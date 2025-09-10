@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
 import { mockWorkoutPlans } from "@/data/mockData";
-import { getPlanById } from "@/data/storage";
+import { getPlanById, addCompletedWorkout } from "@/data/storage";
+import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 
 const ActiveWorkout = () => {
@@ -70,6 +71,25 @@ const ActiveWorkout = () => {
       total + ex.sets.filter(set => set.completed).length, 0
     ) || 0;
     
+    // Persist completed workout
+    if (plan && startTime) {
+      const end = new Date();
+      const durationMin = Math.max(1, Math.round((end.getTime() - startTime.getTime()) / 60000));
+      const workout: CompletedWorkout = {
+        id: `cw_${Date.now()}`,
+        planId: plan.id,
+        planName: plan.name,
+        date: new Date().toISOString().split('T')[0],
+        startTime: startTime.toTimeString().slice(0,5),
+        endTime: end.toTimeString().slice(0,5),
+        duration: durationMin,
+        exercises: plan.exercises,
+        notes: notes || undefined,
+        completed: true,
+      };
+      addCompletedWorkout(workout);
+    }
+
     toast({
       title: "Treino concluído!",
       description: `${completedSets} sets completados em ${formatTime(elapsedTime)}`,

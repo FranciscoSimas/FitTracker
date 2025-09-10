@@ -1,7 +1,8 @@
-import { Exercise, WorkoutPlan } from "./mockData";
+import { Exercise, WorkoutPlan, CompletedWorkout } from "./mockData";
 
 const EXERCISES_KEY = "tdp_exercises";
 const PLANS_KEY = "tdp_workout_plans";
+const COMPLETED_KEY = "tdp_completed_workouts";
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -62,6 +63,22 @@ export function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[]): Wo
   const updatedPlans = plans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p));
   setPlans(updatedPlans);
   return updatedPlans;
+}
+
+// Completed workouts
+export function getCompletedWorkouts(): CompletedWorkout[] {
+  return safeParse<CompletedWorkout[]>(localStorage.getItem(COMPLETED_KEY), []);
+}
+
+export function addCompletedWorkout(workout: CompletedWorkout): CompletedWorkout[] {
+  const current = getCompletedWorkouts();
+  const updated = [...current, workout];
+  localStorage.setItem(COMPLETED_KEY, JSON.stringify(updated));
+  return updated;
+}
+
+export function clearCompletedWorkouts(): void {
+  localStorage.setItem(COMPLETED_KEY, JSON.stringify([]));
 }
 
 

@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, Eye, Filter } from "lucide-react";
-import { mockCompletedWorkouts, CompletedWorkout } from "@/data/mockData";
+import { CompletedWorkout } from "@/data/mockData";
+import { getCompletedWorkouts, clearCompletedWorkouts } from "@/data/storage";
 
 const WorkoutHistory = () => {
-  const [workouts] = useState<CompletedWorkout[]>(mockCompletedWorkouts);
-  const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>(mockCompletedWorkouts);
+  const [workouts, setWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
+  const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
 
@@ -22,6 +23,17 @@ const WorkoutHistory = () => {
     } else {
       setFilteredWorkouts(workouts.filter(workout => workout.planName === plan));
     }
+  };
+
+  const refreshData = () => {
+    const data = getCompletedWorkouts();
+    setWorkouts(data);
+    setFilteredWorkouts(selectedPlan === "all" ? data : data.filter(w => w.planName === selectedPlan));
+  };
+
+  const handleClear = () => {
+    clearCompletedWorkouts();
+    refreshData();
   };
 
   const formatDate = (dateString: string) => {
@@ -156,6 +168,10 @@ const WorkoutHistory = () => {
           <p className="mt-2 text-muted-foreground">
             Reveja os seus treinos anteriores
           </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={refreshData} className="border-border/50">Atualizar</Button>
+          <Button variant="outline" onClick={handleClear} className="border-red-500/20 text-red-600 hover:bg-red-500/10">Limpar Histórico</Button>
         </div>
       </div>
 
