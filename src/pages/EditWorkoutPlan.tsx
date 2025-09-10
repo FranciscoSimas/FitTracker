@@ -20,7 +20,7 @@ const EditWorkoutPlan = () => {
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [planName, setPlanName] = useState("");
   const [selectedExercise, setSelectedExercise] = useState("");
-  const [allExercises] = useState(loadExercises(mockExercises));
+  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
 
   useEffect(() => {
     const foundPlan = planId ? getPlanById(planId, mockWorkoutPlans) : null;
@@ -28,6 +28,12 @@ const EditWorkoutPlan = () => {
       setPlan(foundPlan);
       setPlanName(foundPlan.name);
     }
+    
+    const loadExercises = async () => {
+      const exercises = await loadExercises(mockExercises);
+      setAllExercises(exercises);
+    };
+    loadExercises();
   }, [planId]);
 
   const addExercise = () => {

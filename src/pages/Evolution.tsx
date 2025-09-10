@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,9 +13,23 @@ const Evolution = () => {
   const navigate = useNavigate();
   const [selectedExercise, setSelectedExercise] = useState("1");
 
-  const completed = getCompletedWorkouts();
-  const allExercises = loadExercises(mockExercises);
-  const bodyWeights = getBodyWeights();
+  const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
+  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+  const [bodyWeights, setBodyWeights] = useState<BodyWeightEntry[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const [workouts, exercises, weights] = await Promise.all([
+        getCompletedWorkouts(),
+        loadExercises(mockExercises),
+        getBodyWeights()
+      ]);
+      setCompleted(workouts);
+      setAllExercises(exercises);
+      setBodyWeights(weights);
+    };
+    loadData();
+  }, []);
 
   // Process data for charts
   const getExerciseEvolution = (exerciseId: string) => {
@@ -203,11 +217,11 @@ const Evolution = () => {
           <div className="flex items-center gap-3">
             <input id="bw-date" type="date" defaultValue={new Date().toISOString().slice(0,10)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" />
             <input id="bw-value" type="number" step="0.1" placeholder="Peso (kg)" className="h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            <Button onClick={() => {
+            <Button onClick={async () => {
               const d = (document.getElementById('bw-date') as HTMLInputElement).value;
               const v = parseFloat((document.getElementById('bw-value') as HTMLInputElement).value);
               if (!d || !Number.isFinite(v)) return;
-              addBodyWeight({ date: d, weight: Math.round(v * 10) / 10 });
+              await addBodyWeight({ date: d, weight: Math.round(v * 10) / 10 });
               window.location.reload();
             }}>Guardar</Button>
           </div>
