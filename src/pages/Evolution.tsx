@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
-import { TrendingUp, Calendar, Target, Trophy } from "lucide-react";
+import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
 import { mockCompletedWorkouts, mockExercises } from "@/data/mockData";
+import { useNavigate } from "react-router-dom";
 
 const Evolution = () => {
+  const navigate = useNavigate();
   const [selectedExercise, setSelectedExercise] = useState("1");
 
   // Process data for charts
@@ -52,14 +56,24 @@ const Evolution = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-          Evolução dos Treinos
-        </h1>
-        <p className="mt-2 text-muted-foreground">
-          Acompanhe o seu progresso ao longo do tempo
-        </p>
-      </div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
+              Evolução dos Treinos
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+              Acompanhe o seu progresso ao longo do tempo
+            </p>
+          </div>
+          <Button 
+            onClick={() => navigate("/historico")}
+            variant="outline"
+            className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+          >
+            <History className="h-4 w-4 mr-2" />
+            Ver Histórico
+          </Button>
+        </div>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -67,7 +81,7 @@ const Evolution = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-fitness-success/10 rounded-lg">
-                <Trophy className="h-5 w-5 text-fitness-success" />
+                <TrendingUp className="h-5 w-5 text-fitness-success" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-fitness-success">{totalWorkouts}</div>
@@ -95,7 +109,7 @@ const Evolution = () => {
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-fitness-secondary/10 rounded-lg">
-                <Target className="h-5 w-5 text-fitness-secondary" />
+                <Clock className="h-5 w-5 text-fitness-secondary" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-fitness-secondary">{Math.round(totalDuration / 60)}h</div>

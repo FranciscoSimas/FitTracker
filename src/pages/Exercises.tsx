@@ -1,14 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Filter, Dumbbell } from "lucide-react";
+import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
+import { useToast } from "@/hooks/use-toast";
 
 const Exercises = () => {
-  const [exercises] = useState<Exercise[]>(mockExercises);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const [exercises, setExercises] = useState<Exercise[]>(mockExercises);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>(mockExercises);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
@@ -42,6 +47,18 @@ const Exercises = () => {
     setFilteredExercises(filtered);
   };
 
+  const removeExercise = (exerciseId: string) => {
+    const exerciseToRemove = exercises.find(ex => ex.id === exerciseId);
+    if (exerciseToRemove) {
+      setExercises(prev => prev.filter(ex => ex.id !== exerciseId));
+      filterExercises(searchTerm, selectedMuscleGroup);
+      toast({
+        title: "Exercício removido!",
+        description: `${exerciseToRemove.name} foi removido da biblioteca.`,
+      });
+    }
+  };
+
   const getMuscleGroupColor = (muscleGroup: string) => {
     const colors: { [key: string]: string } = {
       "Peito": "bg-red-100 text-red-700 border-red-200",
@@ -65,7 +82,10 @@ const Exercises = () => {
             Gerencie seus exercícios e adicione novos
           </p>
         </div>
-        <Button className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0">
+        <Button 
+          onClick={() => navigate("/adicionar-exercicio")}
+          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Adicionar Exercício
         </Button>
@@ -119,6 +139,14 @@ const Exercises = () => {
                     </span>
                   </div>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => removeExercise(exercise.id)}
+                  className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </Button>
               </div>
             </CardHeader>
             <CardContent className="pt-0">

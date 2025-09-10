@@ -87,6 +87,46 @@ const ActiveWorkout = () => {
     });
   };
 
+  const addSet = (exerciseId: string) => {
+    if (!plan) return;
+    
+    const exercise = plan.exercises.find(ex => ex.id === exerciseId);
+    if (!exercise) return;
+
+    const lastSet = exercise.sets[exercise.sets.length - 1];
+    const newSet = {
+      id: `set_${Date.now()}`,
+      reps: lastSet ? lastSet.reps : 10,
+      weight: lastSet ? lastSet.weight : 0,
+      completed: false
+    };
+
+    setPlan({
+      ...plan,
+      exercises: plan.exercises.map(ex => 
+        ex.id === exerciseId 
+          ? { ...ex, sets: [...ex.sets, newSet] }
+          : ex
+      )
+    });
+  };
+
+  const removeSet = (exerciseId: string, setId: string) => {
+    if (!plan) return;
+    
+    const exercise = plan.exercises.find(ex => ex.id === exerciseId);
+    if (!exercise || exercise.sets.length <= 1) return; // Don't allow removing the last set
+
+    setPlan({
+      ...plan,
+      exercises: plan.exercises.map(ex => 
+        ex.id === exerciseId 
+          ? { ...ex, sets: ex.sets.filter(set => set.id !== setId) }
+          : ex
+      )
+    });
+  };
+
   const toggleSetComplete = (exerciseId: string, setId: string) => {
     if (!plan) return;
     
@@ -180,7 +220,22 @@ const ActiveWorkout = () => {
                 {exercise.exercise.name}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between mb-3">
+                <Badge variant="outline" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
+                  {exercise.exercise.muscleGroup}
+                </Badge>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => addSet(exercise.id)}
+                  className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Set
+                </Button>
+              </div>
+              
               {exercise.sets.map((set, index) => (
                 <div 
                   key={set.id} 
@@ -253,18 +308,29 @@ const ActiveWorkout = () => {
                     </div>
                   </div>
 
-                  <Button
-                    size="sm"
-                    variant={set.completed ? "default" : "outline"}
-                    onClick={() => toggleSetComplete(exercise.id, set.id)}
-                    className={set.completed 
-                      ? "bg-fitness-success hover:bg-fitness-success/90 text-white" 
-                      : "border-fitness-success/20 text-fitness-success hover:bg-fitness-success/10"
-                    }
-                  >
-                    <CheckCircle className={`h-4 w-4 ${set.completed ? "" : "mr-2"}`} />
-                    {!set.completed && "Marcar"}
-                  </Button>
+                    <Button
+                      size="sm"
+                      variant={set.completed ? "default" : "outline"}
+                      onClick={() => toggleSetComplete(exercise.id, set.id)}
+                      className={set.completed 
+                        ? "bg-fitness-success hover:bg-fitness-success/90 text-white" 
+                        : "border-fitness-success/20 text-fitness-success hover:bg-fitness-success/10"
+                      }
+                    >
+                      <CheckCircle className={`h-4 w-4 ${set.completed ? "" : "mr-2"}`} />
+                      {!set.completed && "Marcar"}
+                    </Button>
+
+                  {exercise.sets.length > 1 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeSet(exercise.id, set.id)}
+                      className="text-red-600 hover:bg-red-500/10 h-8 w-8 p-0"
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                  )}
                 </div>
               ))}
             </CardContent>

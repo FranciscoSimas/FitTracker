@@ -171,72 +171,43 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   },
 ];
 
-// Mock completed workouts for evolution tracking
-export const mockCompletedWorkouts: CompletedWorkout[] = [
-  {
-    id: "cw1",
-    planId: "plan1",
-    planName: "Peito e Trícep",
-    date: "2024-01-15",
-    startTime: "18:00",
-    endTime: "19:30",
-    duration: 90,
-    completed: true,
-    exercises: [
-      {
-        id: "we1",
-        exerciseId: "1",
-        exercise: mockExercises[0],
-        sets: [
-          { id: "s1", reps: 12, weight: 75, completed: true },
-          { id: "s2", reps: 10, weight: 80, completed: true },
-          { id: "s3", reps: 8, weight: 85, completed: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: "cw2",
-    planId: "plan1",
-    planName: "Peito e Trícep",
-    date: "2024-01-18",
-    startTime: "18:00",
-    endTime: "19:15",
-    duration: 75,
-    completed: true,
-    exercises: [
-      {
-        id: "we1",
-        exerciseId: "1",
-        exercise: mockExercises[0],
-        sets: [
-          { id: "s1", reps: 12, weight: 80, completed: true },
-          { id: "s2", reps: 10, weight: 85, completed: true },
-          { id: "s3", reps: 8, weight: 90, completed: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: "cw3",
-    planId: "plan1",
-    planName: "Peito e Trícep",
-    date: "2024-01-22",
-    startTime: "18:30",
-    endTime: "20:00",
-    duration: 90,
-    completed: true,
-    exercises: [
-      {
-        id: "we1",
-        exerciseId: "1",
-        exercise: mockExercises[0],
-        sets: [
-          { id: "s1", reps: 12, weight: 80, completed: true },
-          { id: "s2", reps: 10, weight: 87.5, completed: true },
-          { id: "s3", reps: 8, weight: 92.5, completed: true },
-        ],
-      },
-    ],
-  },
-];
+// Generate more realistic completed workouts
+const generateCompletedWorkouts = (): CompletedWorkout[] => {
+  const workouts: CompletedWorkout[] = [];
+  const today = new Date();
+  
+  // Generate workouts for the last 30 days
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - (i * 2)); // Every 2 days
+    
+    const planIndex = i % 4;
+    const plan = mockWorkoutPlans[planIndex];
+    
+    const workout: CompletedWorkout = {
+      id: `cw${i + 1}`,
+      planId: plan.id,
+      planName: plan.name,
+      date: date.toISOString().split('T')[0],
+      startTime: "18:00",
+      endTime: "19:30",
+      duration: 60 + Math.floor(Math.random() * 30), // 60-90 minutes
+      completed: true,
+      exercises: plan.exercises.map(ex => ({
+        ...ex,
+        sets: ex.sets.map(set => ({
+          ...set,
+          weight: set.weight + (Math.random() * 10 - 5), // Slight weight variations
+          completed: true
+        }))
+      })),
+      notes: i % 3 === 0 ? "Bom treino hoje!" : undefined
+    };
+    
+    workouts.push(workout);
+  }
+  
+  return workouts.reverse(); // Oldest first
+};
+
+export const mockCompletedWorkouts: CompletedWorkout[] = generateCompletedWorkouts();

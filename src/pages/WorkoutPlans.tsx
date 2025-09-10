@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Edit3, Users, Calendar } from "lucide-react";
-import { mockWorkoutPlans } from "@/data/mockData";
+import { mockWorkoutPlans, mockCompletedWorkouts } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
 
 const WorkoutPlans = () => {
@@ -17,6 +17,20 @@ const WorkoutPlans = () => {
   const editPlan = (planId: string) => {
     navigate(`/editar-plano/${planId}`);
   };
+
+  const getSuggestedWorkout = () => {
+    const lastWorkouts = mockCompletedWorkouts.slice(-4);
+    const recentPlanIds = lastWorkouts.map(w => w.planId);
+    
+    // Find a plan that hasn't been done recently
+    const availablePlan = mockWorkoutPlans.find(plan => 
+      !recentPlanIds.includes(plan.id)
+    );
+    
+    return availablePlan || mockWorkoutPlans[1]; // Fallback to plan2
+  };
+
+  const suggestedPlan = getSuggestedWorkout();
 
   return (
     <div className="space-y-6">
@@ -103,10 +117,10 @@ const WorkoutPlans = () => {
             Próximo Treino Sugerido
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
-            Baseado no seu histórico, sugerimos: <strong>Costas e Bícep</strong>
+            Baseado no seu histórico, sugerimos: <strong>{suggestedPlan.name}</strong>
           </p>
           <Button
-            onClick={() => startWorkout("plan2")}
+            onClick={() => startWorkout(suggestedPlan.id)}
             variant="outline"
             className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
           >
