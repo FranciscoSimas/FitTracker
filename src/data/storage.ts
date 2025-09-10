@@ -81,4 +81,8 @@ export function clearCompletedWorkouts(): void {
   localStorage.setItem(COMPLETED_KEY, JSON.stringify([]));
 }
 
+export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
+  localStorage.setItem(COMPLETED_KEY, JSON.stringify(workouts));
+}
+
 
