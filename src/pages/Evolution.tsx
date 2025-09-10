@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
 import { mockExercises } from "@/data/mockData";
-import { getCompletedWorkouts } from "@/data/storage";
+import { getCompletedWorkouts, getExercises as loadExercises, getBodyWeights, addBodyWeight } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 
 const Evolution = () => {
@@ -14,6 +14,8 @@ const Evolution = () => {
   const [selectedExercise, setSelectedExercise] = useState("1");
 
   const completed = getCompletedWorkouts();
+  const allExercises = loadExercises(mockExercises);
+  const bodyWeights = getBodyWeights();
 
   // Process data for charts
   const getExerciseEvolution = (exerciseId: string) => {
@@ -151,7 +153,7 @@ const Evolution = () => {
                 <SelectValue placeholder="Selecionar exercício" />
               </SelectTrigger>
               <SelectContent>
-                {mockExercises.slice(0, 5).map((exercise) => (
+                {allExercises.map((exercise) => (
                   <SelectItem key={exercise.id} value={exercise.id}>
                     {exercise.name}
                   </SelectItem>
@@ -186,6 +188,38 @@ const Evolution = () => {
                   dot={{ fill: 'hsl(var(--fitness-primary))', strokeWidth: 2, r: 6 }}
                   activeDot={{ r: 8, fill: 'hsl(var(--fitness-primary))' }}
                 />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Body Weight Tracking */}
+      <Card className="bg-card/50 border-border/50">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Peso Corporal</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-3">
+            <input id="bw-date" type="date" defaultValue={new Date().toISOString().slice(0,10)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            <input id="bw-value" type="number" step="0.1" placeholder="Peso (kg)" className="h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            <Button onClick={() => {
+              const d = (document.getElementById('bw-date') as HTMLInputElement).value;
+              const v = parseFloat((document.getElementById('bw-value') as HTMLInputElement).value);
+              if (!d || !Number.isFinite(v)) return;
+              addBodyWeight({ date: d, weight: Math.round(v * 10) / 10 });
+              window.location.reload();
+            }}>Guardar</Button>
+          </div>
+
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={bodyWeights.map(b => ({ date: new Date(b.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }), weight: b.weight }))}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis dataKey="date" className="text-muted-foreground" />
+                <YAxis className="text-muted-foreground" />
+                <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }} />
+                <Line type="monotone" dataKey="weight" stroke="hsl(var(--fitness-accent))" strokeWidth={3} dot={{ fill: 'hsl(var(--fitness-accent))', strokeWidth: 2, r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>

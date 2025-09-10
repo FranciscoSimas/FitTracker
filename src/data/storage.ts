@@ -3,6 +3,7 @@ import { Exercise, WorkoutPlan, CompletedWorkout } from "./mockData";
 const EXERCISES_KEY = "tdp_exercises";
 const PLANS_KEY = "tdp_workout_plans";
 const COMPLETED_KEY = "tdp_completed_workouts";
+const BODY_WEIGHT_KEY = "tdp_body_weights"; // [{ date: ISO, weight: number }]
 
 function safeParse<T>(raw: string | null, fallback: T): T {
   if (!raw) return fallback;
@@ -83,6 +84,24 @@ export function clearCompletedWorkouts(): void {
 
 export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
   localStorage.setItem(COMPLETED_KEY, JSON.stringify(workouts));
+}
+
+// Body weight tracking
+export type BodyWeightEntry = { date: string; weight: number };
+
+export function getBodyWeights(): BodyWeightEntry[] {
+  return safeParse<BodyWeightEntry[]>(localStorage.getItem(BODY_WEIGHT_KEY), []);
+}
+
+export function setBodyWeights(entries: BodyWeightEntry[]): void {
+  localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(entries));
+}
+
+export function addBodyWeight(entry: BodyWeightEntry): BodyWeightEntry[] {
+  const current = getBodyWeights();
+  const updated = [...current.filter(e => e.date !== entry.date), entry].sort((a,b) => a.date.localeCompare(b.date));
+  setBodyWeights(updated);
+  return updated;
 }
 
 

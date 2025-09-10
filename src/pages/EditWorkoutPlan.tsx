@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise } from "@/data/mockData";
+import { getExercises as loadExercises } from "@/data/storage";
 import { getPlanById, updatePlan } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +20,7 @@ const EditWorkoutPlan = () => {
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [planName, setPlanName] = useState("");
   const [selectedExercise, setSelectedExercise] = useState("");
+  const [allExercises] = useState(loadExercises(mockExercises));
 
   useEffect(() => {
     const foundPlan = planId ? getPlanById(planId, mockWorkoutPlans) : null;
@@ -124,7 +126,7 @@ const EditWorkoutPlan = () => {
                   <SelectValue placeholder="Selecionar exercício" />
                 </SelectTrigger>
                 <SelectContent>
-                  {mockExercises.map((exercise) => (
+                  {allExercises.map((exercise) => (
                     <SelectItem key={exercise.id} value={exercise.id}>
                       {exercise.name} - {exercise.muscleGroup}
                     </SelectItem>
