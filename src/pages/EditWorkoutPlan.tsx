@@ -33,7 +33,7 @@ const EditWorkoutPlan = () => {
   const addExercise = () => {
     if (!selectedExercise || !plan) return;
     
-    const exercise = mockExercises.find(ex => ex.id === selectedExercise);
+    const exercise = allExercises.find(ex => ex.id === selectedExercise);
     if (!exercise) return;
 
     const newWorkoutExercise: WorkoutExercise = {
@@ -126,10 +126,17 @@ const EditWorkoutPlan = () => {
                   <SelectValue placeholder="Selecionar exercício" />
                 </SelectTrigger>
                 <SelectContent>
-                  {allExercises.map((exercise) => (
-                    <SelectItem key={exercise.id} value={exercise.id}>
-                      {exercise.name} - {exercise.muscleGroup}
-                    </SelectItem>
+                  {Array.from(new Map(allExercises.map(e => [e.muscleGroup, true])).keys()).map((group) => (
+                    <div key={group}>
+                      <SelectItem value={`__header_${group}`} disabled>
+                        {group}
+                      </SelectItem>
+                      {allExercises.filter(e => e.muscleGroup === group).map((exercise) => (
+                        <SelectItem key={exercise.id} value={exercise.id}>
+                          {exercise.name}
+                        </SelectItem>
+                      ))}
+                    </div>
                   ))}
                 </SelectContent>
               </Select>
