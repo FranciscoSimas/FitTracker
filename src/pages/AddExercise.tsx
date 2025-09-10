@@ -21,7 +21,7 @@ const AddExercise = () => {
   const muscleGroups = ["Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas"];
   const equipmentOptions = ["Barra", "Halteres", "Cabo", "Máquina", "Peso Corporal"];
 
-  const saveExercise = () => {
+  const saveExercise = async () => {
     if (!exerciseName || !muscleGroup) {
       toast({
         title: "Erro",
@@ -37,7 +37,7 @@ const AddExercise = () => {
       muscleGroup,
       equipment: equipment || undefined,
     };
-    persistAddExercise(newExercise, mockExercises);
+    await persistAddExercise(newExercise, mockExercises);
     toast({
       title: "Exercício adicionado!",
       description: `${exerciseName} foi adicionado à biblioteca.`,

@@ -65,7 +65,7 @@ const ActiveWorkout = () => {
     setIsActive(false);
   };
 
-  const finishWorkout = () => {
+  const finishWorkout = async () => {
     setIsActive(false);
     const completedSets = plan?.exercises.reduce((total, ex) => 
       total + ex.sets.filter(set => set.completed).length, 0
@@ -87,7 +87,7 @@ const ActiveWorkout = () => {
         notes: notes || undefined,
         completed: true,
       };
-      addCompletedWorkout(workout);
+      await addCompletedWorkout(workout);
     }
 
     toast({

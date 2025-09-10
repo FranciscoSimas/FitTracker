@@ -8,18 +8,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
 import { getExercises as loadExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const Exercises = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [exercises, setExercises] = useState<Exercise[]>(loadExercises(mockExercises));
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>(loadExercises(mockExercises));
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
   const muscleGroups = ["all", ...Array.from(new Set(exercises.map(ex => ex.muscleGroup)))];
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await loadExercises(mockExercises);
+      setExercises(data);
+      setFilteredExercises(data);
+    };
+    loadData();
+  }, []);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -48,10 +58,10 @@ const Exercises = () => {
     setFilteredExercises(filtered);
   };
 
-  const removeExercise = (exerciseId: string) => {
+  const removeExercise = async (exerciseId: string) => {
     const exerciseToRemove = exercises.find(ex => ex.id === exerciseId);
     if (!exerciseToRemove) return;
-    const updated = persistRemoveExercise(exerciseId, mockExercises);
+    const updated = await persistRemoveExercise(exerciseId, mockExercises);
     setExercises(updated);
     setFilteredExercises(updated);
     filterExercises(searchTerm, selectedMuscleGroup);

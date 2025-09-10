@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,14 +11,18 @@ import { getCompletedWorkouts, clearCompletedWorkouts, setCompletedWorkouts } fr
 import { parseFreeformWorkouts } from "@/lib/utils";
 
 const WorkoutHistory = () => {
-  const [workouts, setWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
-  const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
+  const [workouts, setWorkouts] = useState<CompletedWorkout[]>([]);
+  const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>([]);
   const [importText, setImportText] = useState("");
   const [startDate, setStartDate] = useState("2025-07-01");
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
 
   const uniquePlans = ["all", ...Array.from(new Set(workouts.map(w => w.planName)))];
+
+  useEffect(() => {
+    refreshData();
+  }, []);
 
   const handlePlanFilter = (plan: string) => {
     setSelectedPlan(plan);
@@ -29,8 +33,8 @@ const WorkoutHistory = () => {
     }
   };
 
-  const refreshData = () => {
-    const data = getCompletedWorkouts();
+  const refreshData = async () => {
+    const data = await getCompletedWorkouts();
     setWorkouts(data);
     setFilteredWorkouts(selectedPlan === "all" ? data : data.filter(w => w.planName === selectedPlan));
   };
@@ -40,7 +44,7 @@ const WorkoutHistory = () => {
     refreshData();
   };
 
-  const handleImport = () => {
+  const handleImport = async () => {
     if (!importText.trim()) return;
     const parsed = parseFreeformWorkouts(importText, startDate, 3.5, 2);
     // map to CompletedWorkout
@@ -61,7 +65,8 @@ const WorkoutHistory = () => {
         sets: ex.sets.map((s, si) => ({ id: `s_${idx}_${exIdx}_${si}` , reps: s.reps, weight: s.weight, completed: true }))
       }))
     }));
-    const combined = [...getCompletedWorkouts(), ...mapped].sort((a,b) => a.date.localeCompare(b.date));
+    const current = await getCompletedWorkouts();
+    const combined = [...current, ...mapped].sort((a,b) => a.date.localeCompare(b.date));
     setCompletedWorkouts(combined);
     setImportText("");
     refreshData();

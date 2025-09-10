@@ -1,4 +1,5 @@
 import { Exercise, WorkoutPlan, CompletedWorkout } from "./mockData";
+import * as remote from "./remote";
 
 const EXERCISES_KEY = "tdp_exercises";
 const PLANS_KEY = "tdp_workout_plans";
@@ -14,7 +15,16 @@ function safeParse<T>(raw: string | null, fallback: T): T {
   }
 }
 
-export function getExercises(initial: Exercise[]): Exercise[] {
+export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
+  // Try remote first
+  const remoteExercises = await remote.getExercisesRemote();
+  if (remoteExercises.length > 0) {
+    // Sync to localStorage
+    localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+    return remoteExercises;
+  }
+  
+  // Fallback to localStorage
   const stored = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
   // Seed if empty
   if (!localStorage.getItem(EXERCISES_KEY)) {
@@ -27,15 +37,22 @@ export function setExercises(exercises: Exercise[]): void {
   localStorage.setItem(EXERCISES_KEY, JSON.stringify(exercises));
 }
 
-export function addExercise(exercise: Exercise, initial: Exercise[]): Exercise[] {
-  const current = getExercises(initial);
+export async function addExercise(exercise: Exercise, initial: Exercise[]): Promise<Exercise[]> {
+  // Try remote first
+  const remoteSuccess = await remote.addExerciseRemote(exercise);
+  
+  const current = await getExercises(initial);
   const updated = [...current, exercise];
   setExercises(updated);
+  
   return updated;
 }
 
-export function removeExercise(exerciseId: string, initial: Exercise[]): Exercise[] {
-  const current = getExercises(initial);
+export async function removeExercise(exerciseId: string, initial: Exercise[]): Promise<Exercise[]> {
+  // Try remote first
+  await remote.removeExerciseRemote(exerciseId);
+  
+  const current = await getExercises(initial);
   const updated = current.filter((ex) => ex.id !== exerciseId);
   setExercises(updated);
   return updated;
@@ -67,12 +84,24 @@ export function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[]): Wo
 }
 
 // Completed workouts
-export function getCompletedWorkouts(): CompletedWorkout[] {
+export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
+  // Try remote first
+  const remoteWorkouts = await remote.getCompletedWorkoutsRemote();
+  if (remoteWorkouts.length > 0) {
+    // Sync to localStorage
+    localStorage.setItem(COMPLETED_KEY, JSON.stringify(remoteWorkouts));
+    return remoteWorkouts;
+  }
+  
+  // Fallback to localStorage
   return safeParse<CompletedWorkout[]>(localStorage.getItem(COMPLETED_KEY), []);
 }
 
-export function addCompletedWorkout(workout: CompletedWorkout): CompletedWorkout[] {
-  const current = getCompletedWorkouts();
+export async function addCompletedWorkout(workout: CompletedWorkout): Promise<CompletedWorkout[]> {
+  // Try remote first
+  await remote.addCompletedWorkoutRemote(workout);
+  
+  const current = await getCompletedWorkouts();
   const updated = [...current, workout];
   localStorage.setItem(COMPLETED_KEY, JSON.stringify(updated));
   return updated;
@@ -89,7 +118,16 @@ export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
 // Body weight tracking
 export type BodyWeightEntry = { date: string; weight: number };
 
-export function getBodyWeights(): BodyWeightEntry[] {
+export async function getBodyWeights(): Promise<BodyWeightEntry[]> {
+  // Try remote first
+  const remoteWeights = await remote.getBodyWeightsRemote();
+  if (remoteWeights.length > 0) {
+    // Sync to localStorage
+    localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(remoteWeights));
+    return remoteWeights;
+  }
+  
+  // Fallback to localStorage
   return safeParse<BodyWeightEntry[]>(localStorage.getItem(BODY_WEIGHT_KEY), []);
 }
 
@@ -97,8 +135,11 @@ export function setBodyWeights(entries: BodyWeightEntry[]): void {
   localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(entries));
 }
 
-export function addBodyWeight(entry: BodyWeightEntry): BodyWeightEntry[] {
-  const current = getBodyWeights();
+export async function addBodyWeight(entry: BodyWeightEntry): Promise<BodyWeightEntry[]> {
+  // Try remote first
+  await remote.addBodyWeightRemote(entry);
+  
+  const current = await getBodyWeights();
   const updated = [...current.filter(e => e.date !== entry.date), entry].sort((a,b) => a.date.localeCompare(b.date));
   setBodyWeights(updated);
   return updated;
