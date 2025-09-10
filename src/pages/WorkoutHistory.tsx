@@ -1,16 +1,20 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, Eye, Filter } from "lucide-react";
 import { CompletedWorkout } from "@/data/mockData";
-import { getCompletedWorkouts, clearCompletedWorkouts } from "@/data/storage";
+import { getCompletedWorkouts, clearCompletedWorkouts, setCompletedWorkouts } from "@/data/storage";
+import { parseFreeformWorkouts } from "@/lib/utils";
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
   const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>(getCompletedWorkouts());
+  const [importText, setImportText] = useState("");
+  const [startDate, setStartDate] = useState("2025-07-01");
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
 
@@ -33,6 +37,33 @@ const WorkoutHistory = () => {
 
   const handleClear = () => {
     clearCompletedWorkouts();
+    refreshData();
+  };
+
+  const handleImport = () => {
+    if (!importText.trim()) return;
+    const parsed = parseFreeformWorkouts(importText, startDate, 3.5, 2);
+    // map to CompletedWorkout
+    const mapped: CompletedWorkout[] = parsed.map((p, idx) => ({
+      id: `imp_${Date.now()}_${idx}`,
+      planId: p.planName.toLowerCase().replace(/\s+/g,'-'),
+      planName: p.planName,
+      date: p.date,
+      startTime: "18:00",
+      endTime: "19:15",
+      duration: 75,
+      completed: true,
+      notes: undefined,
+      exercises: p.exercises.map((ex, exIdx) => ({
+        id: `ex_${idx}_${exIdx}`,
+        exerciseId: ex.name.toLowerCase().replace(/\s+/g,'-'),
+        exercise: { id: ex.name.toLowerCase().replace(/\s+/g,'-'), name: ex.name, muscleGroup: "", },
+        sets: ex.sets.map((s, si) => ({ id: `s_${idx}_${exIdx}_${si}` , reps: s.reps, weight: s.weight, completed: true }))
+      }))
+    }));
+    const combined = [...getCompletedWorkouts(), ...mapped].sort((a,b) => a.date.localeCompare(b.date));
+    setCompletedWorkouts(combined);
+    setImportText("");
     refreshData();
   };
 
@@ -174,6 +205,25 @@ const WorkoutHistory = () => {
           <Button variant="outline" onClick={handleClear} className="border-red-500/20 text-red-600 hover:bg-red-500/10">Limpar Histórico</Button>
         </div>
       </div>
+
+      {/* Import Section */}
+      <Card className="bg-card/50 border-border/50">
+        <CardHeader>
+          <CardTitle className="text-lg">Importar treinos (texto livre)</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex-1">
+              <Textarea value={importText} onChange={(e) => setImportText(e.target.value)} placeholder="Cole aqui o texto com os seus treinos..." className="bg-background/80 border-border/50 min-h-[120px]" />
+            </div>
+            <div className="w-full sm:w-56 space-y-2">
+              <label className="text-sm text-muted-foreground">Data de início estimada</label>
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <Button onClick={handleImport} className="w-full">Importar</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <Card className="bg-card/50 border-border/50">
