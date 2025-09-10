@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { addExercise as persistAddExercise } from "@/data/storage";
+import { mockExercises, Exercise } from "@/data/mockData";
 
 const AddExercise = () => {
   const navigate = useNavigate();
@@ -29,7 +31,13 @@ const AddExercise = () => {
       return;
     }
 
-    // Here you would normally save to database
+    const newExercise: Exercise = {
+      id: `ex_${Date.now()}`,
+      name: exerciseName.trim(),
+      muscleGroup,
+      equipment: equipment || undefined,
+    };
+    persistAddExercise(newExercise, mockExercises);
     toast({
       title: "Exercício adicionado!",
       description: `${exerciseName} foi adicionado à biblioteca.`,

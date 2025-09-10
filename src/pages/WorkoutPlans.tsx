@@ -4,10 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Edit3, Users, Calendar } from "lucide-react";
 import { mockWorkoutPlans, mockCompletedWorkouts } from "@/data/mockData";
+import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 
 const WorkoutPlans = () => {
-  const [plans] = useState(mockWorkoutPlans);
+  const [plans] = useState(getPlans(mockWorkoutPlans));
   const navigate = useNavigate();
 
   const startWorkout = (planId: string) => {
@@ -23,11 +24,10 @@ const WorkoutPlans = () => {
     const recentPlanIds = lastWorkouts.map(w => w.planId);
     
     // Find a plan that hasn't been done recently
-    const availablePlan = mockWorkoutPlans.find(plan => 
+    const availablePlan = plans.find(plan => 
       !recentPlanIds.includes(plan.id)
     );
-    
-    return availablePlan || mockWorkoutPlans[1]; // Fallback to plan2
+    return availablePlan || plans[1]; // Fallback to second plan
   };
 
   const suggestedPlan = getSuggestedWorkout();

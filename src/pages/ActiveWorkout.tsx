@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
 import { mockWorkoutPlans } from "@/data/mockData";
+import { getPlanById } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const ActiveWorkout = () => {
@@ -15,8 +16,15 @@ const ActiveWorkout = () => {
   const { toast } = useToast();
 
   const [plan, setPlan] = useState(() => 
-    mockWorkoutPlans.find(p => p.id === planId)
+    planId ? getPlanById(planId, mockWorkoutPlans) : null
   );
+  
+  useEffect(() => {
+    if (planId) {
+      const found = getPlanById(planId, mockWorkoutPlans);
+      if (found) setPlan(found);
+    }
+  }, [planId]);
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);

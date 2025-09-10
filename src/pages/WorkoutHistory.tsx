@@ -112,7 +112,7 @@ const WorkoutHistory = () => {
                         {set.reps} reps
                       </span>
                       <span className="text-sm font-medium">
-                        {set.weight} kg
+                        {Number.isFinite(set.weight) ? Number(set.weight.toFixed(1)) : set.weight} kg
                       </span>
                     </div>
 

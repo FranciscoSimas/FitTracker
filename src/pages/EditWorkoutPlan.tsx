@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise } from "@/data/mockData";
+import { getPlanById, updatePlan } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const EditWorkoutPlan = () => {
@@ -20,7 +21,7 @@ const EditWorkoutPlan = () => {
   const [selectedExercise, setSelectedExercise] = useState("");
 
   useEffect(() => {
-    const foundPlan = mockWorkoutPlans.find(p => p.id === planId);
+    const foundPlan = planId ? getPlanById(planId, mockWorkoutPlans) : null;
     if (foundPlan) {
       setPlan(foundPlan);
       setPlanName(foundPlan.name);
@@ -60,8 +61,11 @@ const EditWorkoutPlan = () => {
 
   const savePlan = () => {
     if (!plan) return;
-    
-    // Here you would normally save to database
+    const planToSave: WorkoutPlan = {
+      ...plan,
+      name: planName || plan.name,
+    };
+    updatePlan(planToSave, mockWorkoutPlans);
     toast({
       title: "Plano salvo!",
       description: "As alterações foram guardadas com sucesso.",

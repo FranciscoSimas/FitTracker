@@ -7,14 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
+import { getExercises as loadExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const Exercises = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [exercises, setExercises] = useState<Exercise[]>(mockExercises);
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>(mockExercises);
+  const [exercises, setExercises] = useState<Exercise[]>(loadExercises(mockExercises));
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>(loadExercises(mockExercises));
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
@@ -49,14 +50,15 @@ const Exercises = () => {
 
   const removeExercise = (exerciseId: string) => {
     const exerciseToRemove = exercises.find(ex => ex.id === exerciseId);
-    if (exerciseToRemove) {
-      setExercises(prev => prev.filter(ex => ex.id !== exerciseId));
-      filterExercises(searchTerm, selectedMuscleGroup);
-      toast({
-        title: "Exercício removido!",
-        description: `${exerciseToRemove.name} foi removido da biblioteca.`,
-      });
-    }
+    if (!exerciseToRemove) return;
+    const updated = persistRemoveExercise(exerciseId, mockExercises);
+    setExercises(updated);
+    setFilteredExercises(updated);
+    filterExercises(searchTerm, selectedMuscleGroup);
+    toast({
+      title: "Exercício removido!",
+      description: `${exerciseToRemove.name} foi removido da biblioteca.`,
+    });
   };
 
   const getMuscleGroupColor = (muscleGroup: string) => {
