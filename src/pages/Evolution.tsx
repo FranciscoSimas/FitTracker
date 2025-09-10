@@ -5,23 +5,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
-import { mockCompletedWorkouts, mockExercises } from "@/data/mockData";
+import { mockExercises } from "@/data/mockData";
+import { getCompletedWorkouts } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 
 const Evolution = () => {
   const navigate = useNavigate();
   const [selectedExercise, setSelectedExercise] = useState("1");
 
+  const completed = getCompletedWorkouts();
+
   // Process data for charts
   const getExerciseEvolution = (exerciseId: string) => {
-    const workouts = mockCompletedWorkouts.filter(workout => 
+    const workouts = completed.filter(workout => 
       workout.exercises.some(ex => ex.exerciseId === exerciseId)
     );
 
     return workouts.map(workout => {
-      const exercise = workout.exercises.find(ex => ex.exerciseId === exerciseId);
-      const maxWeight = Math.max(...exercise!.sets.map(set => set.weight));
-      const totalVolume = exercise!.sets.reduce((total, set) => total + (set.weight * set.reps), 0);
+      const exercise = workout.exercises.find(ex => ex.exerciseId === exerciseId)!;
+      const maxWeightRaw = Math.max(...exercise.sets.map(set => set.weight));
+      const totalVolumeRaw = exercise.sets.reduce((total, set) => total + (set.weight * set.reps), 0);
+      const maxWeight = Number(maxWeightRaw.toFixed(1));
+      const totalVolume = Number(totalVolumeRaw.toFixed(1));
 
       return {
         date: new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
@@ -35,12 +40,12 @@ const Evolution = () => {
   const exerciseData = getExerciseEvolution(selectedExercise);
   
   // Calculate stats
-  const totalWorkouts = mockCompletedWorkouts.length;
-  const totalDuration = mockCompletedWorkouts.reduce((total, w) => total + w.duration, 0);
+  const totalWorkouts = completed.length;
+  const totalDuration = completed.reduce((total, w) => total + w.duration, 0);
   const avgDuration = totalDuration / totalWorkouts || 0;
-  const lastWorkout = mockCompletedWorkouts[mockCompletedWorkouts.length - 1];
+  const lastWorkout = completed[completed.length - 1];
 
-  const workoutsByMonth = mockCompletedWorkouts.reduce((acc: any[], workout) => {
+  const workoutsByMonth = completed.reduce((acc: any[], workout) => {
     const month = new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short' });
     const existing = acc.find(item => item.month === month);
     
