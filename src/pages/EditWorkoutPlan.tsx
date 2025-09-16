@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
-import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise } from "@/data/mockData";
-import { getExercises as loadExercises } from "@/data/storage";
+import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise, Exercise } from "@/data/mockData";
+import { getExercises } from "@/data/storage";
 import { getPlanById, updatePlan } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,11 +29,11 @@ const EditWorkoutPlan = () => {
       setPlanName(foundPlan.name);
     }
     
-    const loadExercises = async () => {
-      const exercises = await loadExercises(mockExercises);
+    const loadExercisesData = async () => {
+      const exercises = await getExercises(mockExercises);
       setAllExercises(exercises);
     };
-    loadExercises();
+    loadExercisesData();
   }, [planId]);
 
   const addExercise = () => {
