@@ -16,12 +16,16 @@ function safeParse<T>(raw: string | null, fallback: T): T {
 }
 
 export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
-  // Try remote first
-  const remoteExercises = await remote.getExercisesRemote();
-  if (remoteExercises.length > 0) {
-    // Sync to localStorage
-    localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
-    return remoteExercises;
+  try {
+    // Try remote first
+    const remoteExercises = await remote.getExercisesRemote();
+    if (remoteExercises.length > 0) {
+      // Sync to localStorage
+      localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+      return remoteExercises;
+    }
+  } catch (error) {
+    console.error('Error fetching remote exercises:', error);
   }
   
   // Fallback to localStorage
@@ -38,8 +42,12 @@ export function setExercises(exercises: Exercise[]): void {
 }
 
 export async function addExercise(exercise: Exercise, initial: Exercise[]): Promise<Exercise[]> {
-  // Try remote first
-  const remoteSuccess = await remote.addExerciseRemote(exercise);
+  try {
+    // Try remote first
+    await remote.addExerciseRemote(exercise);
+  } catch (error) {
+    console.error('Error adding remote exercise:', error);
+  }
   
   const current = await getExercises(initial);
   const updated = [...current, exercise];
@@ -49,8 +57,12 @@ export async function addExercise(exercise: Exercise, initial: Exercise[]): Prom
 }
 
 export async function removeExercise(exerciseId: string, initial: Exercise[]): Promise<Exercise[]> {
-  // Try remote first
-  await remote.removeExerciseRemote(exerciseId);
+  try {
+    // Try remote first
+    await remote.removeExerciseRemote(exerciseId);
+  } catch (error) {
+    console.error('Error removing remote exercise:', error);
+  }
   
   const current = await getExercises(initial);
   const updated = current.filter((ex) => ex.id !== exerciseId);
