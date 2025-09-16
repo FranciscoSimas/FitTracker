@@ -28,14 +28,14 @@ const Layout = () => {
 
       {/* Navigation */}
       <nav className="border-b border-border bg-card">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-1">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="flex gap-1 overflow-x-auto">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                  `flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                     isActive
                       ? "border-b-2 border-fitness-primary text-fitness-primary"
                       : "text-muted-foreground hover:text-foreground"
@@ -43,7 +43,7 @@ const Layout = () => {
                 }
               >
                 <item.icon className="h-4 w-4" />
-                {item.label}
+                <span className="hidden sm:inline">{item.label}</span>
               </NavLink>
             ))}
           </div>
@@ -51,7 +51,7 @@ const Layout = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
         <Outlet />
       </main>
     </div>
