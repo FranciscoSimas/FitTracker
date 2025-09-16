@@ -34,12 +34,21 @@ const AddWorkoutPlan = () => {
       exercises: [], // Empty plan, user can add exercises later
     };
 
-    await addPlan(newPlan, mockWorkoutPlans);
-    toast({
-      title: "Plano criado!",
-      description: `${planName} foi criado com sucesso.`,
-    });
-    navigate("/");
+    try {
+      await addPlan(newPlan, mockWorkoutPlans);
+      toast({
+        title: "Plano criado!",
+        description: `${planName} foi criado com sucesso.`,
+      });
+      navigate("/");
+    } catch (error) {
+      console.error('Error creating plan:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível criar o plano. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
