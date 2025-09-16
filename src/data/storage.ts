@@ -50,7 +50,8 @@ export async function addExercise(exercise: Exercise, initial: Exercise[]): Prom
   }
   
   // Get current exercises from localStorage directly to avoid recursion
-  const current = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
+  const stored = localStorage.getItem(EXERCISES_KEY);
+  const current = stored ? safeParse<Exercise[]>(stored, []) : initial;
   const updated = [...current, exercise];
   setExercises(updated);
   
@@ -66,7 +67,8 @@ export async function removeExercise(exerciseId: string, initial: Exercise[]): P
   }
   
   // Get current exercises from localStorage directly to avoid recursion
-  const current = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
+  const stored = localStorage.getItem(EXERCISES_KEY);
+  const current = stored ? safeParse<Exercise[]>(stored, []) : initial;
   const updated = current.filter((ex) => ex.id !== exerciseId);
   setExercises(updated);
   return updated;
