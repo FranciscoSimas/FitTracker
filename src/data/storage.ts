@@ -49,7 +49,8 @@ export async function addExercise(exercise: Exercise, initial: Exercise[]): Prom
     console.error('Error adding remote exercise:', error);
   }
   
-  const current = await getExercises(initial);
+  // Get current exercises from localStorage directly to avoid recursion
+  const current = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
   const updated = [...current, exercise];
   setExercises(updated);
   
@@ -64,7 +65,8 @@ export async function removeExercise(exerciseId: string, initial: Exercise[]): P
     console.error('Error removing remote exercise:', error);
   }
   
-  const current = await getExercises(initial);
+  // Get current exercises from localStorage directly to avoid recursion
+  const current = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
   const updated = current.filter((ex) => ex.id !== exerciseId);
   setExercises(updated);
   return updated;
