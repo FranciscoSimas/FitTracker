@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
-import { getExercises, removeExercise as persistRemoveExercise, setExercises } from "@/data/storage";
+import { getExercises, removeExercise as persistRemoveExercise, setExercises as persistSetExercises } from "@/data/storage";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -20,7 +20,7 @@ const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
-  const muscleGroups = ["all", ...Array.from(new Set(exercises.map(ex => ex.muscleGroup)))];
+  const muscleGroups = ["all", "Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas"];
 
   useEffect(() => {
     const loadData = async () => {
@@ -74,6 +74,7 @@ const Exercises = () => {
   const restoreExercises = () => {
     setExercises(mockExercises);
     setFilteredExercises(mockExercises);
+    persistSetExercises(mockExercises); // Persist to localStorage using storage function
     filterExercises(searchTerm, selectedMuscleGroup);
     toast({
       title: "Exercícios restaurados!",
