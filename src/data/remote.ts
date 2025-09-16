@@ -111,6 +111,44 @@ export async function updatePlanRemote(plan: WorkoutPlan): Promise<boolean> {
   }
 }
 
+export async function addPlanRemote(plan: WorkoutPlan): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  
+  try {
+    const { error } = await supabase
+      .from('workout_plans')
+      .insert([{
+        id: plan.id,
+        name: plan.name,
+        description: plan.description || null,
+        exercises: JSON.stringify(plan.exercises)
+      }]);
+    
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error adding plan:', error);
+    return false;
+  }
+}
+
+export async function removePlanRemote(planId: string): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  
+  try {
+    const { error } = await supabase
+      .from('workout_plans')
+      .delete()
+      .eq('id', planId);
+    
+    if (error) throw error;
+    return true;
+  } catch (error) {
+    console.error('Error removing plan:', error);
+    return false;
+  }
+}
+
 // Completed Workouts
 export async function getCompletedWorkoutsRemote(): Promise<CompletedWorkout[]> {
   if (!isSupabaseConfigured()) return [];

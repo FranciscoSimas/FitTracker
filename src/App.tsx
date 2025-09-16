@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import WorkoutPlans from "./pages/WorkoutPlans";
 import Exercises from "./pages/Exercises";
 import AddExercise from "./pages/AddExercise";
+import AddWorkoutPlan from "./pages/AddWorkoutPlan";
 import Evolution from "./pages/Evolution";
 import ActiveWorkout from "./pages/ActiveWorkout";
 import EditWorkoutPlan from "./pages/EditWorkoutPlan";
@@ -25,6 +26,7 @@ const App = () => (
             <Route index element={<WorkoutPlans />} />
             <Route path="exercicios" element={<Exercises />} />
             <Route path="adicionar-exercicio" element={<AddExercise />} />
+            <Route path="adicionar-plano" element={<AddWorkoutPlan />} />
             <Route path="evolucao" element={<Evolution />} />
             <Route path="historico" element={<WorkoutHistory />} />
             <Route path="treino/:planId" element={<ActiveWorkout />} />

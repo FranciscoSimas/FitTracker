@@ -119,6 +119,34 @@ export async function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[
   return updatedPlans;
 }
 
+export async function addPlan(newPlan: WorkoutPlan, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    // Try remote first
+    await remote.addPlanRemote(newPlan);
+  } catch (error) {
+    console.error('Error adding remote plan:', error);
+  }
+  
+  const plans = await getPlans(initial);
+  const updatedPlans = [...plans, newPlan];
+  setPlans(updatedPlans);
+  return updatedPlans;
+}
+
+export async function removePlan(planId: string, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    // Try remote first
+    await remote.removePlanRemote(planId);
+  } catch (error) {
+    console.error('Error removing remote plan:', error);
+  }
+  
+  const plans = await getPlans(initial);
+  const updatedPlans = plans.filter((p) => p.id !== planId);
+  setPlans(updatedPlans);
+  return updatedPlans;
+}
+
 // Completed workouts
 export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
   // Try remote first

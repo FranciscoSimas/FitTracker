@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Edit3, Users, Calendar } from "lucide-react";
+import { Play, Edit3, Users, Calendar, Plus } from "lucide-react";
 import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
 import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
@@ -51,6 +51,16 @@ const WorkoutPlans = () => {
         <p className="mt-2 text-muted-foreground">
           Escolha um plano para treinar ou editar
         </p>
+      </div>
+
+      <div className="flex justify-center">
+        <Button 
+          onClick={() => navigate("/adicionar-plano")}
+          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Adicionar Novo Plano
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
