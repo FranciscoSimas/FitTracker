@@ -2,8 +2,23 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://ykjcpwzsdnawnudvfqnj.supabase.co";
+// Get the correct Supabase URL - should be like https://your-project.supabase.co
+let SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://ykjcpwzsdnawnudvfqnj.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlramNwd3pzZG5hd251ZHZmcW5qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc0OTUxMjMsImV4cCI6MjA3MzA3MTEyM30.dyl_dxMCah_v9Q7zsVUHMoSWGPqrBXMPCjkApgDcZnU";
+
+// Fix URL if it's pointing to dashboard instead of API
+if (SUPABASE_URL.includes('supabase.com/dashboard/project/')) {
+  const projectId = SUPABASE_URL.match(/project\/([^\/]+)/)?.[1];
+  if (projectId) {
+    SUPABASE_URL = `https://${projectId}.supabase.co`;
+  }
+}
+
+console.log('Supabase client config:', { 
+  url: SUPABASE_URL, 
+  hasKey: !!SUPABASE_PUBLISHABLE_KEY,
+  isDefaultUrl: SUPABASE_URL === "https://ykjcpwzsdnawnudvfqnj.supabase.co"
+});
 
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
