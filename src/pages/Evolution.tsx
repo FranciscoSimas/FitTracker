@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
 import { mockExercises } from "@/data/mockData";
-import { getCompletedWorkouts, getExercises as loadExercises, getBodyWeights, addBodyWeight } from "@/data/storage";
+import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 
 const Evolution = () => {
@@ -21,7 +21,7 @@ const Evolution = () => {
     const loadData = async () => {
       const [workouts, exercises, weights] = await Promise.all([
         getCompletedWorkouts(),
-        loadExercises(mockExercises),
+        getExercises(mockExercises),
         getBodyWeights()
       ]);
       setCompleted(workouts);

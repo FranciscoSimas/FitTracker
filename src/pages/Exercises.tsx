@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
-import { getExercises as loadExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
+import { getExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,7 +24,7 @@ const Exercises = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await loadExercises(mockExercises);
+      const data = await getExercises(mockExercises);
       setExercises(data);
       setFilteredExercises(data);
     };
