@@ -6,6 +6,7 @@ import { BodyWeightEntry } from "./storage";
 const isSupabaseConfigured = () => {
   const url = import.meta.env.VITE_SUPABASE_URL;
   const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  console.log('Supabase config check:', { url: !!url, key: !!key, isDefault: url === "https://ykjcpwzsdnawnudvfqnj.supabase.co" });
   return !!(url && key && url !== "https://ykjcpwzsdnawnudvfqnj.supabase.co");
 };
 
