@@ -1,73 +1,71 @@
-# Welcome to your Lovable project
+# 🏋️ FitTracker
 
-## Project info
+**FitTracker** é uma aplicação web e mobile pensada para quem quer **organizar, acompanhar e personalizar os seus treinos de ginásio** de forma simples e intuitiva.  
 
-**URL**: https://lovable.dev/projects/ea107ed5-bd12-4b32-9999-405a7ab141d9
+---
 
-## How can I edit this code?
+## 🎯 Objetivo
 
-There are several ways of editing your application.
+O objetivo principal é permitir que **cada utilizador tenha o seu próprio dashboard de treino**, totalmente personalizável e adaptado ao seu estilo de treino e preferências.  
+A aplicação foca-se em oferecer uma experiência **simples, prática e motivadora**, que ajude a manter consistência nos treinos.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ea107ed5-bd12-4b32-9999-405a7ab141d9) and start prompting.
+## ⚙️ Funcionalidades Atuais
 
-Changes made via Lovable will be committed automatically to this repo.
+- Seleção de **planos de treino** (dias fixos com exercícios predefinidos).  
+- Edição completa dos exercícios: adicionar, remover, renomear e reordenar.  
+- Histórico de treinos guardado por dia.  
+- Interface **responsiva**, com navegação otimizada para mobile.  
+- Deploy automático via **Vercel** e backend configurado com **Supabase**.  
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Roadmap Futuro
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Fase 1 – Base estável
+- Autenticação de utilizadores (login/conta pessoal).  
+- Dashboard básico com histórico de treinos e estatísticas simples.  
+- Planos de treino fixos já incluídos, totalmente personalizáveis.  
+- Versão mobile estável (PWA ou app nativa).  
 
-Follow these steps:
+### Fase 2 – Experiência do utilizador
+- **Internacionalização** (traduções para várias línguas).  
+- **Customização de tema e cores** ao gosto do utilizador.  
+- **Gamificação inicial**: streaks, conquistas simples.  
+- Dashboard melhorado com gráficos e estatísticas semanais/mensais.  
+- Notificações push discretas (lembretes e resumos).  
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Fase 3 – Expansão
+- Biblioteca de planos de treino avançados.  
+- Sistema de **notas e fotos** opcionais para progresso.  
+- Widgets básicos (atalho rápido para treino, integração simples com música).  
+- Gamificação mais avançada (objetivos semanais/mensais).  
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Fase 4 – Social (versão avançada)
+- Rankings semanais de consistência e progresso.  
+- Possibilidade de adicionar amigos e grupos.  
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🛠️ Stack Tecnológica
 
-**Edit a file directly in GitHub**
+- **Frontend:** React + TypeScript + Tailwind + shadcn/ui  
+- **Backend:** Supabase (auth, base de dados, storage)  
+- **Deploy:** Vercel (CI/CD integrado)  
+- **Mobile:** PWA (Progressive Web App), com possibilidade futura de React Native/Expo  
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 🌟 Visão
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+O **FitTracker** pretende ser mais do que um simples registo de treinos:  
+👉 Uma plataforma personalizável e intuitiva, que acompanha o utilizador na sua jornada no ginásio.  
+👉 Uma ferramenta prática que combina simplicidade com funcionalidades motivadoras, ajudando a manter a consistência nos treinos.  
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 📌 Estado do Projeto
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ea107ed5-bd12-4b32-9999-405a7ab141d9) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+📍 Atualmente em fase **MVP privado** – funcionalidades básicas em desenvolvimento.  
+O projeto ainda não está aberto ao público, mas o objetivo é evoluir até um **beta controlado** e, futuramente, lançar de forma pública.  
