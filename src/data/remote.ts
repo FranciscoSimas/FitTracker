@@ -84,7 +84,14 @@ export async function getPlansRemote(): Promise<WorkoutPlan[]> {
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    
+    // Convert Supabase data to WorkoutPlan format
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      exercises: typeof row.exercises === 'string' ? JSON.parse(row.exercises) : row.exercises
+    }));
   } catch (error) {
     console.error('Error fetching plans:', error);
     return [];
@@ -100,7 +107,7 @@ export async function updatePlanRemote(plan: WorkoutPlan): Promise<boolean> {
       .upsert([{
         id: plan.id,
         name: plan.name,
-        exercises: plan.exercises
+        exercises: JSON.stringify(plan.exercises)
       }]);
     
     if (error) throw error;
@@ -120,7 +127,6 @@ export async function addPlanRemote(plan: WorkoutPlan): Promise<boolean> {
       .insert([{
         id: plan.id,
         name: plan.name,
-        description: plan.description || null,
         exercises: JSON.stringify(plan.exercises)
       }]);
     
