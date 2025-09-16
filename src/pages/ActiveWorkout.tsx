@@ -16,15 +16,16 @@ const ActiveWorkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [plan, setPlan] = useState(() => 
-    planId ? getPlanById(planId, mockWorkoutPlans) : null
-  );
+  const [plan, setPlan] = useState(null);
   
   useEffect(() => {
-    if (planId) {
-      const found = getPlanById(planId, mockWorkoutPlans);
-      if (found) setPlan(found);
-    }
+    const loadPlan = async () => {
+      if (planId) {
+        const found = await getPlanById(planId, mockWorkoutPlans);
+        if (found) setPlan(found);
+      }
+    };
+    loadPlan();
   }, [planId]);
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);

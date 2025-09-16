@@ -1,15 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Edit3, Users, Calendar } from "lucide-react";
-import { mockWorkoutPlans, mockCompletedWorkouts } from "@/data/mockData";
+import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
 import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 
 const WorkoutPlans = () => {
-  const [plans] = useState(getPlans(mockWorkoutPlans));
+  const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadPlans = async () => {
+      const data = await getPlans(mockWorkoutPlans);
+      setPlans(data);
+    };
+    loadPlans();
+  }, []);
 
   const startWorkout = (planId: string) => {
     navigate(`/treino/${planId}`);

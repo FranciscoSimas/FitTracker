@@ -74,7 +74,20 @@ export async function removeExercise(exerciseId: string, initial: Exercise[]): P
   return updated;
 }
 
-export function getPlans(initial: WorkoutPlan[]): WorkoutPlan[] {
+export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    // Try remote first
+    const remotePlans = await remote.getPlansRemote();
+    if (remotePlans.length > 0) {
+      // Sync to localStorage
+      localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
+      return remotePlans;
+    }
+  } catch (error) {
+    console.error('Error fetching remote plans:', error);
+  }
+  
+  // Fallback to localStorage
   const stored = safeParse<WorkoutPlan[]>(localStorage.getItem(PLANS_KEY), initial);
   // Seed if empty
   if (!localStorage.getItem(PLANS_KEY)) {
@@ -87,13 +100,20 @@ export function setPlans(plans: WorkoutPlan[]): void {
   localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
 }
 
-export function getPlanById(planId: string, initial: WorkoutPlan[]): WorkoutPlan | null {
-  const plans = getPlans(initial);
+export async function getPlanById(planId: string, initial: WorkoutPlan[]): Promise<WorkoutPlan | null> {
+  const plans = await getPlans(initial);
   return plans.find((p) => p.id === planId) || null;
 }
 
-export function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[]): WorkoutPlan[] {
-  const plans = getPlans(initial);
+export async function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    // Try remote first
+    await remote.updatePlanRemote(updatedPlan);
+  } catch (error) {
+    console.error('Error updating remote plan:', error);
+  }
+  
+  const plans = await getPlans(initial);
   const updatedPlans = plans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p));
   setPlans(updatedPlans);
   return updatedPlans;

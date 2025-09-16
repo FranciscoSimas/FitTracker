@@ -71,16 +71,6 @@ const Exercises = () => {
     });
   };
 
-  const restoreExercises = () => {
-    setExercises(mockExercises);
-    setFilteredExercises(mockExercises);
-    persistSetExercises(mockExercises); // Persist to localStorage using storage function
-    filterExercises(searchTerm, selectedMuscleGroup);
-    toast({
-      title: "Exercícios restaurados!",
-      description: "Todos os exercícios padrão foram restaurados.",
-    });
-  };
 
   const getMuscleGroupColor = (muscleGroup: string) => {
     const colors: { [key: string]: string } = {
@@ -105,23 +95,13 @@ const Exercises = () => {
             Gerencie seus exercícios e adicione novos
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button 
-            onClick={() => navigate("/adicionar-exercicio")}
-            className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Adicionar Exercício
-          </Button>
-          <Button 
-            onClick={restoreExercises}
-            variant="outline"
-            className="border-orange-500/20 text-orange-600 hover:bg-orange-500/10"
-          >
-            <Dumbbell className="h-4 w-4 mr-2" />
-            Restaurar
-          </Button>
-        </div>
+        <Button 
+          onClick={() => navigate("/adicionar-exercicio")}
+          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+        >
+          <Plus className="h-4 w-4 mr-2" />
+          Adicionar Exercício
+        </Button>
       </div>
 
       {/* Filters */}

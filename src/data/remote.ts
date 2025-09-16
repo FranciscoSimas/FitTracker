@@ -21,7 +21,14 @@ export async function getExercisesRemote(): Promise<Exercise[]> {
       .order('name');
     
     if (error) throw error;
-    return data || [];
+    
+    // Convert Supabase data to Exercise format
+    return (data || []).map((row: any) => ({
+      id: row.id,
+      name: row.name,
+      muscleGroup: row.muscle_group,
+      equipment: row.equipment
+    }));
   } catch (error) {
     console.error('Error fetching exercises:', error);
     return [];

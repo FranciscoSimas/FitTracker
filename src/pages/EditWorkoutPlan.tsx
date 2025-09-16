@@ -23,17 +23,17 @@ const EditWorkoutPlan = () => {
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
 
   useEffect(() => {
-    const foundPlan = planId ? getPlanById(planId, mockWorkoutPlans) : null;
-    if (foundPlan) {
-      setPlan(foundPlan);
-      setPlanName(foundPlan.name);
-    }
-    
-    const loadExercisesData = async () => {
+    const loadData = async () => {
+      const foundPlan = planId ? await getPlanById(planId, mockWorkoutPlans) : null;
+      if (foundPlan) {
+        setPlan(foundPlan);
+        setPlanName(foundPlan.name);
+      }
+      
       const exercises = await getExercises(mockExercises);
       setAllExercises(exercises);
     };
-    loadExercisesData();
+    loadData();
   }, [planId]);
 
   const addExercise = () => {
@@ -67,13 +67,13 @@ const EditWorkoutPlan = () => {
     } : null);
   };
 
-  const savePlan = () => {
+  const savePlan = async () => {
     if (!plan) return;
     const planToSave: WorkoutPlan = {
       ...plan,
       name: planName || plan.name,
     };
-    updatePlan(planToSave, mockWorkoutPlans);
+    await updatePlan(planToSave, mockWorkoutPlans);
     toast({
       title: "Plano salvo!",
       description: "As alterações foram guardadas com sucesso.",
