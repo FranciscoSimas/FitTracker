@@ -1,71 +1,71 @@
 # 🏋️ FitTracker
 
-**FitTracker** é uma aplicação web e mobile pensada para quem quer **organizar, acompanhar e personalizar os seus treinos de ginásio** de forma simples e intuitiva.  
+**FitTracker** is a web and mobile application designed for those who want to **organize, track, and customize their gym workouts** in a simple and intuitive way.  
 
 ---
 
-## 🎯 Objetivo
+## 🎯 Goal
 
-O objetivo principal é permitir que **cada utilizador tenha o seu próprio dashboard de treino**, totalmente personalizável e adaptado ao seu estilo de treino e preferências.  
-A aplicação foca-se em oferecer uma experiência **simples, prática e motivadora**, que ajude a manter consistência nos treinos.
-
----
-
-## ⚙️ Funcionalidades Atuais
-
-- Seleção de **planos de treino** (dias fixos com exercícios predefinidos).  
-- Edição completa dos exercícios: adicionar, remover, renomear e reordenar.  
-- Histórico de treinos guardado por dia.  
-- Interface **responsiva**, com navegação otimizada para mobile.  
-- Deploy automático via **Vercel** e backend configurado com **Supabase**.  
+The main goal is to allow **each user to have their own workout dashboard**, fully customizable and adapted to their workout style and preferences.  
+The application focuses on providing a **simple, practical, and motivating experience** to help maintain consistency in workouts.
 
 ---
 
-## 🚀 Roadmap Futuro
+## ⚙️ Current Features
 
-### Fase 1 – Base estável
-- Autenticação de utilizadores (login/conta pessoal).  
-- Dashboard básico com histórico de treinos e estatísticas simples.  
-- Planos de treino fixos já incluídos, totalmente personalizáveis.  
-- Versão mobile estável (PWA ou app nativa).  
-
-### Fase 2 – Experiência do utilizador
-- **Internacionalização** (traduções para várias línguas).  
-- **Customização de tema e cores** ao gosto do utilizador.  
-- **Gamificação inicial**: streaks, conquistas simples.  
-- Dashboard melhorado com gráficos e estatísticas semanais/mensais.  
-- Notificações push discretas (lembretes e resumos).  
-
-### Fase 3 – Expansão
-- Biblioteca de planos de treino avançados.  
-- Sistema de **notas e fotos** opcionais para progresso.  
-- Widgets básicos (atalho rápido para treino, integração simples com música).  
-- Gamificação mais avançada (objetivos semanais/mensais).  
-
-### Fase 4 – Social (versão avançada)
-- Rankings semanais de consistência e progresso.  
-- Possibilidade de adicionar amigos e grupos.  
+- Selection of **workout plans** (fixed days with predefined exercises).  
+- Full editing of exercises: add, remove, rename, and reorder.  
+- Workout history stored by day.  
+- **Responsive interface**, optimized for mobile navigation.  
+- Automatic deployment via **Vercel** and backend configured with **Supabase**.  
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🚀 Future Roadmap
+
+### Phase 1 – Stable Base
+- User authentication (login/personal account).  
+- Basic dashboard with workout history and simple statistics.  
+- Predefined workout plans already included, fully customizable.  
+- Stable mobile version (PWA or native app).  
+
+### Phase 2 – User Experience
+- **Internationalization** (translations into multiple languages).  
+- **Theme and color customization** to user preference.  
+- **Initial gamification**: streaks, simple achievements.  
+- Improved dashboard with charts and weekly/monthly statistics.  
+- Discreet push notifications (reminders and summaries).  
+
+### Phase 3 – Expansion
+- Library of advanced workout plans.  
+- Optional **notes and photos** system for progress tracking.  
+- Basic widgets (quick workout shortcut, simple music integration).  
+- More advanced gamification (weekly/monthly objectives).  
+
+### Phase 4 – Social (advanced version)
+- Weekly consistency and progress rankings.  
+- Ability to add friends and groups.  
+
+---
+
+## 🛠️ Technology Stack
 
 - **Frontend:** React + TypeScript + Tailwind + shadcn/ui  
-- **Backend:** Supabase (auth, base de dados, storage)  
-- **Deploy:** Vercel (CI/CD integrado)  
-- **Mobile:** PWA (Progressive Web App), com possibilidade futura de React Native/Expo  
+- **Backend:** Supabase (auth, database, storage)  
+- **Deployment:** Vercel (integrated CI/CD)  
+- **Mobile:** PWA (Progressive Web App), with future possibility for React Native/Expo  
 
 ---
 
-## 🌟 Visão
+## 🌟 Vision
 
-O **FitTracker** pretende ser mais do que um simples registo de treinos:  
-👉 Uma plataforma personalizável e intuitiva, que acompanha o utilizador na sua jornada no ginásio.  
-👉 Uma ferramenta prática que combina simplicidade com funcionalidades motivadoras, ajudando a manter a consistência nos treinos.  
+**FitTracker** aims to be more than just a simple workout tracker:  
+👉 A customizable and intuitive platform that supports users in their gym journey.  
+👉 A practical tool that combines simplicity with motivating features, helping to maintain consistency in workouts.  
 
 ---
 
-## 📌 Estado do Projeto
+## 📌 Project Status
 
-📍 Atualmente em fase **MVP privado** – funcionalidades básicas em desenvolvimento.  
-O projeto ainda não está aberto ao público, mas o objetivo é evoluir até um **beta controlado** e, futuramente, lançar de forma pública.  
+📍 Currently in **private MVP** phase – basic functionalities under development.  
+The project is not yet public, but the goal is to evolve into a **controlled beta**, and eventually release publicly.  
