@@ -28,6 +28,8 @@ const WorkoutPlans = () => {
   };
 
   const getSuggestedWorkout = () => {
+    if (plans.length === 0) return null;
+    
     const lastWorkouts = mockCompletedWorkouts.slice(-4);
     const recentPlanIds = lastWorkouts.map(w => w.planId);
     
@@ -35,7 +37,7 @@ const WorkoutPlans = () => {
     const availablePlan = plans.find(plan => 
       !recentPlanIds.includes(plan.id)
     );
-    return availablePlan || plans[1]; // Fallback to second plan
+    return availablePlan || plans[0]; // Fallback to first plan
   };
 
   const suggestedPlan = getSuggestedWorkout();
@@ -86,7 +88,7 @@ const WorkoutPlans = () => {
                       variant="secondary"
                       className="text-xs bg-secondary/80"
                     >
-                      {exercise.exercise.name}
+                      {exercise.exercise?.name || 'Exercício'}
                     </Badge>
                   ))}
                   {plan.exercises.length > 3 && (
@@ -125,12 +127,17 @@ const WorkoutPlans = () => {
             Próximo Treino Sugerido
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
-            Baseado no seu histórico, sugerimos: <strong>{suggestedPlan.name}</strong>
+            {suggestedPlan ? (
+              <>Baseado no seu histórico, sugerimos: <strong>{suggestedPlan.name}</strong></>
+            ) : (
+              "Carregando sugestões..."
+            )}
           </p>
           <Button
-            onClick={() => startWorkout(suggestedPlan.id)}
+            onClick={() => suggestedPlan && startWorkout(suggestedPlan.id)}
             variant="outline"
             className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+            disabled={!suggestedPlan}
           >
             Iniciar Sugestão
           </Button>
