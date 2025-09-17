@@ -61,19 +61,24 @@ const Evolution = () => {
   const avgDuration = totalDuration / totalWorkouts || 0;
   const lastWorkout = completed[completed.length - 1];
 
-  const workoutsByMonth = completed.reduce((acc: any[], workout) => {
-    const month = new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short' });
-    const existing = acc.find(item => item.month === month);
+  // Generate all months of the year
+  const allMonths = [
+    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+  ];
+
+  const workoutsByMonth = allMonths.map(month => {
+    const monthWorkouts = completed.filter(workout => {
+      const workoutMonth = new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short' });
+      return workoutMonth === month;
+    });
     
-    if (existing) {
-      existing.count += 1;
-      existing.duration += workout.duration;
-    } else {
-      acc.push({ month, count: 1, duration: workout.duration });
-    }
-    
-    return acc;
-  }, []);
+    return {
+      month,
+      count: monthWorkouts.length,
+      duration: monthWorkouts.reduce((total, workout) => total + workout.duration, 0)
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -97,60 +102,60 @@ const Evolution = () => {
         </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <Card className="bg-gradient-to-br from-fitness-success/10 to-fitness-success/5 border-fitness-success/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <div className="p-2 bg-fitness-success/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-fitness-success" />
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-fitness-success" />
               </div>
-              <div>
-                <div className="text-2xl font-bold text-fitness-success">{totalWorkouts}</div>
-                <div className="text-sm text-muted-foreground">Treinos Completos</div>
+              <div className="text-center sm:text-left">
+                <div className="text-xl sm:text-2xl font-bold text-fitness-success">{totalWorkouts}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Treinos</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-fitness-primary/10 to-fitness-primary/5 border-fitness-primary/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <div className="p-2 bg-fitness-primary/10 rounded-lg">
-                <Calendar className="h-5 w-5 text-fitness-primary" />
+                <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-fitness-primary" />
               </div>
-              <div>
-                <div className="text-2xl font-bold text-fitness-primary">{Math.round(avgDuration)}</div>
-                <div className="text-sm text-muted-foreground">Min/Treino</div>
+              <div className="text-center sm:text-left">
+                <div className="text-xl sm:text-2xl font-bold text-fitness-primary">{Math.round(avgDuration)}</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Min/Treino</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-fitness-secondary/10 to-fitness-secondary/5 border-fitness-secondary/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <div className="p-2 bg-fitness-secondary/10 rounded-lg">
-                <Clock className="h-5 w-5 text-fitness-secondary" />
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-fitness-secondary" />
               </div>
-              <div>
-                <div className="text-2xl font-bold text-fitness-secondary">{Math.round(totalDuration / 60)}h</div>
-                <div className="text-sm text-muted-foreground">Total Treino</div>
+              <div className="text-center sm:text-left">
+                <div className="text-xl sm:text-2xl font-bold text-fitness-secondary">{Math.round(totalDuration / 60)}h</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Total</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-fitness-accent/10 to-fitness-accent/5 border-fitness-accent/20">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="p-3 sm:p-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
               <div className="p-2 bg-fitness-accent/10 rounded-lg">
-                <TrendingUp className="h-5 w-5 text-fitness-accent" />
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-fitness-accent" />
               </div>
-              <div>
-                <div className="text-2xl font-bold text-fitness-accent">
+              <div className="text-center sm:text-left">
+                <div className="text-xl sm:text-2xl font-bold text-fitness-accent">
                   {lastWorkout ? new Date(lastWorkout.date).toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' }) : '-'}
                 </div>
-                <div className="text-sm text-muted-foreground">Último Treino</div>
+                <div className="text-xs sm:text-sm text-muted-foreground">Último</div>
               </div>
             </div>
           </CardContent>
