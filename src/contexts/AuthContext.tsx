@@ -56,6 +56,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem('workoutPlans');
           localStorage.removeItem('completedWorkouts');
           localStorage.removeItem('bodyWeights');
+          
+          // Force page reload on login to clear React state
+          if (event === 'SIGNED_IN') {
+            console.log('Forcing page reload to clear React state');
+            setTimeout(() => {
+              window.location.reload();
+            }, 100);
+          }
         }
         
         // Clear localStorage if user changed
@@ -100,6 +108,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       email,
       password,
     });
+    
+    // Force page reload after successful login to clear React state
+    if (!error) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+    
     return { error };
   };
 
