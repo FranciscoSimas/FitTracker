@@ -54,8 +54,6 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --radius: 0.5rem;
-
-    /* Sidebar variables removed as not needed */
   }
 
   .dark {
@@ -103,5 +101,68 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Fallback styles in case Tailwind doesn't load */
+  body {
+    background-color: hsl(240 10% 3.9%) !important;
+    color: hsl(0 0% 98%) !important;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    min-height: 100vh;
+    background-color: hsl(240 10% 3.9%) !important;
+    color: hsl(0 0% 98%) !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Ensure all elements have proper fallback colors */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Basic component fallbacks */
+  .bg-background {
+    background-color: hsl(240 10% 3.9%) !important;
+  }
+
+  .text-foreground {
+    color: hsl(0 0% 98%) !important;
+  }
+
+  .bg-card {
+    background-color: hsl(240 10% 3.9%) !important;
+  }
+
+  .text-card-foreground {
+    color: hsl(0 0% 98%) !important;
+  }
+
+  .border-border {
+    border-color: hsl(240 3.7% 15.9%) !important;
+  }
+
+  /* Ensure buttons are visible */
+  button {
+    background-color: hsl(262 83% 58%) !important;
+    color: hsl(0 0% 98%) !important;
+    border: 1px solid hsl(240 3.7% 15.9%) !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+  }
+
+  /* Ensure cards are visible */
+  .card, [class*="card"] {
+    background-color: hsl(240 10% 6%) !important;
+    color: hsl(0 0% 98%) !important;
+    border: 1px solid hsl(240 3.7% 15.9%) !important;
+    border-radius: 8px !important;
   }
 }
