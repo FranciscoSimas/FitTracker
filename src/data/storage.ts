@@ -24,16 +24,15 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
       localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
       return remoteExercises;
     }
+    
+    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
+    return [];
   } catch (error) {
     console.error('Error fetching remote exercises:', error);
   }
   
-  // Fallback to localStorage
-  const stored = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), initial);
-  // Seed if empty
-  if (!localStorage.getItem(EXERCISES_KEY)) {
-    localStorage.setItem(EXERCISES_KEY, JSON.stringify(stored));
-  }
+  // Fallback to localStorage only if remote fails
+  const stored = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), []);
   return stored;
 }
 
@@ -83,16 +82,15 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
       localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
       return remotePlans;
     }
+    
+    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
+    return [];
   } catch (error) {
     console.error('Error fetching remote plans:', error);
   }
   
-  // Fallback to localStorage
-  const stored = safeParse<WorkoutPlan[]>(localStorage.getItem(PLANS_KEY), initial);
-  // Seed if empty
-  if (!localStorage.getItem(PLANS_KEY)) {
-    localStorage.setItem(PLANS_KEY, JSON.stringify(stored));
-  }
+  // Fallback to localStorage only if remote fails
+  const stored = safeParse<WorkoutPlan[]>(localStorage.getItem(PLANS_KEY), []);
   return stored;
 }
 
@@ -149,15 +147,22 @@ export async function removePlan(planId: string, initial: WorkoutPlan[]): Promis
 
 // Completed workouts
 export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
-  // Try remote first
-  const remoteWorkouts = await remote.getCompletedWorkoutsRemote();
-  if (remoteWorkouts.length > 0) {
-    // Sync to localStorage
-    localStorage.setItem(COMPLETED_KEY, JSON.stringify(remoteWorkouts));
-    return remoteWorkouts;
+  try {
+    // Try remote first
+    const remoteWorkouts = await remote.getCompletedWorkoutsRemote();
+    if (remoteWorkouts.length > 0) {
+      // Sync to localStorage
+      localStorage.setItem(COMPLETED_KEY, JSON.stringify(remoteWorkouts));
+      return remoteWorkouts;
+    }
+    
+    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
+    return [];
+  } catch (error) {
+    console.error('Error fetching remote completed workouts:', error);
   }
   
-  // Fallback to localStorage
+  // Fallback to localStorage only if remote fails
   return safeParse<CompletedWorkout[]>(localStorage.getItem(COMPLETED_KEY), []);
 }
 
@@ -183,15 +188,22 @@ export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
 export type BodyWeightEntry = { date: string; weight: number };
 
 export async function getBodyWeights(): Promise<BodyWeightEntry[]> {
-  // Try remote first
-  const remoteWeights = await remote.getBodyWeightsRemote();
-  if (remoteWeights.length > 0) {
-    // Sync to localStorage
-    localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(remoteWeights));
-    return remoteWeights;
+  try {
+    // Try remote first
+    const remoteWeights = await remote.getBodyWeightsRemote();
+    if (remoteWeights.length > 0) {
+      // Sync to localStorage
+      localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(remoteWeights));
+      return remoteWeights;
+    }
+    
+    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
+    return [];
+  } catch (error) {
+    console.error('Error fetching remote body weights:', error);
   }
   
-  // Fallback to localStorage
+  // Fallback to localStorage only if remote fails
   return safeParse<BodyWeightEntry[]>(localStorage.getItem(BODY_WEIGHT_KEY), []);
 }
 
