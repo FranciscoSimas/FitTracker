@@ -45,14 +45,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        const newUser = session?.user ?? null;
+        const currentUserId = user?.id;
+        const newUserId = newUser?.id;
+        
+        // Clear localStorage if user changed
+        if (currentUserId && newUserId && currentUserId !== newUserId) {
+          console.log('User changed, clearing localStorage');
+          localStorage.removeItem('exercises');
+          localStorage.removeItem('workoutPlans');
+          localStorage.removeItem('completedWorkouts');
+          localStorage.removeItem('bodyWeights');
+        }
+        
+        // Clear localStorage on logout
+        if (event === 'SIGNED_OUT') {
+          localStorage.removeItem('exercises');
+          localStorage.removeItem('workoutPlans');
+          localStorage.removeItem('completedWorkouts');
+          localStorage.removeItem('bodyWeights');
+        }
+        
         setSession(session);
-        setUser(session?.user ?? null);
+        setUser(newUser);
         setLoading(false);
       }
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [user?.id]);
 
   const signUp = async (email: string, password: string, name: string) => {
     const { error } = await supabase.auth.signUp({
