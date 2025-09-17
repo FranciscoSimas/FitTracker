@@ -74,7 +74,6 @@ const Evolution = () => {
       try {
         const workoutDate = new Date(workout.date);
         const workoutMonthNumber = workoutDate.getMonth() + 1; // getMonth() returns 0-11, so add 1
-        console.log(`Debug: ${workout.date} -> month number: ${workoutMonthNumber} vs target: ${monthNumber} (${month}) = ${workoutMonthNumber === monthNumber}`);
         return workoutMonthNumber === monthNumber;
       } catch (error) {
         console.error('Error parsing date:', workout.date, error);
@@ -88,8 +87,6 @@ const Evolution = () => {
       duration: monthWorkouts.reduce((total, workout) => total + workout.duration, 0)
     };
   });
-
-  console.log('Final workoutsByMonth:', workoutsByMonth);
 
   return (
     <div className="space-y-6">

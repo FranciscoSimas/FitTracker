@@ -39,21 +39,6 @@ const WorkoutHistory = () => {
     const data = await getCompletedWorkouts();
     setWorkouts(data);
     setFilteredWorkouts(selectedPlan === "all" ? data : data.filter(w => w.planName === selectedPlan));
-    console.log('WorkoutHistory - Loaded workouts:', data.length);
-    console.log('WorkoutHistory - Workout data:', data);
-    console.log('WorkoutHistory - Plan names:', data.map(w => w.planName));
-    console.log('WorkoutHistory - Plan names (filtered):', data.map(w => w.planName).filter(Boolean));
-    console.log('WorkoutHistory - Unique plans:', Array.from(new Set(data.map(w => w.planName).filter(Boolean))));
-    
-    // Debug each workout individually
-    data.forEach((workout, index) => {
-      console.log(`Workout ${index}:`, {
-        id: workout.id,
-        planName: workout.planName,
-        planId: workout.planId,
-        date: workout.date
-      });
-    });
   };
 
   const handleClear = () => {
@@ -266,9 +251,6 @@ const WorkoutHistory = () => {
                 {uniquePlans.slice(1).map((plan) => (
                   <SelectItem key={plan} value={plan}>{plan}</SelectItem>
                 ))}
-                {uniquePlans.length === 1 && (
-                  <SelectItem value="debug" disabled>Debug: {workouts.length} treinos carregados</SelectItem>
-                )}
               </SelectContent>
             </Select>
           </div>
