@@ -2,19 +2,38 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Edit3, Users, Calendar, Plus } from "lucide-react";
+import { Play, Edit3, Users, Calendar, Plus, Sparkles } from "lucide-react";
 import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
 import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
+import { isNewUser, isOnboardingComplete } from "@/utils/onboardingUtils";
+import OnboardingModal from "@/components/OnboardingModal";
 
 const WorkoutPlans = () => {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadPlans = async () => {
-      const data = await getPlans(mockWorkoutPlans);
-      setPlans(data);
+      setIsLoading(true);
+      try {
+        const data = await getPlans(mockWorkoutPlans);
+        setPlans(data);
+        
+        // Verifica se é um usuário novo e se ainda não completou o onboarding
+        const userIsNew = await isNewUser();
+        const onboardingComplete = isOnboardingComplete();
+        
+        if (userIsNew && !onboardingComplete) {
+          setShowOnboarding(true);
+        }
+      } catch (error) {
+        console.error('Error loading plans:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     loadPlans();
   }, []);
@@ -42,6 +61,29 @@ const WorkoutPlans = () => {
 
   const suggestedPlan = getSuggestedWorkout();
 
+  const handleOnboardingComplete = async () => {
+    setShowOnboarding(false);
+    // Recarrega os planos após o onboarding
+    const data = await getPlans(mockWorkoutPlans);
+    setPlans(data);
+  };
+
+  // Mostra loading enquanto verifica se é usuário novo
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="bg-card/50 border-border/50 p-8">
+          <CardContent className="flex flex-col items-center gap-4">
+            <div className="rounded-lg bg-gradient-to-r from-fitness-primary to-fitness-secondary p-3">
+              <Dumbbell className="h-8 w-8 text-white animate-pulse" />
+            </div>
+            <p className="text-muted-foreground">A carregar...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -62,6 +104,40 @@ const WorkoutPlans = () => {
           Adicionar Novo Plano
         </Button>
       </div>
+
+      {/* Estado vazio - sem planos */}
+      {plans.length === 0 && (
+        <Card className="bg-gradient-to-r from-fitness-primary/10 to-fitness-secondary/10 border-fitness-primary/20">
+          <CardContent className="p-8 text-center">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-r from-fitness-primary to-fitness-secondary rounded-full flex items-center justify-center mb-4">
+              <Sparkles className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Ainda não tem planos de treino
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              Comece criando o seu primeiro plano ou escolha um dos nossos planos pré-definidos
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                onClick={() => navigate("/adicionar-plano")}
+                className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Criar Meu Plano
+              </Button>
+              <Button 
+                onClick={() => setShowOnboarding(true)}
+                variant="outline"
+                className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+              >
+                <Target className="h-4 w-4 mr-2" />
+                Ver Planos Pré-definidos
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {plans.map((plan) => (
@@ -153,6 +229,13 @@ const WorkoutPlans = () => {
           </Button>
         </CardContent>
       </Card>
+
+      {/* Modal de Onboarding */}
+      <OnboardingModal
+        isOpen={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 };
