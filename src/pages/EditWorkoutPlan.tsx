@@ -23,38 +23,23 @@ const EditWorkoutPlan = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      console.log('Loading data for planId:', planId);
-      
       const foundPlan = planId ? await getPlanById(planId, mockWorkoutPlans) : null;
-      console.log('Found plan:', foundPlan);
-      
       if (foundPlan) {
         setPlan(foundPlan);
         setPlanName(foundPlan.name);
       }
       
       const exercises = await getExercises(mockExercises);
-      console.log('Loaded exercises:', exercises.length, exercises);
       setAllExercises(exercises);
     };
     loadData();
   }, [planId]);
 
   const addExercise = () => {
-    console.log('addExercise called:', { selectedExercise, plan: !!plan, allExercises: allExercises.length });
-    
-    if (!selectedExercise || !plan) {
-      console.log('Early return:', { selectedExercise, plan: !!plan });
-      return;
-    }
+    if (!selectedExercise || !plan) return;
     
     const exercise = allExercises.find(ex => ex.id === selectedExercise);
-    console.log('Found exercise:', exercise);
-    
-    if (!exercise) {
-      console.log('Exercise not found');
-      return;
-    }
+    if (!exercise) return;
 
     const newWorkoutExercise: WorkoutExercise = {
       id: `we_${Date.now()}`,
@@ -67,16 +52,10 @@ const EditWorkoutPlan = () => {
       ]
     };
 
-    console.log('Adding exercise to plan:', newWorkoutExercise);
-    
-    setPlan(prev => {
-      const updated = prev ? {
-        ...prev,
-        exercises: [...prev.exercises, newWorkoutExercise]
-      } : null;
-      console.log('Updated plan:', updated);
-      return updated;
-    });
+    setPlan(prev => prev ? {
+      ...prev,
+      exercises: [...prev.exercises, newWorkoutExercise]
+    } : null);
     setSelectedExercise("");
   };
 

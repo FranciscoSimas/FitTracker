@@ -106,10 +106,14 @@ export async function updatePlanRemote(plan: WorkoutPlan): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
     const { error } = await supabase
       .from('workout_plans')
       .upsert([{
         id: plan.id,
+        user_id: user.id,
         name: plan.name,
         exercises: JSON.stringify(plan.exercises)
       }]);
