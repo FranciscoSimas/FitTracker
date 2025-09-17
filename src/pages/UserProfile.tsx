@@ -26,6 +26,8 @@ const UserProfile = () => {
   const [deleteEmail, setDeleteEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [changeEmailLoading, setChangeEmailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -56,6 +58,36 @@ const UserProfile = () => {
       setError("Erro inesperado. Tenta novamente.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmail.trim() || !user?.email) return;
+
+    setChangeEmailLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail.trim()
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess("Email de confirmação enviado! Verifica a tua nova caixa de entrada.");
+        setNewEmail("");
+        toast({
+          title: "Email enviado",
+          description: "Verifica a tua nova caixa de entrada para confirmar a mudança.",
+        });
+      }
+    } catch (err) {
+      setError("Erro inesperado. Tenta novamente.");
+    } finally {
+      setChangeEmailLoading(false);
     }
   };
 
@@ -202,6 +234,54 @@ const UserProfile = () => {
 
             <Button type="submit" disabled={loading} className="w-full">
               {loading ? "A enviar..." : "Enviar Email de Reset"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Change Email */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Mail className="h-5 w-5" />
+            Alterar Email
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleChangeEmail} className="space-y-4">
+            <div>
+              <Label htmlFor="currentEmail">Email Atual</Label>
+              <Input
+                id="currentEmail"
+                type="email"
+                value={user?.email || ''}
+                disabled
+                className="bg-muted/50 border-border/50"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="newEmail">Novo Email</Label>
+              <Input
+                id="newEmail"
+                type="email"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+                placeholder="novo@email.com"
+                required
+                className="bg-background/80 border-border/50"
+              />
+            </div>
+            
+            <Alert>
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                Será enviado um email de confirmação para o novo endereço. O email atual continuará a funcionar até ser confirmado.
+              </AlertDescription>
+            </Alert>
+
+            <Button type="submit" disabled={changeEmailLoading || !newEmail.trim()} className="w-full">
+              {changeEmailLoading ? "A enviar..." : "Enviar Confirmação"}
             </Button>
           </form>
         </CardContent>

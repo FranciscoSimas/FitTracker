@@ -10,6 +10,9 @@ import PWAInstaller from "./components/PWAInstaller";
 import { useServiceWorker } from "./hooks/useServiceWorker";
 import Login from "./pages/Login";
 import UserProfile from "./pages/UserProfile";
+import EmailConfirmed from "./pages/EmailConfirmed";
+import ResetPassword from "./pages/ResetPassword";
+import EmailChanged from "./pages/EmailChanged";
 import WorkoutPlans from "./pages/WorkoutPlans";
 import Exercises from "./pages/Exercises";
 import AddExercise from "./pages/AddExercise";
@@ -33,21 +36,24 @@ const App = () => {
           <AuthProvider>
             <Routes>
               <Route path="/login" element={<Login />} />
-                        <Route path="/" element={
-                          <ProtectedRoute>
-                            <Layout />
-                          </ProtectedRoute>
-                        }>
-                          <Route index element={<WorkoutPlans />} />
-                          <Route path="exercicios" element={<Exercises />} />
-                          <Route path="adicionar-exercicio" element={<AddExercise />} />
-                          <Route path="adicionar-plano" element={<AddWorkoutPlan />} />
-                          <Route path="evolucao" element={<Evolution />} />
-                          <Route path="historico" element={<WorkoutHistory />} />
-                          <Route path="perfil" element={<UserProfile />} />
-                          <Route path="treino/:planId" element={<ActiveWorkout />} />
-                          <Route path="editar-plano/:planId" element={<EditWorkoutPlan />} />
-                        </Route>
+              <Route path="/email-confirmed" element={<EmailConfirmed />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/email-changed" element={<EmailChanged />} />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<WorkoutPlans />} />
+                <Route path="exercicios" element={<Exercises />} />
+                <Route path="adicionar-exercicio" element={<AddExercise />} />
+                <Route path="adicionar-plano" element={<AddWorkoutPlan />} />
+                <Route path="evolucao" element={<Evolution />} />
+                <Route path="historico" element={<WorkoutHistory />} />
+                <Route path="perfil" element={<UserProfile />} />
+                <Route path="treino/:planId" element={<ActiveWorkout />} />
+                <Route path="editar-plano/:planId" element={<EditWorkoutPlan />} />
+              </Route>
             </Routes>
           </AuthProvider>
         </BrowserRouter>
