@@ -89,6 +89,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signIn = async (email: string, password: string) => {
+    // Clear localStorage before signing in
+    localStorage.removeItem('exercises');
+    localStorage.removeItem('workoutPlans');
+    localStorage.removeItem('completedWorkouts');
+    localStorage.removeItem('bodyWeights');
+    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
