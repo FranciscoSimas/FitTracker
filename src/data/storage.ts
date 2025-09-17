@@ -176,7 +176,15 @@ export async function addCompletedWorkout(workout: CompletedWorkout): Promise<Co
   return updated;
 }
 
-export function clearCompletedWorkouts(): void {
+export async function clearCompletedWorkouts(): Promise<void> {
+  try {
+    // Clear remote data first
+    await remote.clearCompletedWorkoutsRemote();
+  } catch (error) {
+    console.error('Error clearing remote completed workouts:', error);
+  }
+  
+  // Clear localStorage
   localStorage.setItem(COMPLETED_KEY, JSON.stringify([]));
 }
 

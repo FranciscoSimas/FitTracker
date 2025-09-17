@@ -41,9 +41,9 @@ const WorkoutHistory = () => {
     setFilteredWorkouts(selectedPlan === "all" ? data : data.filter(w => w.planName === selectedPlan));
   };
 
-  const handleClear = () => {
-    clearCompletedWorkouts();
-    refreshData();
+  const handleClear = async () => {
+    await clearCompletedWorkouts();
+    await refreshData();
   };
 
   const handleImport = async () => {
@@ -210,11 +210,6 @@ const WorkoutHistory = () => {
         <div className="flex gap-2">
           <Button variant="outline" onClick={refreshData} className="border-border/50">Atualizar</Button>
           <Button variant="outline" onClick={handleClear} className="border-red-500/20 text-red-600 hover:bg-red-500/10">Limpar Histórico</Button>
-          <Button variant="outline" onClick={() => {
-            const url = import.meta.env.VITE_SUPABASE_URL;
-            const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-            alert(`Supabase URL: ${url ? 'Configurado' : 'Não configurado'}\nSupabase Key: ${key ? 'Configurado' : 'Não configurado'}`);
-          }} className="border-blue-500/20 text-blue-600 hover:bg-blue-500/10">Debug</Button>
         </div>
       </div>
 

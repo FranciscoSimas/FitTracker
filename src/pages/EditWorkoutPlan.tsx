@@ -8,8 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise, Exercise } from "@/data/mockData";
-import { getExercises } from "@/data/storage";
-import { getPlanById, updatePlan, removePlan } from "@/data/storage";
+import { getExercises, getPlanById, updatePlan, removePlan } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const EditWorkoutPlan = () => {
