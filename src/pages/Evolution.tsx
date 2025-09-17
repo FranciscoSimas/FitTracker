@@ -68,15 +68,14 @@ const Evolution = () => {
     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
   ];
 
-  const workoutsByMonth = allMonths.map(month => {
+  const workoutsByMonth = allMonths.map((month, index) => {
+    const monthNumber = index + 1; // Jan = 1, Fev = 2, etc.
     const monthWorkouts = completed.filter(workout => {
       try {
         const workoutDate = new Date(workout.date);
-        const workoutMonth = workoutDate.toLocaleDateString('pt-PT', { month: 'short' });
-        // Remove the dot from the month name (e.g., "set." -> "Set")
-        const cleanWorkoutMonth = workoutMonth.replace('.', '');
-        console.log(`Debug: ${workout.date} -> ${workoutMonth} -> ${cleanWorkoutMonth} vs ${month} = ${cleanWorkoutMonth === month}`);
-        return cleanWorkoutMonth === month;
+        const workoutMonthNumber = workoutDate.getMonth() + 1; // getMonth() returns 0-11, so add 1
+        console.log(`Debug: ${workout.date} -> month number: ${workoutMonthNumber} vs target: ${monthNumber} (${month}) = ${workoutMonthNumber === monthNumber}`);
+        return workoutMonthNumber === monthNumber;
       } catch (error) {
         console.error('Error parsing date:', workout.date, error);
         return false;
@@ -255,7 +254,14 @@ const Evolution = () => {
               }>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis dataKey="date" className="text-muted-foreground" />
-                <YAxis className="text-muted-foreground" />
+                <YAxis 
+                  className="text-muted-foreground"
+                  domain={bodyWeights.length > 0 ? [
+                    Math.max(0, Math.min(...bodyWeights.map(b => b.weight)) - 10),
+                    Math.max(...bodyWeights.map(b => b.weight)) + 10
+                  ] : [0, 100]}
+                  tickCount={6}
+                />
                 <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: '8px', color: 'hsl(var(--foreground))' }} />
                 <Line type="monotone" dataKey="weight" stroke="hsl(var(--fitness-accent))" strokeWidth={3} dot={{ fill: 'hsl(var(--fitness-accent))', strokeWidth: 2, r: 5 }} />
               </LineChart>
