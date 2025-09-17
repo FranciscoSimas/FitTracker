@@ -80,6 +80,10 @@ const Evolution = () => {
     };
   });
 
+  // Debug: log the data to see what's happening
+  console.log('workoutsByMonth:', workoutsByMonth);
+  console.log('completed workouts:', completed);
+
   return (
     <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -165,10 +169,10 @@ const Evolution = () => {
       {/* Exercise Evolution Chart */}
       <Card className="bg-card/50 border-border/50">
         <CardHeader>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col gap-4">
             <CardTitle className="text-xl font-semibold">Evolução por Exercício</CardTitle>
             <Select value={selectedExercise} onValueChange={setSelectedExercise}>
-              <SelectTrigger className="w-64 bg-background/80 border-border/50">
+              <SelectTrigger className="w-full sm:w-64 bg-background/80 border-border/50">
                 <SelectValue placeholder="Selecionar exercício" />
               </SelectTrigger>
               <SelectContent>
@@ -219,16 +223,16 @@ const Evolution = () => {
           <CardTitle className="text-xl font-semibold">Peso Corporal</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <input id="bw-date" type="date" defaultValue={new Date().toISOString().slice(0,10)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm" />
-            <input id="bw-value" type="number" step="0.1" placeholder="Peso (kg)" className="h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <input id="bw-date" type="date" defaultValue={new Date().toISOString().slice(0,10)} className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm flex-1" />
+            <input id="bw-value" type="number" step="0.1" placeholder="Peso (kg)" className="h-10 w-full sm:w-32 rounded-md border border-input bg-background px-3 py-2 text-sm" />
             <Button onClick={async () => {
               const d = (document.getElementById('bw-date') as HTMLInputElement).value;
               const v = parseFloat((document.getElementById('bw-value') as HTMLInputElement).value);
               if (!d || !Number.isFinite(v)) return;
               await addBodyWeight({ date: d, weight: Math.round(v * 10) / 10 });
               window.location.reload();
-            }}>Guardar</Button>
+            }} className="w-full sm:w-auto">Guardar</Button>
           </div>
 
           <div className="h-64">

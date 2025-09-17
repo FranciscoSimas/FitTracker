@@ -1,12 +1,16 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="64" fill="#3b82f6"/>
-  <svg x="128" y="128" width="256" height="256" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M6.5 6.5h11v11h-11z"/>
-    <path d="M6.5 6.5L12 12l5.5-5.5"/>
-    <path d="M6.5 17.5L12 12l5.5 5.5"/>
-    <path d="M12 2v4"/>
-    <path d="M12 18v4"/>
-    <path d="M2 12h4"/>
-    <path d="M18 12h4"/>
-  </svg>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="64" fill="url(#gradient)"/>
+  <g transform="translate(128, 128)">
+    <path d="M128 64C128 28.7 99.3 0 64 0S0 28.7 0 64s28.7 64 64 64 64-28.7 64-64z" fill="white"/>
+    <rect x="56" y="56" width="16" height="16" fill="url(#gradient)"/>
+    <path d="M192 64C192 28.7 163.3 0 128 0S64 28.7 64 64s28.7 64 64 64 64-28.7 64-64z" fill="white"/>
+    <rect x="120" y="56" width="16" height="16" fill="url(#gradient)"/>
+    <rect x="88" y="88" width="32" height="8" rx="4" fill="white"/>
+  </g>
 </svg>
