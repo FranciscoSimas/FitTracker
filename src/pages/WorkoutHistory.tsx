@@ -42,7 +42,18 @@ const WorkoutHistory = () => {
     console.log('WorkoutHistory - Loaded workouts:', data.length);
     console.log('WorkoutHistory - Workout data:', data);
     console.log('WorkoutHistory - Plan names:', data.map(w => w.planName));
-    console.log('WorkoutHistory - Unique plans:', Array.from(new Set(data.map(w => w.planName))));
+    console.log('WorkoutHistory - Plan names (filtered):', data.map(w => w.planName).filter(Boolean));
+    console.log('WorkoutHistory - Unique plans:', Array.from(new Set(data.map(w => w.planName).filter(Boolean))));
+    
+    // Debug each workout individually
+    data.forEach((workout, index) => {
+      console.log(`Workout ${index}:`, {
+        id: workout.id,
+        planName: workout.planName,
+        planId: workout.planId,
+        date: workout.date
+      });
+    });
   };
 
   const handleClear = () => {
