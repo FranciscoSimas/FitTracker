@@ -39,10 +39,14 @@ export async function addExerciseRemote(exercise: Exercise): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
     const { error } = await supabase
       .from('exercises')
       .insert([{
         id: exercise.id,
+        user_id: user.id,
         name: exercise.name,
         muscle_group: exercise.muscleGroup,
         equipment: exercise.equipment || null
@@ -122,10 +126,14 @@ export async function addPlanRemote(plan: WorkoutPlan): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
     const { error } = await supabase
       .from('workout_plans')
       .insert([{
         id: plan.id,
+        user_id: user.id,
         name: plan.name,
         exercises: JSON.stringify(plan.exercises)
       }]);
@@ -190,10 +198,14 @@ export async function addCompletedWorkoutRemote(workout: CompletedWorkout): Prom
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
     const { error } = await supabase
       .from('completed_workouts')
       .insert([{
         id: workout.id,
+        user_id: user.id,
         plan_id: workout.planId,
         plan_name: workout.planName,
         date: workout.date,
@@ -251,9 +263,13 @@ export async function addBodyWeightRemote(entry: BodyWeightEntry): Promise<boole
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
     const { error } = await supabase
       .from('body_weights')
       .upsert([{
+        user_id: user.id,
         date: entry.date,
         weight: entry.weight
       }]);
