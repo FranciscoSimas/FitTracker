@@ -72,8 +72,9 @@ const Evolution = () => {
       try {
         const workoutDate = new Date(workout.date);
         const workoutMonth = workoutDate.toLocaleDateString('pt-PT', { month: 'short' });
-        console.log(`Checking workout date: ${workout.date} -> month: ${workoutMonth} vs target: ${month}`);
-        return workoutMonth === month;
+        // Remove the dot from the month name (e.g., "set." -> "Set")
+        const cleanWorkoutMonth = workoutMonth.replace('.', '');
+        return cleanWorkoutMonth === month;
       } catch (error) {
         console.error('Error parsing date:', workout.date, error);
         return false;
@@ -86,11 +87,6 @@ const Evolution = () => {
       duration: monthWorkouts.reduce((total, workout) => total + workout.duration, 0)
     };
   });
-
-  // Debug: log the data to see what's happening
-  console.log('workoutsByMonth:', workoutsByMonth);
-  console.log('completed workouts:', completed);
-  console.log('Sample workout date format:', completed[0]?.date);
 
   return (
     <div className="space-y-6">
@@ -261,9 +257,6 @@ const Evolution = () => {
       <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Resumo Mensal</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Total de treinos: {completed.length} | Dados: {JSON.stringify(workoutsByMonth.map(m => `${m.month}:${m.count}`))}
-          </p>
         </CardHeader>
         <CardContent>
           <div className="h-64">
