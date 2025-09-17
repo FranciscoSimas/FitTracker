@@ -49,8 +49,9 @@ const Evolution = () => {
         weight: maxWeight,
         volume: totalVolume,
         duration: workout.duration,
+        sortDate: new Date(workout.date).getTime(), // For sorting
       };
-    });
+    }).sort((a, b) => a.sortDate - b.sortDate); // Sort by date ascending (oldest first)
   };
 
   const exerciseData = getExerciseEvolution(selectedExercise);
@@ -59,7 +60,7 @@ const Evolution = () => {
   const totalWorkouts = completed.length;
   const totalDuration = completed.reduce((total, w) => total + w.duration, 0);
   const avgDuration = totalDuration / totalWorkouts || 0;
-  const lastWorkout = completed[completed.length - 1];
+  const lastWorkout = completed.length > 0 ? completed[0] : null; // Most recent workout (first in array)
 
   // Generate all months of the year
   const allMonths = [
@@ -74,6 +75,7 @@ const Evolution = () => {
         const workoutMonth = workoutDate.toLocaleDateString('pt-PT', { month: 'short' });
         // Remove the dot from the month name (e.g., "set." -> "Set")
         const cleanWorkoutMonth = workoutMonth.replace('.', '');
+        console.log(`Debug: ${workout.date} -> ${workoutMonth} -> ${cleanWorkoutMonth} vs ${month} = ${cleanWorkoutMonth === month}`);
         return cleanWorkoutMonth === month;
       } catch (error) {
         console.error('Error parsing date:', workout.date, error);
@@ -87,6 +89,8 @@ const Evolution = () => {
       duration: monthWorkouts.reduce((total, workout) => total + workout.duration, 0)
     };
   });
+
+  console.log('Final workoutsByMonth:', workoutsByMonth);
 
   return (
     <div className="space-y-6">
@@ -241,7 +245,14 @@ const Evolution = () => {
 
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={bodyWeights.map(b => ({ date: new Date(b.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }), weight: b.weight }))}>
+              <LineChart data={bodyWeights
+                .map(b => ({ 
+                  date: new Date(b.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }), 
+                  weight: b.weight,
+                  sortDate: new Date(b.date).getTime()
+                }))
+                .sort((a, b) => a.sortDate - b.sortDate) // Sort by date ascending
+              }>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis dataKey="date" className="text-muted-foreground" />
                 <YAxis className="text-muted-foreground" />
