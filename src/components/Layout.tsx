@@ -1,6 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Dumbbell, Calendar, Target, TrendingUp, LogOut, User } from "lucide-react";
+import { Dumbbell, Calendar, Target, TrendingUp, LogOut, User, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -38,21 +45,31 @@ const Layout = () => {
             </div>
             
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {user?.user_metadata?.name || user?.email}
-                </span>
-              </div>
-              <Button
-                onClick={handleSignOut}
-                variant="outline"
-                size="sm"
-                className="border-border/50 text-muted-foreground hover:text-foreground"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Sair</span>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-border/50 text-muted-foreground hover:text-foreground"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    <span className="hidden sm:inline">
+                      {user?.user_metadata?.name || user?.email}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => window.location.href = '/perfil'}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Configurações da Conta
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

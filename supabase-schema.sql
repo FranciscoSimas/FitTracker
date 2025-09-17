@@ -66,3 +66,21 @@ CREATE POLICY "Users can view own body_weights" ON body_weights FOR SELECT USING
 CREATE POLICY "Users can insert own body_weights" ON body_weights FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users can update own body_weights" ON body_weights FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "Users can delete own body_weights" ON body_weights FOR DELETE USING (auth.uid() = user_id);
+
+-- Create function to delete user and all their data
+CREATE OR REPLACE FUNCTION delete_user()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+  -- Delete user data from all tables
+  DELETE FROM exercises WHERE user_id = auth.uid();
+  DELETE FROM workout_plans WHERE user_id = auth.uid();
+  DELETE FROM completed_workouts WHERE user_id = auth.uid();
+  DELETE FROM body_weights WHERE user_id = auth.uid();
+  
+  -- Delete user from auth.users (this will cascade to all references)
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$;
