@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { clearUserData, setCurrentUserId, getCurrentUserId, isUserChanged } from '@/utils/authUtils';
 
 interface AuthContextType {
   user: User | null;
@@ -36,7 +37,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-      setUser(session?.user ?? null);
+      const user = session?.user ?? null;
+      setUser(user);
+      
+      // Set current user ID if logged in
+      if (user?.id) {
+        setCurrentUserId(user.id);
+      }
+      
       setLoading(false);
     };
 
@@ -46,25 +54,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         const newUser = session?.user ?? null;
-        const currentUserId = user?.id;
         const newUserId = newUser?.id;
         
-        // Clear localStorage on any auth change
-        if (event === 'SIGNED_OUT' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          console.log('Auth event:', event, 'clearing localStorage');
-          localStorage.removeItem('exercises');
-          localStorage.removeItem('workoutPlans');
-          localStorage.removeItem('completedWorkouts');
-          localStorage.removeItem('bodyWeights');
+        // Handle user changes
+        if (newUserId && isUserChanged(newUserId)) {
+          console.log('User changed, clearing data and reloading page');
+          clearUserData();
+          setCurrentUserId(newUserId);
+          // Force page reload to clear React state
+          window.location.reload();
+          return;
         }
         
-        // Clear localStorage if user changed
-        if (currentUserId && newUserId && currentUserId !== newUserId) {
-          console.log('User changed, clearing localStorage');
-          localStorage.removeItem('exercises');
-          localStorage.removeItem('workoutPlans');
-          localStorage.removeItem('completedWorkouts');
-          localStorage.removeItem('bodyWeights');
+        // Handle logout
+        if (event === 'SIGNED_OUT') {
+          console.log('User signed out, clearing data');
+          clearUserData();
+        }
+        
+        // Handle login
+        if (event === 'SIGNED_IN' && newUserId) {
+          console.log('User signed in, setting user ID');
+          setCurrentUserId(newUserId);
         }
         
         setSession(session);
@@ -90,12 +101,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    // Clear localStorage before signing in
-    localStorage.removeItem('exercises');
-    localStorage.removeItem('workoutPlans');
-    localStorage.removeItem('completedWorkouts');
-    localStorage.removeItem('bodyWeights');
-    
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -105,12 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signOut = async () => {
-    // Clear localStorage before signing out
-    localStorage.removeItem('exercises');
-    localStorage.removeItem('workoutPlans');
-    localStorage.removeItem('completedWorkouts');
-    localStorage.removeItem('bodyWeights');
-    
+    clearUserData();
     await supabase.auth.signOut();
   };
 
