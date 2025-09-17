@@ -201,7 +201,14 @@ const Evolution = () => {
                   dataKey="date" 
                   className="text-muted-foreground"
                 />
-                <YAxis className="text-muted-foreground" />
+                <YAxis 
+                  className="text-muted-foreground"
+                  domain={exerciseData.length > 0 ? [
+                    Math.max(0, Math.min(...exerciseData.map(d => d.weight)) - 5),
+                    Math.max(...exerciseData.map(d => d.weight)) + 5
+                  ] : [0, 100]}
+                  tickCount={6}
+                />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
