@@ -1,48 +1,20 @@
--- Create tables for Train Diary Plus with user isolation
+-- Add user_id columns to existing tables (Step 1)
+ALTER TABLE exercises ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+ALTER TABLE workout_plans ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+ALTER TABLE completed_workouts ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+ALTER TABLE body_weights ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
 
--- Exercises table
-CREATE TABLE IF NOT EXISTS exercises (
-  id TEXT PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  muscle_group TEXT NOT NULL,
-  equipment TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- Add created_at columns
+ALTER TABLE exercises ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE workout_plans ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE completed_workouts ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE body_weights ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 
--- Workout Plans table
-CREATE TABLE IF NOT EXISTS workout_plans (
-  id TEXT PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  exercises JSONB NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Completed Workouts table
-CREATE TABLE IF NOT EXISTS completed_workouts (
-  id TEXT PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  plan_id TEXT NOT NULL,
-  plan_name TEXT NOT NULL,
-  date DATE NOT NULL,
-  start_time TEXT,
-  end_time TEXT,
-  duration INTEGER,
-  exercises JSONB NOT NULL,
-  notes TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Body Weights table
-CREATE TABLE IF NOT EXISTS body_weights (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  date DATE NOT NULL,
-  weight NUMERIC NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(user_id, date)
-);
+-- Update body_weights table structure
+ALTER TABLE body_weights DROP CONSTRAINT IF EXISTS body_weights_pkey;
+ALTER TABLE body_weights ADD COLUMN IF NOT EXISTS id UUID DEFAULT gen_random_uuid();
+ALTER TABLE body_weights ADD CONSTRAINT body_weights_pkey PRIMARY KEY (id);
+ALTER TABLE body_weights ADD CONSTRAINT body_weights_user_date_unique UNIQUE (user_id, date);
 
 -- Enable Row Level Security (RLS) for user isolation
 ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
