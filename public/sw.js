@@ -1,9 +1,10 @@
 // Service Worker for FitTracker PWA
-const CACHE_NAME = 'fittracker-v1';
+const CACHE_NAME = 'fittracker-v2';
 const urlsToCache = [
   '/',
   '/manifest.json',
-  '/icon.svg'
+  '/icon.svg',
+  '/offline.html'
 ];
 
 // Install event - cache resources
@@ -23,13 +24,13 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
   
-  // Skip Supabase API calls when offline
+  // Handle Supabase API calls
   if (event.request.url.includes('supabase.co')) {
     event.respondWith(
       fetch(event.request).catch(() => {
-        // Return a basic offline response for API calls
-        return new Response(JSON.stringify({ error: 'Offline' }), {
-          status: 503,
+        // Return empty array for API calls when offline
+        return new Response(JSON.stringify([]), {
+          status: 200,
           headers: { 'Content-Type': 'application/json' }
         });
       })
@@ -37,10 +38,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  // Handle navigation requests
+  if (event.request.destination === 'document') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/offline.html');
+      })
+    );
+    return;
+  }
+  
+  // Handle other requests
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
         if (response) {
           return response;
         }
@@ -48,7 +59,7 @@ self.addEventListener('fetch', (event) => {
         return fetch(event.request).catch(() => {
           // Return offline page for navigation requests
           if (event.request.destination === 'document') {
-            return caches.match('/');
+            return caches.match('/offline.html');
           }
         });
       })
