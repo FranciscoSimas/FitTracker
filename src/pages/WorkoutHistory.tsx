@@ -18,7 +18,7 @@ const WorkoutHistory = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
 
-  const uniquePlans = ["all", ...Array.from(new Set(workouts.map(w => w.planName)))];
+  const uniquePlans = ["all", ...Array.from(new Set(workouts.map(w => w.planName).filter(Boolean)))];
 
   useEffect(() => {
     refreshData();
@@ -37,6 +37,8 @@ const WorkoutHistory = () => {
     const data = await getCompletedWorkouts();
     setWorkouts(data);
     setFilteredWorkouts(selectedPlan === "all" ? data : data.filter(w => w.planName === selectedPlan));
+    console.log('WorkoutHistory - Loaded workouts:', data.length);
+    console.log('WorkoutHistory - Unique plans:', Array.from(new Set(data.map(w => w.planName))));
   };
 
   const handleClear = () => {
