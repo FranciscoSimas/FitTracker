@@ -166,7 +166,20 @@ export async function getCompletedWorkoutsRemote(): Promise<CompletedWorkout[]> 
       .order('date', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    
+    // Map Supabase column names to frontend model properties
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      planId: item.plan_id,
+      planName: item.plan_name,
+      date: item.date,
+      startTime: item.start_time,
+      endTime: item.end_time,
+      duration: item.duration,
+      exercises: item.exercises,
+      notes: item.notes,
+      completed: item.completed
+    }));
   } catch (error) {
     console.error('Error fetching completed workouts:', error);
     return [];
