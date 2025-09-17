@@ -69,8 +69,15 @@ const Evolution = () => {
 
   const workoutsByMonth = allMonths.map(month => {
     const monthWorkouts = completed.filter(workout => {
-      const workoutMonth = new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short' });
-      return workoutMonth === month;
+      try {
+        const workoutDate = new Date(workout.date);
+        const workoutMonth = workoutDate.toLocaleDateString('pt-PT', { month: 'short' });
+        console.log(`Checking workout date: ${workout.date} -> month: ${workoutMonth} vs target: ${month}`);
+        return workoutMonth === month;
+      } catch (error) {
+        console.error('Error parsing date:', workout.date, error);
+        return false;
+      }
     });
     
     return {
@@ -83,6 +90,7 @@ const Evolution = () => {
   // Debug: log the data to see what's happening
   console.log('workoutsByMonth:', workoutsByMonth);
   console.log('completed workouts:', completed);
+  console.log('Sample workout date format:', completed[0]?.date);
 
   return (
     <div className="space-y-6">
@@ -253,6 +261,9 @@ const Evolution = () => {
       <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Resumo Mensal</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Total de treinos: {completed.length} | Dados: {JSON.stringify(workoutsByMonth.map(m => `${m.month}:${m.count}`))}
+          </p>
         </CardHeader>
         <CardContent>
           <div className="h-64">
