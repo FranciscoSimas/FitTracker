@@ -25,16 +25,23 @@ export async function isNewUser(): Promise<boolean> {
  */
 export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
   try {
+    // Gera IDs únicos para os exercícios baseados no timestamp e índice
+    const timestamp = Date.now();
+    const exercisesWithUniqueIds = mockExercises.map((exercise, index) => ({
+      ...exercise,
+      id: `${timestamp}_${index}_${exercise.id}`
+    }));
+    
     // Carrega todos os exercícios básicos para localStorage
-    setExercises(mockExercises);
+    setExercises(exercisesWithUniqueIds);
     
     // Salva também na base de dados remota
     const { addExerciseRemote } = await import("@/data/remote");
-    for (const exercise of mockExercises) {
+    for (const exercise of exercisesWithUniqueIds) {
       await addExerciseRemote(exercise);
     }
     
-    return mockExercises;
+    return exercisesWithUniqueIds;
   } catch (error) {
     console.error('Error loading basic exercise library:', error);
     return [];
@@ -46,16 +53,28 @@ export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
  */
 export async function loadPredefinedPlans(): Promise<WorkoutPlan[]> {
   try {
+    // Gera IDs únicos para os planos baseados no timestamp
+    const timestamp = Date.now();
+    const plansWithUniqueIds = mockWorkoutPlans.map((plan, index) => ({
+      ...plan,
+      id: `${timestamp}_${index}_${plan.id}`,
+      exercises: plan.exercises.map((exercise, exerciseIndex) => ({
+        ...exercise,
+        id: `${timestamp}_${index}_${exerciseIndex}_${exercise.id}`,
+        exerciseId: `${timestamp}_${exerciseIndex}_${exercise.exerciseId}`
+      }))
+    }));
+    
     // Carrega todos os planos pré-definidos para localStorage
-    setPlans(mockWorkoutPlans);
+    setPlans(plansWithUniqueIds);
     
     // Salva também na base de dados remota
     const { addPlanRemote } = await import("@/data/remote");
-    for (const plan of mockWorkoutPlans) {
+    for (const plan of plansWithUniqueIds) {
       await addPlanRemote(plan);
     }
     
-    return mockWorkoutPlans;
+    return plansWithUniqueIds;
   } catch (error) {
     console.error('Error loading predefined plans:', error);
     return [];
