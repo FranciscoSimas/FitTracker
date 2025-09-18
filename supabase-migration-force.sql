@@ -45,7 +45,25 @@ ALTER TABLE user_workout_plans ENABLE ROW LEVEL SECURITY;
 ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workout_plans ENABLE ROW LEVEL SECURITY;
 
--- PASSO 7: Criar políticas para tabelas principais
+-- PASSO 7: Remover políticas existentes e criar novas
+-- =====================================================
+-- Remover políticas existentes das tabelas principais
+DROP POLICY IF EXISTS "Anyone can view exercises" ON exercises;
+DROP POLICY IF EXISTS "Authenticated users can insert exercises" ON exercises;
+DROP POLICY IF EXISTS "Authenticated users can update exercises" ON exercises;
+DROP POLICY IF EXISTS "Anyone can view workout plans" ON workout_plans;
+DROP POLICY IF EXISTS "Authenticated users can insert workout plans" ON workout_plans;
+DROP POLICY IF EXISTS "Authenticated users can update workout plans" ON workout_plans;
+
+-- Remover políticas existentes das tabelas de referência
+DROP POLICY IF EXISTS "Users can view their own exercise references" ON user_exercises;
+DROP POLICY IF EXISTS "Users can insert their own exercise references" ON user_exercises;
+DROP POLICY IF EXISTS "Users can delete their own exercise references" ON user_exercises;
+DROP POLICY IF EXISTS "Users can view their own workout plan references" ON user_workout_plans;
+DROP POLICY IF EXISTS "Users can insert their own workout plan references" ON user_workout_plans;
+DROP POLICY IF EXISTS "Users can delete their own workout plan references" ON user_workout_plans;
+
+-- PASSO 8: Criar políticas para tabelas principais
 -- =====================================================
 -- Políticas para tabela exercises
 CREATE POLICY "Anyone can view exercises" ON exercises 
@@ -67,7 +85,7 @@ CREATE POLICY "Authenticated users can insert workout plans" ON workout_plans
 CREATE POLICY "Authenticated users can update workout plans" ON workout_plans 
     FOR UPDATE USING (auth.role() = 'authenticated');
 
--- PASSO 8: Criar políticas para tabelas de referência
+-- PASSO 9: Criar políticas para tabelas de referência
 -- =====================================================
 -- Políticas para user_exercises
 CREATE POLICY "Users can view their own exercise references" ON user_exercises
