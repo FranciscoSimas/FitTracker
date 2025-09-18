@@ -1,0 +1,81 @@
+{
+  "projectInfo": {
+    "name": "FitTracker",
+    "description": "Aplicação completa de tracking de exercícios e planos de treino com sistema normalizado de base de dados, autenticação social e interface multilíngue",
+    "techStack": ["React", "TypeScript", "Vite", "Tailwind CSS", "Supabase", "Lucide React", "shadcn/ui", "Google OAuth"],
+    "deployment": "Vercel (https://fittrackerplus.vercel.app)",
+    "database": "Supabase com sistema normalizado (tabelas de referência)",
+    "lastUpdated": "2025-01-17",
+    "status": "Production Ready - Sistema completo e funcional com autenticação social"
+  },
+  "recentCommits": [
+    {
+      "hash": "e639788",
+      "message": "refactor: Remove redundant 'Ver Planos Pré-definidos' button",
+      "date": "2025-01-17"
+    },
+    {
+      "hash": "771ecc5",
+      "message": "fix: Remove duplicate buttons in WorkoutPlans page",
+      "date": "2025-01-17"
+    },
+    {
+      "hash": "4b96907",
+      "message": "feat: Improve WorkoutPlans page UX and fix button duplication",
+      "date": "2025-01-17"
+    },
+    {
+      "hash": "643d6a5",
+      "message": "docs: Update README - Phase 1 Google OAuth completed",
+      "date": "2025-01-17"
+    },
+    {
+      "hash": "3fdc2fb",
+      "message": "feat: Implement Google OAuth authentication",
+      "date": "2025-01-17"
+    }
+  ],
+  "currentStatus": {
+    "database": "Normalizado e funcional",
+    "authentication": "Completo com Supabase Auth + Google OAuth",
+    "onboarding": "Sistema completo implementado",
+    "performance": "Otimizado com bulk operations",
+    "ux": "Fluxo completo e intuitivo",
+    "deployment": "Ativo em produção (fittrackerplus.vercel.app)",
+    "repository": "Limpo e organizado para público",
+    "settings": "Página UserProfile funcional"
+  },
+  "nextSteps": [
+    "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
+    "Criar landing page para utilizadores que acedem via PC",
+    "Implementar customização de temas (Dark/Light mode)",
+    "Adicionar sistema de notificações push",
+    "Implementar gamificação básica (streaks, achievements)",
+    "Melhorar analytics e relatórios de progresso",
+    "Adicionar funcionalidades sociais (compartilhar treinos)",
+    "Otimizar performance e adicionar mais funcionalidades PWA"
+  ],
+  "projectStructure": {
+    "mainPages": [
+      "WorkoutPlans.tsx - Página principal com lista de planos de treino",
+      "Exercises.tsx - Gestão de exercícios",
+      "Evolution.tsx - Acompanhamento de evolução",
+      "ActiveWorkout.tsx - Treino ativo",
+      "Login.tsx - Autenticação com Google OAuth",
+      "UserProfile.tsx - Página de configurações da conta"
+    ],
+    "components": [
+      "Layout.tsx - Layout principal com navegação",
+      "OnboardingModal.tsx - Modal de onboarding para novos usuários",
+      "ProtectedRoute.tsx - Rota protegida para usuários autenticados"
+    ],
+    "contexts": [
+      "AuthContext.tsx - Contexto de autenticação com Supabase e Google OAuth"
+    ],
+    "data": [
+      "mockData.ts - Dados mock para desenvolvimento",
+      "storage.ts - Funções de armazenamento local",
+      "remote.ts - Integração com Supabase"
+    ]
+  }
+}
