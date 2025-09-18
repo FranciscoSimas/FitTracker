@@ -15,3 +15,6 @@ node_modules/
 
 # vite
 /.vite/
+
+# private context files
+cursor-chat-context.json
