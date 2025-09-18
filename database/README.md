@@ -16,10 +16,16 @@ Esta pasta contém os ficheiros SQL para a base de dados do FitTracker.
 - **IMPORTANTE**: Execute este script no Supabase SQL Editor
 
 ### `migrate-existing-data.sql`
-- **MIGRAÇÃO DE DADOS** - Execute este ficheiro para migrar dados existentes
-- Migra exercícios e planos existentes para as novas tabelas de referência
-- Garante que dados antigos não sejam perdidos
+- **VERIFICAÇÃO DE MIGRAÇÃO** - Execute este ficheiro para verificar o estado atual
+- Mostra estatísticas das tabelas e referências existentes
+- Identifica exercícios e planos sem referências de usuário
 - **IMPORTANTE**: Execute APÓS o `supabase-migration-force.sql`
+
+### `migrate-legacy-data.sql`
+- **MIGRAÇÃO DE DADOS LEGADOS** - Execute APENAS se necessário
+- Migra dados existentes que ainda têm colunas `user_id`
+- Inclui verificações de segurança antes da migração
+- **IMPORTANTE**: Execute APENAS se `migrate-existing-data.sql` mostrar dados órfãos
 
 ## Sistema Normalizado
 
@@ -36,8 +42,9 @@ O sistema usa uma arquitetura normalizada onde:
 
 1. Execute `supabase-schema.sql` para criar o schema inicial
 2. Execute `supabase-migration-force.sql` para aplicar o sistema normalizado
-3. Execute `migrate-existing-data.sql` para migrar dados existentes
-4. O sistema estará pronto para uso com múltiplos utilizadores
+3. Execute `migrate-existing-data.sql` para verificar o estado da migração
+4. Se necessário, execute `migrate-legacy-data.sql` para migrar dados órfãos
+5. O sistema estará pronto para uso com múltiplos utilizadores
 
 ## Ordem de execução
 
@@ -45,4 +52,5 @@ O sistema usa uma arquitetura normalizada onde:
 
 1. `supabase-schema.sql` (se for uma instalação nova)
 2. `supabase-migration-force.sql` (migração principal)
-3. `migrate-existing-data.sql` (migração de dados existentes)
+3. `migrate-existing-data.sql` (verificação do estado)
+4. `migrate-legacy-data.sql` (APENAS se necessário)

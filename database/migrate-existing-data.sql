@@ -1,61 +1,51 @@
 -- =====================================================
--- MIGRAÇÃO DE DADOS EXISTENTES PARA SISTEMA NORMALIZADO
--- Execute este script para migrar exercícios e planos existentes
+-- VERIFICAÇÃO DO ESTADO DA MIGRAÇÃO
+-- Execute este script para verificar o estado atual da migração
 -- =====================================================
 
--- PASSO 1: Migrar exercícios existentes para user_exercises
+-- PASSO 1: Verificar estado atual das tabelas
 -- =====================================================
--- Insere referências para todos os exercícios que têm user_id
-INSERT INTO user_exercises (user_id, exercise_id, created_at)
+-- Mostra quantos exercícios existem na tabela principal
 SELECT 
-    user_id, 
-    id as exercise_id, 
-    NOW() as created_at
-FROM exercises 
-WHERE user_id IS NOT NULL
-ON CONFLICT (user_id, exercise_id) DO NOTHING;
+    'Exercícios na tabela principal' as tipo,
+    COUNT(*) as total
+FROM exercises;
 
--- PASSO 2: Migrar planos de treino existentes para user_workout_plans
--- =====================================================
--- Insere referências para todos os planos que têm user_id
-INSERT INTO user_workout_plans (user_id, plan_id, created_at)
+-- Mostra quantos planos existem na tabela principal
 SELECT 
-    user_id, 
-    id as plan_id, 
-    NOW() as created_at
-FROM workout_plans 
-WHERE user_id IS NOT NULL
-ON CONFLICT (user_id, plan_id) DO NOTHING;
+    'Planos na tabela principal' as tipo,
+    COUNT(*) as total
+FROM workout_plans;
 
--- PASSO 3: Verificar migração
--- =====================================================
--- Mostra quantos exercícios foram migrados
+-- Mostra quantas referências de exercícios existem
 SELECT 
-    'Exercícios migrados' as tipo,
+    'Referências de exercícios' as tipo,
     COUNT(*) as total
 FROM user_exercises;
 
--- Mostra quantos planos foram migrados
+-- Mostra quantas referências de planos existem
 SELECT 
-    'Planos migrados' as tipo,
+    'Referências de planos' as tipo,
     COUNT(*) as total
 FROM user_workout_plans;
 
--- Mostra exercícios órfãos (sem referência de usuário)
+-- PASSO 2: Verificar se há exercícios sem referências
+-- =====================================================
+-- Mostra exercícios que não têm referências de usuário
 SELECT 
-    'Exercícios órfãos' as tipo,
+    'Exercícios sem referências' as tipo,
     COUNT(*) as total
-FROM exercises 
-WHERE user_id IS NOT NULL 
-AND id NOT IN (SELECT exercise_id FROM user_exercises);
+FROM exercises e
+LEFT JOIN user_exercises ue ON e.id = ue.exercise_id
+WHERE ue.exercise_id IS NULL;
 
--- Mostra planos órfãos (sem referência de usuário)
+-- Mostra planos que não têm referências de usuário
 SELECT 
-    'Planos órfãos' as tipo,
+    'Planos sem referências' as tipo,
     COUNT(*) as total
-FROM workout_plans 
-WHERE user_id IS NOT NULL 
-AND id NOT IN (SELECT plan_id FROM user_workout_plans);
+FROM workout_plans wp
+LEFT JOIN user_workout_plans uwp ON wp.id = uwp.plan_id
+WHERE uwp.plan_id IS NULL;
 
 -- =====================================================
 -- MIGRAÇÃO CONCLUÍDA!
