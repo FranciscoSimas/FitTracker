@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Edit3, Users, Calendar, Plus, Sparkles, Dumbbell, Target } from "lucide-react";
+import { Play, Edit3, Users, Calendar, Plus, Sparkles, Dumbbell } from "lucide-react";
 import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
 import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
@@ -123,21 +123,13 @@ const WorkoutPlans = () => {
             <p className="text-muted-foreground mb-6">
               Comece criando o seu primeiro plano ou escolha um dos nossos planos pré-definidos
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex justify-center">
               <Button 
                 onClick={() => setShowOnboarding(true)}
                 className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Adicionar Novo Plano
-              </Button>
-              <Button 
-                onClick={() => setShowOnboarding(true)}
-                variant="outline"
-                className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-              >
-                <Target className="h-4 w-4 mr-2" />
-                Ver Planos Pré-definidos
               </Button>
             </div>
           </CardContent>
