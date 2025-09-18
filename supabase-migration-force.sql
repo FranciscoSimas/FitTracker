@@ -1,42 +1,18 @@
 -- =====================================================
--- MIGRAÇÃO COMPLETA PARA SISTEMA NORMALIZADO
--- Execute este script no Supabase SQL Editor
+-- MIGRAÇÃO FORÇADA PARA SISTEMA NORMALIZADO
+-- Execute este script se o anterior der erro
 -- =====================================================
 
--- PASSO 1: Remover políticas RLS antigas que dependem de user_id
+-- PASSO 1: Remover colunas user_id com CASCADE (força remoção)
 -- =====================================================
--- Remover todas as políticas possíveis das tabelas exercises e workout_plans
-DROP POLICY IF EXISTS "Users can view own exercises" ON exercises;
-DROP POLICY IF EXISTS "Users can insert own exercises" ON exercises;
-DROP POLICY IF EXISTS "Users can update own exercises" ON exercises;
-DROP POLICY IF EXISTS "Users can delete own exercises" ON exercises;
-DROP POLICY IF EXISTS "Users can view own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can insert own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can update own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can delete own workout_plans" ON workout_plans;
+ALTER TABLE exercises DROP COLUMN IF EXISTS user_id CASCADE;
+ALTER TABLE workout_plans DROP COLUMN IF EXISTS user_id CASCADE;
 
--- Remover políticas com nomes alternativos (com underscore)
-DROP POLICY IF EXISTS "Users can view own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can insert own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can update own workout_plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can delete own workout_plans" ON workout_plans;
-
--- Remover políticas com nomes alternativos (com espaço)
-DROP POLICY IF EXISTS "Users can view own workout plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can insert own workout plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can update own workout plans" ON workout_plans;
-DROP POLICY IF EXISTS "Users can delete own workout plans" ON workout_plans;
-
--- PASSO 2: Remover colunas user_id das tabelas principais
--- =====================================================
-ALTER TABLE exercises DROP COLUMN IF EXISTS user_id;
-ALTER TABLE workout_plans DROP COLUMN IF EXISTS user_id;
-
--- PASSO 3: Adicionar coluna description se não existir
+-- PASSO 2: Adicionar coluna description se não existir
 -- =====================================================
 ALTER TABLE workout_plans ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
 
--- PASSO 4: Criar tabelas de referência
+-- PASSO 3: Criar tabelas de referência
 -- =====================================================
 CREATE TABLE IF NOT EXISTS user_exercises (
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -52,24 +28,24 @@ CREATE TABLE IF NOT EXISTS user_workout_plans (
     PRIMARY KEY (user_id, plan_id)
 );
 
--- PASSO 5: Criar índices para performance
+-- PASSO 4: Criar índices para performance
 -- =====================================================
 CREATE INDEX IF NOT EXISTS idx_user_exercises_user_id ON user_exercises(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_exercises_exercise_id ON user_exercises(exercise_id);
 CREATE INDEX IF NOT EXISTS idx_user_workout_plans_user_id ON user_workout_plans(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_workout_plans_plan_id ON user_workout_plans(plan_id);
 
--- PASSO 6: Habilitar RLS nas tabelas de referência
+-- PASSO 5: Habilitar RLS nas tabelas de referência
 -- =====================================================
 ALTER TABLE user_exercises ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_workout_plans ENABLE ROW LEVEL SECURITY;
 
--- PASSO 7: Configurar RLS para tabelas principais
+-- PASSO 6: Configurar RLS para tabelas principais
 -- =====================================================
 ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workout_plans ENABLE ROW LEVEL SECURITY;
 
--- PASSO 8: Criar políticas para tabelas principais
+-- PASSO 7: Criar políticas para tabelas principais
 -- =====================================================
 -- Políticas para tabela exercises
 CREATE POLICY "Anyone can view exercises" ON exercises 
@@ -91,7 +67,7 @@ CREATE POLICY "Authenticated users can insert workout plans" ON workout_plans
 CREATE POLICY "Authenticated users can update workout plans" ON workout_plans 
     FOR UPDATE USING (auth.role() = 'authenticated');
 
--- PASSO 9: Criar políticas para tabelas de referência
+-- PASSO 8: Criar políticas para tabelas de referência
 -- =====================================================
 -- Políticas para user_exercises
 CREATE POLICY "Users can view their own exercise references" ON user_exercises
