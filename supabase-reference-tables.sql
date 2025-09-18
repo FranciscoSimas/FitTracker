@@ -18,20 +18,37 @@ CREATE TABLE IF NOT EXISTS user_workout_plans (
 );
 
 -- 3. Remover user_id das tabelas principais (se existir)
--- ALTER TABLE exercises DROP COLUMN IF EXISTS user_id;
--- ALTER TABLE workout_plans DROP COLUMN IF EXISTS user_id;
+ALTER TABLE exercises DROP COLUMN IF EXISTS user_id;
+ALTER TABLE workout_plans DROP COLUMN IF EXISTS user_id;
 
--- 4. Criar índices para performance
+-- 4. Adicionar coluna description à tabela workout_plans se não existir
+ALTER TABLE workout_plans ADD COLUMN IF NOT EXISTS description TEXT DEFAULT '';
+
+-- 5. Criar índices para performance
 CREATE INDEX IF NOT EXISTS idx_user_exercises_user_id ON user_exercises(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_exercises_exercise_id ON user_exercises(exercise_id);
 CREATE INDEX IF NOT EXISTS idx_user_workout_plans_user_id ON user_workout_plans(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_workout_plans_plan_id ON user_workout_plans(plan_id);
 
--- 5. Habilitar RLS (Row Level Security)
+-- 6. Habilitar RLS (Row Level Security)
 ALTER TABLE user_exercises ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_workout_plans ENABLE ROW LEVEL SECURITY;
 
--- 6. Criar políticas de segurança
+-- 7. Configurar RLS para tabelas principais (permitir leitura para todos, escrita para autenticados)
+ALTER TABLE exercises ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workout_plans ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para tabela exercises
+CREATE POLICY "Anyone can view exercises" ON exercises FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can insert exercises" ON exercises FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can update exercises" ON exercises FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- Políticas para tabela workout_plans
+CREATE POLICY "Anyone can view workout plans" ON workout_plans FOR SELECT USING (true);
+CREATE POLICY "Authenticated users can insert workout plans" ON workout_plans FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "Authenticated users can update workout plans" ON workout_plans FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- 8. Criar políticas de segurança para tabelas de referência
 CREATE POLICY "Users can view their own exercise references" ON user_exercises
     FOR SELECT USING (auth.uid() = user_id);
 

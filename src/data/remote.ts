@@ -130,7 +130,7 @@ export async function getPlansRemote(): Promise<WorkoutPlan[]> {
     return (data || []).map((row: any) => ({
       id: row.workout_plans.id,
       name: row.workout_plans.name,
-      description: row.workout_plans.description,
+      description: row.workout_plans.description || '',
       exercises: typeof row.workout_plans.exercises === 'string' ? JSON.parse(row.workout_plans.exercises) : row.workout_plans.exercises
     }));
   } catch (error) {
