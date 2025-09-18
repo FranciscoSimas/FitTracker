@@ -77,23 +77,12 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
       const { loadBasicExerciseLibrary } = await import("@/utils/onboardingUtils");
       await loadBasicExerciseLibrary();
       
-      // Depois carrega apenas os planos selecionados com IDs únicos
+      // Depois carrega apenas os planos selecionados
       const { mockWorkoutPlans } = await import("@/data/mockData");
       const { addPlanRemote } = await import("@/data/remote");
       const { setPlans } = await import("@/data/storage");
       
-      const timestamp = Date.now();
-      const filteredPlans = mockWorkoutPlans
-        .filter(plan => selectedPlans.includes(plan.id))
-        .map((plan, index) => ({
-          ...plan,
-          id: `${timestamp}_${index}_${plan.id}`,
-          exercises: plan.exercises.map((exercise, exerciseIndex) => ({
-            ...exercise,
-            id: `${timestamp}_${index}_${exerciseIndex}_${exercise.id}`,
-            exerciseId: `${timestamp}_${exerciseIndex}_${exercise.exerciseId}`
-          }))
-        }));
+      const filteredPlans = mockWorkoutPlans.filter(plan => selectedPlans.includes(plan.id));
       
       // Salva os planos selecionados na base de dados
       for (const plan of filteredPlans) {
