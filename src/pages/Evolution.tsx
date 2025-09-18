@@ -180,10 +180,26 @@ const Evolution = () => {
                 <SelectValue placeholder="Selecionar exercício" />
               </SelectTrigger>
               <SelectContent>
-                {allExercises.map((exercise) => (
-                  <SelectItem key={exercise.id} value={exercise.id}>
-                    {exercise.name}
-                  </SelectItem>
+                {Object.entries(
+                  allExercises.reduce((groups, exercise) => {
+                    const group = exercise.muscleGroup || 'Outros';
+                    if (!groups[group]) {
+                      groups[group] = [];
+                    }
+                    groups[group].push(exercise);
+                    return groups;
+                  }, {} as Record<string, typeof allExercises>)
+                ).map(([muscleGroup, exercises]) => (
+                  <div key={muscleGroup}>
+                    <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-muted/50">
+                      {muscleGroup}
+                    </div>
+                    {exercises.map((exercise) => (
+                      <SelectItem key={exercise.id} value={exercise.id} className="pl-6">
+                        {exercise.name}
+                      </SelectItem>
+                    ))}
+                  </div>
                 ))}
               </SelectContent>
             </Select>

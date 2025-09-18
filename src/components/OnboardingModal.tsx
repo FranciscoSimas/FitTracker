@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,7 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handlePlanToggle = (planId: string) => {
     setSelectedPlans(prev => 
@@ -46,11 +48,16 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
       
       toast({
         title: "Biblioteca carregada! 🎉",
-        description: `${exercises.length} exercícios básicos disponíveis. Agora pode criar os seus próprios planos.`,
+        description: `${exercises.length} exercícios básicos disponíveis. Redirecionando para criar o seu primeiro plano...`,
       });
       
       markOnboardingComplete();
       onComplete();
+      
+      // Redireciona para a página de adicionar plano
+      setTimeout(() => {
+        navigate("/adicionar-plano");
+      }, 1500);
     } catch (error) {
       toast({
         title: "Erro",

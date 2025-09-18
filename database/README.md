@@ -27,6 +27,12 @@ Esta pasta contém os ficheiros SQL para a base de dados do FitTracker.
 - Inclui verificações de segurança antes da migração
 - **IMPORTANTE**: Execute APENAS se `migrate-existing-data.sql` mostrar dados órfãos
 
+### `migrate-user-data.sql`
+- **MIGRAÇÃO MANUAL DE DADOS** - Para migrar exercícios e planos específicos
+- Permite migração manual de exercícios e planos para usuários específicos
+- Inclui exemplos de comandos SQL para migração individual e em lote
+- **IMPORTANTE**: Use quando precisar migrar dados específicos (ex: exercícios criados manualmente)
+
 ## Sistema Normalizado
 
 O sistema usa uma arquitetura normalizada onde:
@@ -44,7 +50,8 @@ O sistema usa uma arquitetura normalizada onde:
 2. Execute `supabase-migration-force.sql` para aplicar o sistema normalizado
 3. Execute `migrate-existing-data.sql` para verificar o estado da migração
 4. Se necessário, execute `migrate-legacy-data.sql` para migrar dados órfãos
-5. O sistema estará pronto para uso com múltiplos utilizadores
+5. Se necessário, execute `migrate-user-data.sql` para migrar dados específicos
+6. O sistema estará pronto para uso com múltiplos utilizadores
 
 ## Ordem de execução
 
@@ -54,3 +61,4 @@ O sistema usa uma arquitetura normalizada onde:
 2. `supabase-migration-force.sql` (migração principal)
 3. `migrate-existing-data.sql` (verificação do estado)
 4. `migrate-legacy-data.sql` (APENAS se necessário)
+5. `migrate-user-data.sql` (APENAS se necessário - para dados específicos)
