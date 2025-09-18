@@ -38,9 +38,10 @@ const AddWorkoutPlan = () => {
       await addPlan(newPlan, mockWorkoutPlans);
       toast({
         title: "Plano criado!",
-        description: `${planName} foi criado com sucesso.`,
+        description: `${planName} foi criado com sucesso. Redirecionando para editar...`,
       });
-      navigate("/");
+      // Redireciona para editar o plano recém-criado
+      navigate(`/editar-plano/${newPlan.id}`);
     } catch (error) {
       console.error('Error creating plan:', error);
       toast({
