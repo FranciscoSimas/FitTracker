@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Play, Edit3, Users, Calendar, Plus, Sparkles, Dumbbell } from "lucide-react";
+import { Play, Edit3, Users, Calendar, Plus, Sparkles, Dumbbell, Target } from "lucide-react";
 import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
 import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
