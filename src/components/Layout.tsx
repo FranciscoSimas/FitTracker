@@ -16,7 +16,7 @@ const Layout = () => {
   const { toast } = useToast();
 
   const navItems = [
-    { to: "/", icon: Calendar, label: "Dias de Treino" },
+    { to: "/", icon: Calendar, label: "Planos de Treino" },
     { to: "/exercicios", icon: Target, label: "Exercícios" },
     { to: "/evolucao", icon: TrendingUp, label: "Evolução" },
   ];

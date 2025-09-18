@@ -88,30 +88,35 @@ const WorkoutPlans = () => {
     <div className="space-y-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-          Seus Planos de Treino
+          Planos de Treino
         </h1>
-        <p className="mt-2 text-muted-foreground">
-          Escolha um plano para treinar ou editar
-        </p>
+        {plans.length > 0 && (
+          <p className="mt-2 text-muted-foreground">
+            Escolha um plano para treinar ou editar
+          </p>
+        )}
       </div>
 
-      <div className="flex justify-center gap-3">
-        <Button 
-          onClick={() => navigate("/adicionar-plano")}
-          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar Novo Plano
-        </Button>
-        <Button 
-          onClick={() => setShowOnboarding(true)}
-          variant="outline"
-          className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-        >
-          <Target className="h-4 w-4 mr-2" />
-          Ver Planos Pré-definidos
-        </Button>
-      </div>
+      {/* Botões apenas quando há planos */}
+      {plans.length > 0 && (
+        <div className="flex justify-center gap-3">
+          <Button 
+            onClick={() => setShowOnboarding(true)}
+            className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Novo Plano
+          </Button>
+          <Button 
+            onClick={() => setShowOnboarding(true)}
+            variant="outline"
+            className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+          >
+            <Target className="h-4 w-4 mr-2" />
+            Ver Planos Pré-definidos
+          </Button>
+        </div>
+      )}
 
       {/* Estado vazio - sem planos */}
       {plans.length === 0 && (
@@ -128,11 +133,11 @@ const WorkoutPlans = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button 
-                onClick={() => navigate("/adicionar-plano")}
+                onClick={() => setShowOnboarding(true)}
                 className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Criar Meu Plano
+                Adicionar Novo Plano
               </Button>
               <Button 
                 onClick={() => setShowOnboarding(true)}
