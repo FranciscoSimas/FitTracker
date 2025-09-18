@@ -81,6 +81,46 @@ export async function addExerciseRemote(exercise: Exercise): Promise<boolean> {
   }
 }
 
+// Bulk operations for better performance
+export async function addExercisesBulkRemote(exercises: Exercise[]): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    // First, ensure all exercises exist in the exercises table
+    const exerciseData = exercises.map(exercise => ({
+      id: exercise.id,
+      name: exercise.name,
+      muscle_group: exercise.muscleGroup,
+      equipment: exercise.equipment || null
+    }));
+    
+    const { error: upsertError } = await supabase
+      .from('exercises')
+      .upsert(exerciseData, { onConflict: 'id' });
+    
+    if (upsertError) throw upsertError;
+    
+    // Then, add all user references in bulk
+    const userRefs = exercises.map(exercise => ({
+      user_id: user.id,
+      exercise_id: exercise.id
+    }));
+    
+    const { error: refError } = await supabase
+      .from('user_exercises')
+      .upsert(userRefs, { onConflict: 'user_id,exercise_id' });
+    
+    if (refError) throw refError;
+    return true;
+  } catch (error) {
+    console.error('Error adding exercises in bulk:', error);
+    return false;
+  }
+}
+
 export async function removeExerciseRemote(exerciseId: string): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   
@@ -146,16 +186,27 @@ export async function updatePlanRemote(plan: WorkoutPlan): Promise<boolean> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
     
-    const { error } = await supabase
+    // Update the plan in the main table (no user_id needed)
+    const { error: updateError } = await supabase
       .from('workout_plans')
       .upsert([{
         id: plan.id,
-        user_id: user.id,
         name: plan.name,
+        description: plan.description || '',
         exercises: JSON.stringify(plan.exercises)
-      }]);
+      }], { onConflict: 'id' });
     
-    if (error) throw error;
+    if (updateError) throw updateError;
+    
+    // Ensure the user has a reference to this plan
+    const { error: refError } = await supabase
+      .from('user_workout_plans')
+      .upsert([{
+        user_id: user.id,
+        plan_id: plan.id
+      }], { onConflict: 'user_id,plan_id' });
+    
+    if (refError) throw refError;
     return true;
   } catch (error) {
     console.error('Error updating plan:', error);
@@ -194,6 +245,45 @@ export async function addPlanRemote(plan: WorkoutPlan): Promise<boolean> {
     return true;
   } catch (error) {
     console.error('Error adding plan:', error);
+    return false;
+  }
+}
+
+export async function addPlansBulkRemote(plans: WorkoutPlan[]): Promise<boolean> {
+  if (!isSupabaseConfigured()) return false;
+  
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    // First, ensure all plans exist in the workout_plans table
+    const planData = plans.map(plan => ({
+      id: plan.id,
+      name: plan.name,
+      description: plan.description || '',
+      exercises: JSON.stringify(plan.exercises)
+    }));
+    
+    const { error: upsertError } = await supabase
+      .from('workout_plans')
+      .upsert(planData, { onConflict: 'id' });
+    
+    if (upsertError) throw upsertError;
+    
+    // Then, add all user references in bulk
+    const userRefs = plans.map(plan => ({
+      user_id: user.id,
+      plan_id: plan.id
+    }));
+    
+    const { error: refError } = await supabase
+      .from('user_workout_plans')
+      .upsert(userRefs, { onConflict: 'user_id,plan_id' });
+    
+    if (refError) throw refError;
+    return true;
+  } catch (error) {
+    console.error('Error adding plans in bulk:', error);
     return false;
   }
 }

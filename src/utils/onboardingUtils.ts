@@ -28,11 +28,9 @@ export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
     // Carrega todos os exercícios básicos para localStorage
     setExercises(mockExercises);
     
-    // Salva também na base de dados remota
-    const { addExerciseRemote } = await import("@/data/remote");
-    for (const exercise of mockExercises) {
-      await addExerciseRemote(exercise);
-    }
+    // Salva também na base de dados remota usando bulk insert
+    const { addExercisesBulkRemote } = await import("@/data/remote");
+    await addExercisesBulkRemote(mockExercises);
     
     return mockExercises;
   } catch (error) {
@@ -49,11 +47,9 @@ export async function loadPredefinedPlans(): Promise<WorkoutPlan[]> {
     // Carrega todos os planos pré-definidos para localStorage
     setPlans(mockWorkoutPlans);
     
-    // Salva também na base de dados remota
-    const { addPlanRemote } = await import("@/data/remote");
-    for (const plan of mockWorkoutPlans) {
-      await addPlanRemote(plan);
-    }
+    // Salva também na base de dados remota usando bulk insert
+    const { addPlansBulkRemote } = await import("@/data/remote");
+    await addPlansBulkRemote(mockWorkoutPlans);
     
     return mockWorkoutPlans;
   } catch (error) {
@@ -79,6 +75,18 @@ export async function initializeNewUser(): Promise<{
   } catch (error) {
     console.error('Error initializing new user:', error);
     return { exercises: [], plans: [] };
+  }
+}
+
+/**
+ * Inicializa apenas a biblioteca de exercícios para novos usuários
+ */
+export async function initializeBasicExercises(): Promise<Exercise[]> {
+  try {
+    return await loadBasicExerciseLibrary();
+  } catch (error) {
+    console.error('Error initializing basic exercises:', error);
+    return [];
   }
 }
 

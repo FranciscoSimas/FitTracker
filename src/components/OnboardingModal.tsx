@@ -40,8 +40,9 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
   const handleCreateCustom = async () => {
     setIsLoading(true);
     try {
-      // Inicializa apenas a biblioteca de exercícios
-      const { exercises } = await initializeNewUser();
+      // Inicializa apenas a biblioteca de exercícios (não os planos)
+      const { initializeBasicExercises } = await import("@/utils/onboardingUtils");
+      const exercises = await initializeBasicExercises();
       
       toast({
         title: "Biblioteca carregada! 🎉",
@@ -77,17 +78,15 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
       const { loadBasicExerciseLibrary } = await import("@/utils/onboardingUtils");
       await loadBasicExerciseLibrary();
       
-      // Depois carrega apenas os planos selecionados
+      // Depois carrega apenas os planos selecionados usando bulk insert
       const { mockWorkoutPlans } = await import("@/data/mockData");
-      const { addPlanRemote } = await import("@/data/remote");
+      const { addPlansBulkRemote } = await import("@/data/remote");
       const { setPlans } = await import("@/data/storage");
       
       const filteredPlans = mockWorkoutPlans.filter(plan => selectedPlans.includes(plan.id));
       
-      // Salva os planos selecionados na base de dados
-      for (const plan of filteredPlans) {
-        await addPlanRemote(plan);
-      }
+      // Salva os planos selecionados na base de dados usando bulk insert
+      await addPlansBulkRemote(filteredPlans);
       
       // Atualiza localStorage com os planos selecionados
       setPlans(filteredPlans);
