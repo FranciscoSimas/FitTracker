@@ -73,13 +73,24 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
 
     setIsLoading(true);
     try {
-      // Inicializa com exercícios e planos selecionados
-      const { exercises, plans } = await initializeNewUser();
-      const filteredPlans = plans.filter(plan => selectedPlans.includes(plan.id));
+      // Primeiro carrega a biblioteca de exercícios
+      const { loadBasicExerciseLibrary } = await import("@/utils/onboardingUtils");
+      await loadBasicExerciseLibrary();
       
-      // Atualiza apenas com os planos selecionados
+      // Depois carrega apenas os planos selecionados
+      const { mockWorkoutPlans } = await import("@/data/mockData");
+      const { addPlanRemote } = await import("@/data/remote");
       const { setPlans } = await import("@/data/storage");
-      await setPlans(filteredPlans);
+      
+      const filteredPlans = mockWorkoutPlans.filter(plan => selectedPlans.includes(plan.id));
+      
+      // Salva os planos selecionados na base de dados
+      for (const plan of filteredPlans) {
+        await addPlanRemote(plan);
+      }
+      
+      // Atualiza localStorage com os planos selecionados
+      setPlans(filteredPlans);
       
       toast({
         title: "Planos carregados! 🚀",
@@ -89,6 +100,7 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
       markOnboardingComplete();
       onComplete();
     } catch (error) {
+      console.error('Error loading selected plans:', error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar os planos selecionados.",

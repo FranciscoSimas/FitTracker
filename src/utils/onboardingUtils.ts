@@ -25,8 +25,15 @@ export async function isNewUser(): Promise<boolean> {
  */
 export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
   try {
-    // Carrega todos os exercícios básicos
-    await setExercises(mockExercises);
+    // Carrega todos os exercícios básicos para localStorage
+    setExercises(mockExercises);
+    
+    // Salva também na base de dados remota
+    const { addExerciseRemote } = await import("@/data/remote");
+    for (const exercise of mockExercises) {
+      await addExerciseRemote(exercise);
+    }
+    
     return mockExercises;
   } catch (error) {
     console.error('Error loading basic exercise library:', error);
@@ -39,8 +46,15 @@ export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
  */
 export async function loadPredefinedPlans(): Promise<WorkoutPlan[]> {
   try {
-    // Carrega todos os planos pré-definidos
-    await setPlans(mockWorkoutPlans);
+    // Carrega todos os planos pré-definidos para localStorage
+    setPlans(mockWorkoutPlans);
+    
+    // Salva também na base de dados remota
+    const { addPlanRemote } = await import("@/data/remote");
+    for (const plan of mockWorkoutPlans) {
+      await addPlanRemote(plan);
+    }
+    
     return mockWorkoutPlans;
   } catch (error) {
     console.error('Error loading predefined plans:', error);

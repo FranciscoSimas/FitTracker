@@ -95,13 +95,21 @@ const WorkoutPlans = () => {
         </p>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-3">
         <Button 
           onClick={() => navigate("/adicionar-plano")}
           className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
         >
           <Plus className="h-4 w-4 mr-2" />
           Adicionar Novo Plano
+        </Button>
+        <Button 
+          onClick={() => setShowOnboarding(true)}
+          variant="outline"
+          className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+        >
+          <Target className="h-4 w-4 mr-2" />
+          Ver Planos Pré-definidos
         </Button>
       </div>
 
