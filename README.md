@@ -26,7 +26,7 @@ The application focuses on providing a **simple, practical, and motivating exper
 ### Phase 1 – Stable Base
 - User authentication (login/personal account). ✔️
 - Basic dashboard with workout history and simple statistics.  ✔️
-- Predefined workout plans already included, fully customizable. ⏳
+- Predefined workout plans already included, fully customizable. ✔️
 - Stable mobile version (PWA or native app).  PWA ✔️
 
 ### Phase 2 – User Experience
