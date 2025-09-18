@@ -15,19 +15,30 @@ export async function getExercisesRemote(): Promise<Exercise[]> {
   if (!isSupabaseConfigured()) return [];
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
     const { data, error } = await supabase
-      .from('exercises')
-      .select('*')
-      .order('name');
+      .from('user_exercises')
+      .select(`
+        exercises (
+          id,
+          name,
+          muscle_group,
+          equipment
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('exercises(name)');
     
     if (error) throw error;
     
     // Convert Supabase data to Exercise format
     return (data || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      muscleGroup: row.muscle_group,
-      equipment: row.equipment
+      id: row.exercises.id,
+      name: row.exercises.name,
+      muscleGroup: row.exercises.muscle_group,
+      equipment: row.exercises.equipment
     }));
   } catch (error) {
     console.error('Error fetching exercises:', error);
@@ -42,17 +53,27 @@ export async function addExerciseRemote(exercise: Exercise): Promise<boolean> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
     
-    const { error } = await supabase
+    // First, ensure the exercise exists in the exercises table
+    const { error: upsertError } = await supabase
       .from('exercises')
-      .insert([{
+      .upsert([{
         id: exercise.id,
-        user_id: user.id,
         name: exercise.name,
         muscle_group: exercise.muscleGroup,
         equipment: exercise.equipment || null
-      }]);
+      }], { onConflict: 'id' });
     
-    if (error) throw error;
+    if (upsertError) throw upsertError;
+    
+    // Then, add the user reference
+    const { error: refError } = await supabase
+      .from('user_exercises')
+      .upsert([{
+        user_id: user.id,
+        exercise_id: exercise.id
+      }], { onConflict: 'user_id,exercise_id' });
+    
+    if (refError) throw refError;
     return true;
   } catch (error) {
     console.error('Error adding exercise:', error);
@@ -64,10 +85,15 @@ export async function removeExerciseRemote(exerciseId: string): Promise<boolean>
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    // Remove the user reference (not the exercise itself)
     const { error } = await supabase
-      .from('exercises')
+      .from('user_exercises')
       .delete()
-      .eq('id', exerciseId);
+      .eq('user_id', user.id)
+      .eq('exercise_id', exerciseId);
     
     if (error) throw error;
     return true;
@@ -82,19 +108,30 @@ export async function getPlansRemote(): Promise<WorkoutPlan[]> {
   if (!isSupabaseConfigured()) return [];
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return [];
+    
     const { data, error } = await supabase
-      .from('workout_plans')
-      .select('*')
-      .order('name');
+      .from('user_workout_plans')
+      .select(`
+        workout_plans (
+          id,
+          name,
+          description,
+          exercises
+        )
+      `)
+      .eq('user_id', user.id)
+      .order('workout_plans(name)');
     
     if (error) throw error;
     
     // Convert Supabase data to WorkoutPlan format
     return (data || []).map((row: any) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      exercises: typeof row.exercises === 'string' ? JSON.parse(row.exercises) : row.exercises
+      id: row.workout_plans.id,
+      name: row.workout_plans.name,
+      description: row.workout_plans.description,
+      exercises: typeof row.workout_plans.exercises === 'string' ? JSON.parse(row.workout_plans.exercises) : row.workout_plans.exercises
     }));
   } catch (error) {
     console.error('Error fetching plans:', error);
@@ -133,16 +170,27 @@ export async function addPlanRemote(plan: WorkoutPlan): Promise<boolean> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
     
-    const { error } = await supabase
+    // First, ensure the plan exists in the workout_plans table
+    const { error: upsertError } = await supabase
       .from('workout_plans')
-      .insert([{
+      .upsert([{
         id: plan.id,
-        user_id: user.id,
         name: plan.name,
+        description: plan.description || '',
         exercises: JSON.stringify(plan.exercises)
-      }]);
+      }], { onConflict: 'id' });
     
-    if (error) throw error;
+    if (upsertError) throw upsertError;
+    
+    // Then, add the user reference
+    const { error: refError } = await supabase
+      .from('user_workout_plans')
+      .upsert([{
+        user_id: user.id,
+        plan_id: plan.id
+      }], { onConflict: 'user_id,plan_id' });
+    
+    if (refError) throw refError;
     return true;
   } catch (error) {
     console.error('Error adding plan:', error);
@@ -154,10 +202,15 @@ export async function removePlanRemote(planId: string): Promise<boolean> {
   if (!isSupabaseConfigured()) return false;
   
   try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    // Remove the user reference (not the plan itself)
     const { error } = await supabase
-      .from('workout_plans')
+      .from('user_workout_plans')
       .delete()
-      .eq('id', planId);
+      .eq('user_id', user.id)
+      .eq('plan_id', planId);
     
     if (error) throw error;
     return true;
