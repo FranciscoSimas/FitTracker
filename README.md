@@ -24,10 +24,10 @@ The application focuses on providing a **simple, practical, and motivating exper
 ## 🚀 Future Roadmap
 
 ### Phase 1 – Stable Base
-- User authentication (login/personal account). ✔️ Google/Other social media authentication ⏳
-- Basic dashboard with workout history and simple statistics.  ✔️
+- User authentication (login/personal account). ✔️ Google OAuth authentication ✔️
+- Basic dashboard with workout history and simple statistics. ✔️
 - Predefined workout plans already included, fully customizable. ✔️
-- Stable mobile version (PWA or native app).  PWA ✔️ Native app ⏳
+- Stable mobile version (PWA or native app). PWA ✔️ Native app ⏳
 
 ### Phase 2 – User Experience
 - **Internationalization** (translations into multiple languages).  
