@@ -10,42 +10,55 @@
   },
   "recentCommits": [
     {
-      "hash": "e639788",
-      "message": "refactor: Remove redundant 'Ver Planos Pré-definidos' button",
+      "hash": "70325b4",
+      "message": "feat: Implement 4 major UX/UI improvements - workout timer pause/resume, muscle group evolution charts, improved onboarding flow, and enhanced exercise selection",
       "date": "2025-01-17"
     },
     {
-      "hash": "771ecc5",
-      "message": "fix: Remove duplicate buttons in WorkoutPlans page",
+      "hash": "c6fc415",
+      "message": "feat: Improve exercise selection modal UX and visual design",
       "date": "2025-01-17"
     },
     {
-      "hash": "4b96907",
-      "message": "feat: Improve WorkoutPlans page UX and fix button duplication",
+      "hash": "2bb0c5b",
+      "message": "feat: Implement advanced exercise selection modal with filters and multi-selection",
       "date": "2025-01-17"
     },
     {
-      "hash": "643d6a5",
-      "message": "docs: Update README - Phase 1 Google OAuth completed",
+      "hash": "7bb0a1c",
+      "message": "feat: Refactor onboarding modal - separate exercises and predefined plans",
       "date": "2025-01-17"
     },
     {
-      "hash": "3fdc2fb",
-      "message": "feat: Implement Google OAuth authentication",
+      "hash": "7eb1890",
+      "message": "docs: Add public project context file",
       "date": "2025-01-17"
     }
   ],
   "currentStatus": {
     "database": "Normalizado e funcional",
     "authentication": "Completo com Supabase Auth + Google OAuth",
-    "onboarding": "Sistema completo implementado",
+    "onboarding": "Sistema completo implementado com fluxo melhorado",
     "performance": "Otimizado com bulk operations",
-    "ux": "Fluxo completo e intuitivo",
+    "ux": "Fluxo completo e intuitivo com 4 melhorias UX/UI implementadas",
     "deployment": "Ativo em produção (fittrackerplus.vercel.app)",
     "repository": "Limpo e organizado para público",
-    "settings": "Página UserProfile funcional"
+    "settings": "Página UserProfile funcional",
+    "workoutTimer": "Funcionalidade de pausar/continuar implementada",
+    "evolutionCharts": "Gráficos por grupo muscular implementados",
+    "exerciseSelection": "Modal avançado com filtros e seleção múltipla"
   },
   "nextSteps": [
+    "FASE 1 - UX/UI Melhorias (CONCLUÍDA ✅):",
+    "1. ✅ Refatorar modal 'Bem-vindo ao FitTracker' - Remover planos pré-definidos",
+    "2. ✅ Criar novo modal 'Planos Pré-definidos' - Só planos com seleção limpa",
+    "3. ✅ Sistema de adicionar exercícios - Modal com filtros por grupo muscular e seleção múltipla",
+    "4. ✅ Resume de treino - Pausar/continuar funcionalidade",
+    "5. ✅ Evolução por grupo muscular - Gráfico multi-linha com hover effects",
+    "FASE 2 - Funcionalidades Core (Próximas):",
+    "6. Melhorias visuais - Animações, transições",
+    "7. Performance - Otimizações",
+    "FUTURO:",
     "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
     "Criar landing page para utilizadores que acedem via PC",
     "Implementar customização de temas (Dark/Light mode)",
@@ -66,7 +79,9 @@
     ],
     "components": [
       "Layout.tsx - Layout principal com navegação",
-      "OnboardingModal.tsx - Modal de onboarding para novos usuários",
+      "OnboardingModal.tsx - Modal de onboarding para novos usuários (melhorado)",
+      "PredefinedPlansModal.tsx - Modal de seleção de planos pré-definidos",
+      "ExerciseSelectionModal.tsx - Modal avançado de seleção de exercícios com filtros",
       "ProtectedRoute.tsx - Rota protegida para usuários autenticados"
     ],
     "contexts": [
@@ -77,5 +92,35 @@
       "storage.ts - Funções de armazenamento local",
       "remote.ts - Integração com Supabase"
     ]
-  }
+  },
+  "recentImprovements": [
+    {
+      "date": "2025-01-17",
+      "improvement": "Funcionalidade de Pausar/Continuar Treino Ativo",
+      "description": "Implementada funcionalidade completa de pausar e continuar treinos ativos com tempo pausado não contando para duração total",
+      "files": ["src/pages/ActiveWorkout.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17", 
+      "improvement": "Gráficos de Evolução por Grupo Muscular",
+      "description": "Adicionado gráfico multi-linha por grupo muscular com cores diferentes e legenda visual",
+      "files": ["src/pages/Evolution.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Fluxo de Onboarding Melhorado", 
+      "description": "Refatorado modal de onboarding para separar exercícios básicos e planos pré-definidos com fluxo mais claro",
+      "files": ["src/components/OnboardingModal.tsx", "src/components/PredefinedPlansModal.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Sistema de Seleção de Exercícios Aprimorado",
+      "description": "Melhorado modal de seleção com indicadores visuais aprimorados para exercícios selecionados",
+      "files": ["src/components/ExerciseSelectionModal.tsx"],
+      "status": "completed"
+    }
+  ]
 }
