@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@/components/ui/loading";
 const Evolution = () => {
   const navigate = useNavigate();
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("all");
+  const [selectedWorkoutPlan, setSelectedWorkoutPlan] = useState("all");
   const [isGeneratingData, setIsGeneratingData] = useState(false);
 
   const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
@@ -124,6 +125,61 @@ const Evolution = () => {
 
   // Get unique muscle groups
   const muscleGroups = Array.from(new Set(allExercises.map(ex => ex.muscleGroup))).filter(Boolean);
+  
+  // Get unique workout plans
+  const workoutPlans = Array.from(new Set(completed.map(workout => workout.planName))).filter(Boolean);
+  
+  // Process data for workout plan evolution - shows individual exercises within the selected plan
+  const getWorkoutPlanEvolution = (planName: string) => {
+    if (planName === "all") {
+      return [];
+    }
+
+    // Get workouts for the selected plan
+    const planWorkouts = completed.filter(workout => workout.planName === planName);
+    
+    // Get all unique exercises in this plan
+    const planExercises = new Set<string>();
+    planWorkouts.forEach(workout => {
+      workout.exercises.forEach(ex => {
+        planExercises.add(ex.exerciseId);
+      });
+    });
+    
+    // Get exercises with history in this plan
+    const exercisesWithHistory = Array.from(planExercises).filter(exerciseId => {
+      const exerciseData = getExerciseEvolution(exerciseId);
+      return exerciseData.length > 0;
+    });
+    
+    const allDates = new Set<string>();
+    
+    // Collect all unique dates for exercises with history in this plan
+    exercisesWithHistory.forEach(exerciseId => {
+      const exerciseData = getExerciseEvolution(exerciseId);
+      exerciseData.forEach(d => allDates.add(d.date));
+    });
+    
+    // Create data points for each date with individual exercise lines
+    return Array.from(allDates).map(date => {
+      const dataPoint: any = { date };
+      
+      exercisesWithHistory.forEach(exerciseId => {
+        const exercise = allExercises.find(ex => ex.id === exerciseId);
+        if (exercise) {
+          const exerciseData = getExerciseEvolution(exerciseId);
+          const point = exerciseData.find(d => d.date === date);
+          dataPoint[exercise.name] = point ? point.weight : null;
+        }
+      });
+      
+      return dataPoint;
+    }).sort((a, b) => {
+      const dateA = new Date(a.date + ' ' + new Date().getFullYear());
+      const dateB = new Date(b.date + ' ' + new Date().getFullYear());
+      return dateA.getTime() - dateB.getTime();
+    });
+  };
   
   // Calculate stats
   const totalWorkouts = completed.length;
@@ -511,6 +567,150 @@ const Evolution = () => {
         </CardContent>
       </Card>
 
+      {/* Workout Plan Evolution Chart */}
+      {workoutPlans.length > 0 && (
+        <Card className="bg-card/50 border-border/50">
+          <CardHeader>
+            <div className="flex flex-col gap-4">
+              <CardTitle className="text-xl font-semibold">Evolução por Plano de Treino</CardTitle>
+              <Select value={selectedWorkoutPlan} onValueChange={setSelectedWorkoutPlan}>
+                <SelectTrigger className="w-full sm:w-64 bg-background/80 border-border/50">
+                  <SelectValue placeholder="Selecionar plano de treino" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os planos</SelectItem>
+                  {workoutPlans.map((plan) => (
+                    <SelectItem key={plan} value={plan}>
+                      {plan}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {selectedWorkoutPlan === "all" ? (
+              <div className="h-80 flex items-center justify-center text-muted-foreground">
+                <div className="text-center">
+                  <Dumbbell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Selecione um plano de treino para ver a evolução dos exercícios</p>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={getWorkoutPlanEvolution(selectedWorkoutPlan)}>
+                      <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                      <XAxis 
+                        dataKey="date" 
+                        className="text-muted-foreground"
+                      />
+                      <YAxis 
+                        className="text-muted-foreground"
+                        tickCount={6}
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          color: 'hsl(var(--foreground))'
+                        }}
+                      />
+                      {(() => {
+                        const planWorkouts = completed.filter(workout => workout.planName === selectedWorkoutPlan);
+                        const planExercises = new Set<string>();
+                        planWorkouts.forEach(workout => {
+                          workout.exercises.forEach(ex => {
+                            planExercises.add(ex.exerciseId);
+                          });
+                        });
+                        
+                        const exercisesWithHistory = Array.from(planExercises).filter(exerciseId => {
+                          const exerciseData = getExerciseEvolution(exerciseId);
+                          return exerciseData.length > 0;
+                        });
+                        
+                        return exercisesWithHistory.map((exerciseId, index) => {
+                          const exercise = allExercises.find(ex => ex.id === exerciseId);
+                          if (!exercise) return null;
+                          
+                          const colors = [
+                            'hsl(var(--fitness-primary))',
+                            'hsl(var(--fitness-secondary))',
+                            'hsl(var(--fitness-success))',
+                            'hsl(var(--fitness-warning))',
+                            'hsl(var(--fitness-accent))',
+                            '#8B5CF6',
+                            '#F59E0B',
+                            '#EF4444',
+                            '#10B981',
+                            '#F97316'
+                          ];
+                          return (
+                            <Line
+                              key={exercise.id}
+                              type="monotone"
+                              dataKey={exercise.name}
+                              stroke={colors[index % colors.length]}
+                              strokeWidth={2}
+                              dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
+                              activeDot={{ r: 6, fill: colors[index % colors.length] }}
+                              connectNulls={false}
+                            />
+                          );
+                        });
+                      })()}
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+                {/* Legend */}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {(() => {
+                    const planWorkouts = completed.filter(workout => workout.planName === selectedWorkoutPlan);
+                    const planExercises = new Set<string>();
+                    planWorkouts.forEach(workout => {
+                      workout.exercises.forEach(ex => {
+                        planExercises.add(ex.exerciseId);
+                      });
+                    });
+                    
+                    const exercisesWithHistory = Array.from(planExercises).filter(exerciseId => {
+                      const exerciseData = getExerciseEvolution(exerciseId);
+                      return exerciseData.length > 0;
+                    });
+                    
+                    return exercisesWithHistory.map((exerciseId, index) => {
+                      const exercise = allExercises.find(ex => ex.id === exerciseId);
+                      if (!exercise) return null;
+                      
+                      const colors = [
+                        'bg-fitness-primary',
+                        'bg-fitness-secondary', 
+                        'bg-fitness-success',
+                        'bg-fitness-warning',
+                        'bg-fitness-accent',
+                        'bg-purple-500',
+                        'bg-amber-500',
+                        'bg-red-500',
+                        'bg-emerald-500',
+                        'bg-orange-500'
+                      ];
+                      return (
+                        <div key={exercise.id} className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
+                          <span className="text-sm text-muted-foreground">{exercise.name}</span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Body Weight Tracking */}
       <Card className="bg-card/50 border-border/50">
