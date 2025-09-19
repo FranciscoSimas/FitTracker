@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 
 const Evolution = () => {
   const navigate = useNavigate();
-  const [selectedExercise, setSelectedExercise] = useState("1");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("all");
 
   const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
@@ -55,65 +54,56 @@ const Evolution = () => {
     }).sort((a, b) => a.sortDate - b.sortDate); // Sort by date ascending (oldest first)
   };
 
-  // Process data for muscle group evolution
+  // Process data for muscle group evolution - shows individual exercises within the group
   const getMuscleGroupEvolution = (muscleGroup: string) => {
-    const workouts = completed.filter(workout => 
-      workout.exercises.some(ex => {
-        const exercise = allExercises.find(e => e.id === ex.exerciseId);
-        return exercise && exercise.muscleGroup === muscleGroup;
-      })
-    );
-
-    return workouts.map(workout => {
-      const muscleGroupExercises = workout.exercises.filter(ex => {
-        const exercise = allExercises.find(e => e.id === ex.exerciseId);
-        return exercise && exercise.muscleGroup === muscleGroup;
+    if (muscleGroup === "all") {
+      // Show all muscle groups
+      const allDates = new Set<string>();
+      
+      muscleGroups.forEach(group => {
+        if (group !== "all") {
+          const data = getMuscleGroupEvolution(group);
+          data.forEach(d => allDates.add(d.date));
+        }
       });
+      
+      return Array.from(allDates).map(date => {
+        const dataPoint: any = { date };
+        
+        muscleGroups.forEach(group => {
+          if (group !== "all") {
+            const groupData = getMuscleGroupEvolution(group);
+            const point = groupData.find(d => d.date === date);
+            dataPoint[group] = point ? point.weight : null;
+          }
+        });
+        
+        return dataPoint;
+      }).sort((a, b) => {
+        const dateA = new Date(a.date + ' ' + new Date().getFullYear());
+        const dateB = new Date(b.date + ' ' + new Date().getFullYear());
+        return dateA.getTime() - dateB.getTime();
+      });
+    }
 
-      // Calculate average max weight and total volume for the muscle group
-      const maxWeights = muscleGroupExercises.map(ex => 
-        Math.max(...ex.sets.map(set => set.weight))
-      );
-      const totalVolumes = muscleGroupExercises.map(ex => 
-        ex.sets.reduce((total, set) => total + (set.weight * set.reps), 0)
-      );
-
-      const avgMaxWeight = maxWeights.length > 0 ? maxWeights.reduce((a, b) => a + b, 0) / maxWeights.length : 0;
-      const totalVolume = totalVolumes.reduce((a, b) => a + b, 0);
-
-      return {
-        date: new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
-        weight: Number(avgMaxWeight.toFixed(1)),
-        volume: Number(totalVolume.toFixed(1)),
-        duration: workout.duration,
-        sortDate: new Date(workout.date).getTime(),
-      };
-    }).sort((a, b) => a.sortDate - b.sortDate);
-  };
-
-  const exerciseData = getExerciseEvolution(selectedExercise);
-  
-  // Get unique muscle groups
-  const muscleGroups = Array.from(new Set(allExercises.map(ex => ex.muscleGroup))).filter(Boolean);
-  
-  // Get multi-line data for muscle groups
-  const getMultiLineMuscleGroupData = () => {
+    // Get individual exercises for the selected muscle group
+    const exercisesInGroup = allExercises.filter(ex => ex.muscleGroup === muscleGroup);
     const allDates = new Set<string>();
     
-    // Collect all unique dates
-    muscleGroups.forEach(group => {
-      const data = getMuscleGroupEvolution(group);
-      data.forEach(d => allDates.add(d.date));
+    // Collect all unique dates for exercises in this group
+    exercisesInGroup.forEach(exercise => {
+      const exerciseData = getExerciseEvolution(exercise.id);
+      exerciseData.forEach(d => allDates.add(d.date));
     });
     
-    // Create data points for each date
+    // Create data points for each date with individual exercise lines
     return Array.from(allDates).map(date => {
       const dataPoint: any = { date };
       
-      muscleGroups.forEach(group => {
-        const groupData = getMuscleGroupEvolution(group);
-        const point = groupData.find(d => d.date === date);
-        dataPoint[group] = point ? point.weight : null;
+      exercisesInGroup.forEach(exercise => {
+        const exerciseData = getExerciseEvolution(exercise.id);
+        const point = exerciseData.find(d => d.date === date);
+        dataPoint[exercise.name] = point ? point.weight : null;
       });
       
       return dataPoint;
@@ -123,8 +113,9 @@ const Evolution = () => {
       return dateA.getTime() - dateB.getTime();
     });
   };
-  
-  const multiLineData = getMultiLineMuscleGroupData();
+
+  // Get unique muscle groups
+  const muscleGroups = Array.from(new Set(allExercises.map(ex => ex.muscleGroup))).filter(Boolean);
   
   // Calculate stats
   const totalWorkouts = completed.length;
@@ -240,36 +231,20 @@ const Evolution = () => {
         </Card>
       </div>
 
-      {/* Exercise Evolution Chart */}
+      {/* Muscle Group Evolution Chart */}
       <Card className="bg-card/50 border-border/50">
         <CardHeader>
           <div className="flex flex-col gap-4">
-            <CardTitle className="text-xl font-semibold">Evolução por Exercício</CardTitle>
-            <Select value={selectedExercise} onValueChange={setSelectedExercise}>
+            <CardTitle className="text-xl font-semibold">Evolução por Grupo Muscular</CardTitle>
+            <Select value={selectedMuscleGroup} onValueChange={setSelectedMuscleGroup}>
               <SelectTrigger className="w-full sm:w-64 bg-background/80 border-border/50">
-                <SelectValue placeholder="Selecionar exercício" />
+                <SelectValue placeholder="Selecionar grupo muscular" />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(
-                  allExercises.reduce((groups, exercise) => {
-                    const group = exercise.muscleGroup || 'Outros';
-                    if (!groups[group]) {
-                      groups[group] = [];
-                    }
-                    groups[group].push(exercise);
-                    return groups;
-                  }, {} as Record<string, typeof allExercises>)
-                ).map(([muscleGroup, exercises]) => (
-                  <div key={muscleGroup}>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground bg-muted/50">
-                      {muscleGroup}
-                    </div>
-                    {exercises.map((exercise) => (
-                      <SelectItem key={exercise.id} value={exercise.id} className="pl-6">
-                        {exercise.name}
-                      </SelectItem>
-                    ))}
-                  </div>
+                {muscleGroups.map((group) => (
+                  <SelectItem key={group} value={group}>
+                    {group}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -278,54 +253,7 @@ const Evolution = () => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={exerciseData}>
-                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis 
-                  dataKey="date" 
-                  className="text-muted-foreground"
-                />
-                <YAxis 
-                  className="text-muted-foreground"
-                  domain={exerciseData.length > 0 ? [
-                    Math.max(0, Math.min(...exerciseData.map(d => d.weight)) - 5),
-                    Math.max(...exerciseData.map(d => d.weight)) + 5
-                  ] : [0, 100]}
-                  tickCount={6}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'hsl(var(--card))', 
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '8px',
-                    color: 'hsl(var(--foreground))'
-                  }}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="weight" 
-                  stroke="hsl(var(--fitness-primary))" 
-                  strokeWidth={3}
-                  dot={{ fill: 'hsl(var(--fitness-primary))', strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, fill: 'hsl(var(--fitness-primary))' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Muscle Group Evolution Chart */}
-      <Card className="bg-card/50 border-border/50">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">Evolução por Grupo Muscular</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Peso médio máximo por grupo muscular ao longo do tempo
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={multiLineData}>
+              <LineChart data={getMuscleGroupEvolution(selectedMuscleGroup)}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis 
                   dataKey="date" 
@@ -343,56 +271,115 @@ const Evolution = () => {
                     color: 'hsl(var(--foreground))'
                   }}
                 />
-                {muscleGroups.map((group, index) => {
-                  const colors = [
-                    'hsl(var(--fitness-primary))',
-                    'hsl(var(--fitness-secondary))',
-                    'hsl(var(--fitness-success))',
-                    'hsl(var(--fitness-warning))',
-                    'hsl(var(--fitness-accent))',
-                    '#8B5CF6',
-                    '#F59E0B',
-                    '#EF4444'
-                  ];
-                  return (
-                    <Line
-                      key={group}
-                      type="monotone"
-                      dataKey={group}
-                      stroke={colors[index % colors.length]}
-                      strokeWidth={2}
-                      dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: colors[index % colors.length] }}
-                      connectNulls={false}
-                    />
-                  );
-                })}
+                {selectedMuscleGroup === "all" ? (
+                  // Show all muscle groups
+                  muscleGroups.filter(group => group !== "all").map((group, index) => {
+                    const colors = [
+                      'hsl(var(--fitness-primary))',
+                      'hsl(var(--fitness-secondary))',
+                      'hsl(var(--fitness-success))',
+                      'hsl(var(--fitness-warning))',
+                      'hsl(var(--fitness-accent))',
+                      '#8B5CF6',
+                      '#F59E0B',
+                      '#EF4444'
+                    ];
+                    return (
+                      <Line
+                        key={group}
+                        type="monotone"
+                        dataKey={group}
+                        stroke={colors[index % colors.length]}
+                        strokeWidth={2}
+                        dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: colors[index % colors.length] }}
+                        connectNulls={false}
+                      />
+                    );
+                  })
+                ) : (
+                  // Show individual exercises in the selected muscle group
+                  allExercises
+                    .filter(ex => ex.muscleGroup === selectedMuscleGroup)
+                    .map((exercise, index) => {
+                      const colors = [
+                        'hsl(var(--fitness-primary))',
+                        'hsl(var(--fitness-secondary))',
+                        'hsl(var(--fitness-success))',
+                        'hsl(var(--fitness-warning))',
+                        'hsl(var(--fitness-accent))',
+                        '#8B5CF6',
+                        '#F59E0B',
+                        '#EF4444',
+                        '#10B981',
+                        '#F97316'
+                      ];
+                      return (
+                        <Line
+                          key={exercise.id}
+                          type="monotone"
+                          dataKey={exercise.name}
+                          stroke={colors[index % colors.length]}
+                          strokeWidth={2}
+                          dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
+                          activeDot={{ r: 6, fill: colors[index % colors.length] }}
+                          connectNulls={false}
+                        />
+                      );
+                    })
+                )}
               </LineChart>
             </ResponsiveContainer>
           </div>
           {/* Legend */}
           <div className="mt-4 flex flex-wrap gap-2">
-            {muscleGroups.map((group, index) => {
-              const colors = [
-                'bg-fitness-primary',
-                'bg-fitness-secondary', 
-                'bg-fitness-success',
-                'bg-fitness-warning',
-                'bg-fitness-accent',
-                'bg-purple-500',
-                'bg-amber-500',
-                'bg-red-500'
-              ];
-              return (
-                <div key={group} className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
-                  <span className="text-sm text-muted-foreground">{group}</span>
-                </div>
-              );
-            })}
+            {selectedMuscleGroup === "all" ? (
+              muscleGroups.filter(group => group !== "all").map((group, index) => {
+                const colors = [
+                  'bg-fitness-primary',
+                  'bg-fitness-secondary', 
+                  'bg-fitness-success',
+                  'bg-fitness-warning',
+                  'bg-fitness-accent',
+                  'bg-purple-500',
+                  'bg-amber-500',
+                  'bg-red-500'
+                ];
+                return (
+                  <div key={group} className="flex items-center gap-2">
+                    <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
+                    <span className="text-sm text-muted-foreground">{group}</span>
+                  </div>
+                );
+              })
+            ) : (
+              allExercises
+                .filter(ex => ex.muscleGroup === selectedMuscleGroup)
+                .map((exercise, index) => {
+                  const colors = [
+                    'bg-fitness-primary',
+                    'bg-fitness-secondary', 
+                    'bg-fitness-success',
+                    'bg-fitness-warning',
+                    'bg-fitness-accent',
+                    'bg-purple-500',
+                    'bg-amber-500',
+                    'bg-red-500',
+                    'bg-emerald-500',
+                    'bg-orange-500'
+                  ];
+                  return (
+                    <div key={exercise.id} className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
+                      <span className="text-sm text-muted-foreground">{exercise.name}</span>
+                    </div>
+                  );
+                })
+            )}
           </div>
         </CardContent>
       </Card>
+
 
       {/* Body Weight Tracking */}
       <Card className="bg-card/50 border-border/50">

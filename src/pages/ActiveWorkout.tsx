@@ -32,6 +32,7 @@ const ActiveWorkout = () => {
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [pausedTime, setPausedTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [pauseStartTime, setPauseStartTime] = useState<Date | null>(null);
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -69,6 +70,7 @@ const ActiveWorkout = () => {
 
   const pauseWorkout = () => {
     setIsPaused(true);
+    setPauseStartTime(new Date());
     toast({
       title: "Treino pausado",
       description: "O tempo foi pausado. Clique em 'Continuar' para retomar.",
@@ -76,6 +78,11 @@ const ActiveWorkout = () => {
   };
 
   const resumeWorkout = () => {
+    if (pauseStartTime) {
+      const pauseDuration = Date.now() - pauseStartTime.getTime();
+      setPausedTime(prev => prev + pauseDuration);
+      setPauseStartTime(null);
+    }
     setIsPaused(false);
     toast({
       title: "Treino retomado",

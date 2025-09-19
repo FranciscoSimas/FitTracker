@@ -85,7 +85,8 @@ const ExerciseSelectionModal = ({
     { id: "Peito", name: "Peito" },
     { id: "Costas", name: "Costas" },
     { id: "Ombros", name: "Ombros" },
-    { id: "Braços", name: "Braços" },
+    { id: "Bíceps", name: "Bíceps" },
+    { id: "Tríceps", name: "Tríceps" },
     { id: "Pernas", name: "Pernas" },
     { id: "Core", name: "Core" },
   ];
@@ -121,7 +122,8 @@ const ExerciseSelectionModal = ({
       "Peito": "bg-red-500/10 text-red-600 border-red-200",
       "Costas": "bg-blue-500/10 text-blue-600 border-blue-200",
       "Ombros": "bg-yellow-500/10 text-yellow-600 border-yellow-200",
-      "Braços": "bg-green-500/10 text-green-600 border-green-200",
+      "Bíceps": "bg-green-500/10 text-green-600 border-green-200",
+      "Tríceps": "bg-emerald-500/10 text-emerald-600 border-emerald-200",
       "Pernas": "bg-purple-500/10 text-purple-600 border-purple-200",
       "Core": "bg-orange-500/10 text-orange-600 border-orange-200",
     };
