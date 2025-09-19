@@ -81,13 +81,13 @@ const ExerciseSelectionModal = ({
   }, [filteredExercises]);
 
   const muscleGroups = [
-    { id: "all", name: "Todos", icon: Dumbbell },
-    { id: "Peito", name: "Peito", icon: Heart },
-    { id: "Costas", name: "Costas", icon: Target },
-    { id: "Ombros", name: "Ombros", icon: Zap },
-    { id: "Braços", name: "Braços", icon: Users },
-    { id: "Pernas", name: "Pernas", icon: Dumbbell },
-    { id: "Core", name: "Core", icon: Sparkles },
+    { id: "all", name: "Todos" },
+    { id: "Peito", name: "Peito" },
+    { id: "Costas", name: "Costas" },
+    { id: "Ombros", name: "Ombros" },
+    { id: "Braços", name: "Braços" },
+    { id: "Pernas", name: "Pernas" },
+    { id: "Core", name: "Core" },
   ];
 
   const handleExerciseToggle = (exerciseId: string) => {
@@ -112,12 +112,9 @@ const ExerciseSelectionModal = ({
     setSelectedExercises([]);
     setSearchTerm("");
     setActiveTab("all");
+    onClose(); // Fecha o modal após confirmar
   };
 
-  const getMuscleGroupIcon = (muscleGroup: string) => {
-    const group = muscleGroups.find(g => g.id === muscleGroup);
-    return group ? <group.icon className="h-4 w-4" /> : <Dumbbell className="h-4 w-4" />;
-  };
 
   const getMuscleGroupColor = (muscleGroup: string) => {
     const colors: { [key: string]: string } = {
@@ -136,7 +133,7 @@ const ExerciseSelectionModal = ({
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-            📚 Selecionar Exercícios
+            Selecionar Exercícios
           </DialogTitle>
         </DialogHeader>
 
@@ -156,9 +153,9 @@ const ExerciseSelectionModal = ({
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
             <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
               {muscleGroups.map((group) => (
-                <TabsTrigger key={group.id} value={group.id} className="flex items-center gap-2">
-                  <group.icon className="h-4 w-4" />
+                <TabsTrigger key={group.id} value={group.id}>
                   <span className="hidden sm:inline">{group.name}</span>
+                  <span className="sm:hidden">{group.name.charAt(0)}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -167,20 +164,21 @@ const ExerciseSelectionModal = ({
             <div className="flex-1 overflow-y-auto">
               <TabsContent value={activeTab} className="mt-4 space-y-4">
                 {/* Header com seleção */}
-                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      checked={selectedExercises.length === filteredExercises.length && filteredExercises.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                    <span className="text-sm font-medium">
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/30 to-muted/50 rounded-lg border border-border/50">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleSelectAll}
+                      className="text-xs"
+                    >
                       {selectedExercises.length === filteredExercises.length && filteredExercises.length > 0
                         ? "Desmarcar todos"
                         : "Selecionar todos"
                       }
-                    </span>
+                    </Button>
                   </div>
-                  <Badge variant="secondary">
+                  <Badge variant="secondary" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
                     {selectedExercises.length} selecionado{selectedExercises.length !== 1 ? 's' : ''}
                   </Badge>
                 </div>
@@ -191,10 +189,9 @@ const ExerciseSelectionModal = ({
                   <div className="space-y-6">
                     {Object.entries(exercisesByGroup).map(([group, exercises]) => (
                       <div key={group} className="space-y-3">
-                        <h3 className="text-lg font-semibold flex items-center gap-2">
-                          {getMuscleGroupIcon(group)}
+                        <h3 className="text-lg font-semibold flex items-center gap-3 text-foreground">
                           {group}
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs bg-muted/50">
                             {exercises.length}
                           </Badge>
                         </h3>
@@ -202,32 +199,30 @@ const ExerciseSelectionModal = ({
                           {exercises.map((exercise) => (
                             <Card
                               key={exercise.id}
-                              className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                              className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                                 selectedExercises.includes(exercise.id)
-                                  ? 'ring-2 ring-fitness-primary bg-fitness-primary/5'
-                                  : 'hover:bg-muted/50'
+                                  ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md'
+                                  : 'hover:bg-muted/30 hover:border-fitness-primary/30'
                               }`}
                               onClick={() => handleExerciseToggle(exercise.id)}
                             >
                               <CardContent className="p-4">
-                                <div className="flex items-start gap-3">
-                                  <Checkbox
-                                    checked={selectedExercises.includes(exercise.id)}
-                                    onChange={() => handleExerciseToggle(exercise.id)}
-                                    className="mt-1"
-                                  />
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-medium text-sm leading-tight">
+                                <div className="space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <h4 className="font-medium text-sm leading-tight text-foreground">
                                       {exercise.name}
                                     </h4>
-                                    <div className="flex items-center gap-2 mt-2">
-                                      <Badge 
-                                        variant="outline" 
-                                        className={`text-xs ${getMuscleGroupColor(exercise.muscleGroup)}`}
-                                      >
-                                        {exercise.muscleGroup}
-                                      </Badge>
-                                    </div>
+                                    {selectedExercises.includes(exercise.id) && (
+                                      <CheckCircle className="h-4 w-4 text-fitness-primary" />
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Badge 
+                                      variant="outline" 
+                                      className={`text-xs ${getMuscleGroupColor(exercise.muscleGroup)}`}
+                                    >
+                                      {exercise.muscleGroup}
+                                    </Badge>
                                   </div>
                                 </div>
                               </CardContent>
@@ -243,32 +238,30 @@ const ExerciseSelectionModal = ({
                     {filteredExercises.map((exercise) => (
                       <Card
                         key={exercise.id}
-                        className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                        className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                           selectedExercises.includes(exercise.id)
-                            ? 'ring-2 ring-fitness-primary bg-fitness-primary/5'
-                            : 'hover:bg-muted/50'
+                            ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md'
+                            : 'hover:bg-muted/30 hover:border-fitness-primary/30'
                         }`}
                         onClick={() => handleExerciseToggle(exercise.id)}
                       >
                         <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
-                            <Checkbox
-                              checked={selectedExercises.includes(exercise.id)}
-                              onChange={() => handleExerciseToggle(exercise.id)}
-                              className="mt-1"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <h4 className="font-medium text-sm leading-tight">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-sm leading-tight text-foreground">
                                 {exercise.name}
                               </h4>
-                              <div className="flex items-center gap-2 mt-2">
-                                <Badge 
-                                  variant="outline" 
-                                  className={`text-xs ${getMuscleGroupColor(exercise.muscleGroup)}`}
-                                >
-                                  {exercise.muscleGroup}
-                                </Badge>
-                              </div>
+                              {selectedExercises.includes(exercise.id) && (
+                                <CheckCircle className="h-4 w-4 text-fitness-primary" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                variant="outline" 
+                                className={`text-xs ${getMuscleGroupColor(exercise.muscleGroup)}`}
+                              >
+                                {exercise.muscleGroup}
+                              </Badge>
                             </div>
                           </div>
                         </CardContent>
