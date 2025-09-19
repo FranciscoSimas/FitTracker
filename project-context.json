@@ -10,8 +10,8 @@
   },
   "recentCommits": [
     {
-      "hash": "6f50e8b",
-      "message": "fix: Restore original package.json to fix Vercel deployment",
+      "hash": "f71c30e",
+      "message": "feat: Add workout plan evolution chart with exercise tracking",
       "date": "2025-01-17"
     },
     {
@@ -83,7 +83,8 @@
     "evolutionCharts": "Gráficos por grupo muscular implementados com dropdown e exercícios individuais",
     "exerciseSelection": "Modal avançado com filtros e seleção múltipla - Bíceps e Tríceps separados",
     "monorepo": "Planejamento de estrutura compatível com Vercel",
-    "mobileApp": "Preparação para app mobile nativa - abordagem alternativa necessária"
+    "mobileApp": "Preparação para app mobile nativa - abordagem alternativa necessária",
+    "evolutionCharts": "Gráficos por grupo muscular e por plano de treino implementados"
   },
   "nextSteps": [
     "FASE 1 - UX/UI Melhorias (CONCLUÍDA ✅):",
@@ -102,6 +103,11 @@
     "11. 🔄 Criação da app mobile nativa com React Native",
     "12. 🔄 Implementação de código compartilhado",
     "13. 🔄 Testes e otimizações mobile",
+    "FASE 4 - User Experience Enhancements (EM PROGRESSO 🚀):",
+    "14. ✅ Evolução por plano de treino - Gráfico com exercícios individuais",
+    "15. 🔄 CSS Polish - Fix overlays, scrollbars, padding issues",
+    "16. 🔄 Settings page - Units (KG/LB), themes, app configuration",
+    "17. 🔄 Internationalization (i18n) - PT/EN support",
     "FUTURO:",
     "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
     "Criar landing page para utilizadores que acedem via PC",
@@ -196,9 +202,9 @@
     },
     {
       "date": "2025-01-17",
-      "improvement": "FASE 3 - Correção Deploy Vercel e Planejamento Monorepo",
-      "description": "Correção do deploy do Vercel removendo estrutura monorepo que quebrava o build, e planejamento de abordagem alternativa para desenvolvimento mobile",
-      "files": ["package.json"],
+      "improvement": "FASE 4 - Evolução por Plano de Treino",
+      "description": "Implementado novo gráfico de evolução que permite selecionar planos de treino específicos e visualizar a evolução individual de cada exercício dentro desse plano",
+      "files": ["src/pages/Evolution.tsx"],
       "status": "completed"
     }
   ]
