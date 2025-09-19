@@ -92,20 +92,21 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
                 Vamos configurar o seu perfil de treino
               </p>
               <p className="text-sm text-muted-foreground">
-                Primeiro, vamos carregar a biblioteca de exercícios básicos
+                Escolha como quer começar a sua jornada fitness
               </p>
             </div>
 
-            {/* Opção principal - Carregar biblioteca */}
-            <div className="flex justify-center">
-              <Card className="border-2 border-dashed border-fitness-primary/30 hover:border-fitness-primary/60 transition-all duration-300 cursor-pointer max-w-md w-full">
+            {/* Opções principais */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Opção 1: Criar próprio */}
+              <Card className="border-2 border-dashed border-fitness-primary/30 hover:border-fitness-primary/60 transition-all duration-300 cursor-pointer">
                 <CardHeader className="text-center">
                   <div className="mx-auto w-16 h-16 bg-gradient-to-r from-fitness-primary to-fitness-secondary rounded-full flex items-center justify-center mb-4">
-                    <Sparkles className="h-8 w-8 text-white" />
+                    <Plus className="h-8 w-8 text-white" />
                   </div>
-                  <CardTitle className="text-xl">Carregar Biblioteca de Exercícios</CardTitle>
+                  <CardTitle className="text-xl">Criar o Meu Próprio Plano</CardTitle>
                   <p className="text-muted-foreground text-sm">
-                    Vamos começar carregando a biblioteca de exercícios básicos
+                    Comece do zero com a biblioteca de exercícios básicos
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -116,11 +117,11 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Organizados por grupo muscular</span>
+                      <span>Totalmente personalizável</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span>Base para criar seus planos</span>
+                      <span>Adicione seus próprios exercícios</span>
                     </div>
                   </div>
                   <Button 
@@ -128,26 +129,46 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
                     disabled={isLoading}
                     className="w-full bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white"
                   >
-                    {isLoading ? "Carregando..." : "Carregar Biblioteca"}
+                    {isLoading ? "Carregando..." : "Começar do Zero"}
                   </Button>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Opção secundária - Planos pré-definidos */}
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-4">
-                Ou prefere começar com planos prontos?
-              </p>
-              <Button 
-                onClick={handleShowPredefinedPlans}
-                disabled={isLoading}
-                variant="outline"
-                className="border-fitness-secondary/20 text-fitness-secondary hover:bg-fitness-secondary/10"
-              >
-                <Target className="h-4 w-4 mr-2" />
-                Ver Planos Pré-definidos
-              </Button>
+              {/* Opção 2: Planos pré-definidos */}
+              <Card className="border-2 border-dashed border-fitness-secondary/30 hover:border-fitness-secondary/60 transition-all duration-300 cursor-pointer">
+                <CardHeader className="text-center">
+                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-fitness-secondary to-fitness-primary rounded-full flex items-center justify-center mb-4">
+                    <Target className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-xl">Ver Planos Pré-definidos</CardTitle>
+                  <p className="text-muted-foreground text-sm">
+                    Explore planos prontos para começar imediatamente
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>6 planos especializados</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>Prontos para usar</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      <span>Totalmente editáveis depois</span>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={handleShowPredefinedPlans}
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-fitness-secondary to-fitness-primary hover:from-fitness-secondary/90 hover:to-fitness-primary/90 text-white"
+                  >
+                    Ver Planos
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Rodapé */}
