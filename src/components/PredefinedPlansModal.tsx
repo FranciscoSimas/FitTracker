@@ -127,10 +127,10 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
           {/* Introdução */}
           <div className="text-center space-y-2">
             <p className="text-lg text-muted-foreground">
-              Escolha os planos que quer incluir na sua biblioteca
+              Planos de Treino Pré-definidos
             </p>
             <p className="text-sm text-muted-foreground">
-              Pode selecionar múltiplos planos e editá-los depois
+              Escolha os planos que quer incluir na sua biblioteca. Pode selecionar múltiplos planos e editá-los depois.
             </p>
           </div>
 

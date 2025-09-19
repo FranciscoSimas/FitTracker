@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 const Evolution = () => {
   const navigate = useNavigate();
   const [selectedExercise, setSelectedExercise] = useState("1");
+  const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("all");
 
   const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
@@ -54,7 +55,76 @@ const Evolution = () => {
     }).sort((a, b) => a.sortDate - b.sortDate); // Sort by date ascending (oldest first)
   };
 
+  // Process data for muscle group evolution
+  const getMuscleGroupEvolution = (muscleGroup: string) => {
+    const workouts = completed.filter(workout => 
+      workout.exercises.some(ex => {
+        const exercise = allExercises.find(e => e.id === ex.exerciseId);
+        return exercise && exercise.muscleGroup === muscleGroup;
+      })
+    );
+
+    return workouts.map(workout => {
+      const muscleGroupExercises = workout.exercises.filter(ex => {
+        const exercise = allExercises.find(e => e.id === ex.exerciseId);
+        return exercise && exercise.muscleGroup === muscleGroup;
+      });
+
+      // Calculate average max weight and total volume for the muscle group
+      const maxWeights = muscleGroupExercises.map(ex => 
+        Math.max(...ex.sets.map(set => set.weight))
+      );
+      const totalVolumes = muscleGroupExercises.map(ex => 
+        ex.sets.reduce((total, set) => total + (set.weight * set.reps), 0)
+      );
+
+      const avgMaxWeight = maxWeights.length > 0 ? maxWeights.reduce((a, b) => a + b, 0) / maxWeights.length : 0;
+      const totalVolume = totalVolumes.reduce((a, b) => a + b, 0);
+
+      return {
+        date: new Date(workout.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
+        weight: Number(avgMaxWeight.toFixed(1)),
+        volume: Number(totalVolume.toFixed(1)),
+        duration: workout.duration,
+        sortDate: new Date(workout.date).getTime(),
+      };
+    }).sort((a, b) => a.sortDate - b.sortDate);
+  };
+
   const exerciseData = getExerciseEvolution(selectedExercise);
+  
+  // Get unique muscle groups
+  const muscleGroups = Array.from(new Set(allExercises.map(ex => ex.muscleGroup))).filter(Boolean);
+  
+  // Get multi-line data for muscle groups
+  const getMultiLineMuscleGroupData = () => {
+    const allDates = new Set<string>();
+    
+    // Collect all unique dates
+    muscleGroups.forEach(group => {
+      const data = getMuscleGroupEvolution(group);
+      data.forEach(d => allDates.add(d.date));
+    });
+    
+    // Create data points for each date
+    return Array.from(allDates).map(date => {
+      const dataPoint: any = { date };
+      
+      muscleGroups.forEach(group => {
+        const groupData = getMuscleGroupEvolution(group);
+        const point = groupData.find(d => d.date === date);
+        dataPoint[group] = point ? point.weight : null;
+      });
+      
+      return dataPoint;
+    }).sort((a, b) => {
+      const dateA = new Date(a.date + ' ' + new Date().getFullYear());
+      const dateB = new Date(b.date + ' ' + new Date().getFullYear());
+      return dateA.getTime() - dateB.getTime();
+    });
+  };
+  
+  const multiLineData = getMultiLineMuscleGroupData();
   
   // Calculate stats
   const totalWorkouts = completed.length;
@@ -240,6 +310,86 @@ const Evolution = () => {
                 />
               </LineChart>
             </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Muscle Group Evolution Chart */}
+      <Card className="bg-card/50 border-border/50">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Evolução por Grupo Muscular</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Peso médio máximo por grupo muscular ao longo do tempo
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={multiLineData}>
+                <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+                <XAxis 
+                  dataKey="date" 
+                  className="text-muted-foreground"
+                />
+                <YAxis 
+                  className="text-muted-foreground"
+                  tickCount={6}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    color: 'hsl(var(--foreground))'
+                  }}
+                />
+                {muscleGroups.map((group, index) => {
+                  const colors = [
+                    'hsl(var(--fitness-primary))',
+                    'hsl(var(--fitness-secondary))',
+                    'hsl(var(--fitness-success))',
+                    'hsl(var(--fitness-warning))',
+                    'hsl(var(--fitness-accent))',
+                    '#8B5CF6',
+                    '#F59E0B',
+                    '#EF4444'
+                  ];
+                  return (
+                    <Line
+                      key={group}
+                      type="monotone"
+                      dataKey={group}
+                      stroke={colors[index % colors.length]}
+                      strokeWidth={2}
+                      dot={{ fill: colors[index % colors.length], strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, fill: colors[index % colors.length] }}
+                      connectNulls={false}
+                    />
+                  );
+                })}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          {/* Legend */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {muscleGroups.map((group, index) => {
+              const colors = [
+                'bg-fitness-primary',
+                'bg-fitness-secondary', 
+                'bg-fitness-success',
+                'bg-fitness-warning',
+                'bg-fitness-accent',
+                'bg-purple-500',
+                'bg-amber-500',
+                'bg-red-500'
+              ];
+              return (
+                <div key={group} className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${colors[index % colors.length]}`}></div>
+                  <span className="text-sm text-muted-foreground">{group}</span>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

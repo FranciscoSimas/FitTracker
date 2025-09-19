@@ -201,7 +201,7 @@ const ExerciseSelectionModal = ({
                               key={exercise.id}
                               className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                                 selectedExercises.includes(exercise.id)
-                                  ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md'
+                                  ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md border-fitness-primary/50'
                                   : 'hover:bg-muted/30 hover:border-fitness-primary/30'
                               }`}
                               onClick={() => handleExerciseToggle(exercise.id)}
@@ -240,7 +240,7 @@ const ExerciseSelectionModal = ({
                         key={exercise.id}
                         className={`cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] ${
                           selectedExercises.includes(exercise.id)
-                            ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md'
+                            ? 'ring-2 ring-fitness-primary bg-gradient-to-br from-fitness-primary/10 to-fitness-secondary/5 shadow-md border-fitness-primary/50'
                             : 'hover:bg-muted/30 hover:border-fitness-primary/30'
                         }`}
                         onClick={() => handleExerciseToggle(exercise.id)}

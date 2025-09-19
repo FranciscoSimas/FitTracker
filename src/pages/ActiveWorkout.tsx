@@ -28,19 +28,21 @@ const ActiveWorkout = () => {
     loadPlan();
   }, [planId]);
   const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [pausedTime, setPausedTime] = useState(0);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
-    if (isActive && startTime) {
+    if (isActive && !isPaused && startTime) {
       interval = setInterval(() => {
-        setElapsedTime(Date.now() - startTime.getTime());
+        setElapsedTime(Date.now() - startTime.getTime() - pausedTime);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isActive, startTime]);
+  }, [isActive, isPaused, startTime, pausedTime]);
 
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
@@ -55,7 +57,10 @@ const ActiveWorkout = () => {
 
   const startWorkout = () => {
     setIsActive(true);
+    setIsPaused(false);
     setStartTime(new Date());
+    setPausedTime(0);
+    setElapsedTime(0);
     toast({
       title: "Treino iniciado!",
       description: "Boa sorte com o seu treino 💪",
@@ -63,11 +68,24 @@ const ActiveWorkout = () => {
   };
 
   const pauseWorkout = () => {
-    setIsActive(false);
+    setIsPaused(true);
+    toast({
+      title: "Treino pausado",
+      description: "O tempo foi pausado. Clique em 'Continuar' para retomar.",
+    });
+  };
+
+  const resumeWorkout = () => {
+    setIsPaused(false);
+    toast({
+      title: "Treino retomado",
+      description: "Continue com o seu treino! 💪",
+    });
   };
 
   const finishWorkout = async () => {
     setIsActive(false);
+    setIsPaused(false);
     const completedSets = plan?.exercises.reduce((total, ex) => 
       total + ex.sets.filter(set => set.completed).length, 0
     ) || 0;
@@ -75,7 +93,7 @@ const ActiveWorkout = () => {
     // Persist completed workout
     if (plan && startTime) {
       const end = new Date();
-      const durationMin = Math.max(1, Math.round((end.getTime() - startTime.getTime()) / 60000));
+      const durationMin = Math.max(1, Math.round(elapsedTime / 60000));
       const workout: CompletedWorkout = {
         id: `cw_${Date.now()}`,
         planId: plan.id,
@@ -199,10 +217,15 @@ const ActiveWorkout = () => {
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-foreground">
-                <Clock className="h-5 w-5 text-fitness-primary" />
+                <Clock className={`h-5 w-5 ${isPaused ? 'text-fitness-warning' : 'text-fitness-primary'}`} />
                 <span className="text-xl font-mono font-bold">
                   {formatTime(elapsedTime)}
                 </span>
+                {isPaused && (
+                  <Badge variant="outline" className="bg-fitness-warning/10 text-fitness-warning border-fitness-warning/20">
+                    Pausado
+                  </Badge>
+                )}
               </div>
               <div className="flex gap-2">
                 {!isActive && !startTime && (
@@ -214,7 +237,7 @@ const ActiveWorkout = () => {
                     Iniciar
                   </Button>
                 )}
-                {isActive && (
+                {isActive && !isPaused && (
                   <Button 
                     onClick={pauseWorkout}
                     variant="outline"
@@ -222,6 +245,15 @@ const ActiveWorkout = () => {
                   >
                     <Pause className="h-4 w-4 mr-2" />
                     Pausar
+                  </Button>
+                )}
+                {isActive && isPaused && (
+                  <Button 
+                    onClick={resumeWorkout}
+                    className="bg-gradient-to-r from-fitness-success to-fitness-success/80 hover:from-fitness-success/90 hover:to-fitness-success/70 text-white"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    Continuar
                   </Button>
                 )}
                 {startTime && (
