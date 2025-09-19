@@ -271,7 +271,7 @@ const Evolution = () => {
                 Acompanhe o seu progresso ao longo do tempo
               </p>
             </div>
-          <div className="flex gap-2">
+            <div className="flex gap-2">
             <Button 
               onClick={generateTestData}
               disabled={isGeneratingData}
@@ -291,6 +291,7 @@ const Evolution = () => {
             </Button>
           </div>
         </div>
+        </FadeIn>
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
