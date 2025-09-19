@@ -10,6 +10,11 @@
   },
   "recentCommits": [
     {
+      "hash": "pending",
+      "message": "feat: Implement FASE 2 - Visual animations and performance optimizations",
+      "date": "2025-01-17"
+    },
+    {
       "hash": "6df17b7",
       "message": "fix: Resolve multiple UX issues and add test data generator",
       "date": "2025-01-17"
@@ -70,9 +75,9 @@
     "3. ✅ Sistema de adicionar exercícios - Modal com filtros por grupo muscular e seleção múltipla",
     "4. ✅ Resume de treino - Pausar/continuar funcionalidade",
     "5. ✅ Evolução por grupo muscular - Gráfico multi-linha com hover effects",
-    "FASE 2 - Funcionalidades Core (Próximas):",
-    "6. Melhorias visuais - Animações, transições",
-    "7. Performance - Otimizações",
+    "FASE 2 - Funcionalidades Core (EM PROGRESSO 🚀):",
+    "6. ✅ Melhorias visuais - Animações, transições",
+    "7. ✅ Performance - Otimizações",
     "FUTURO:",
     "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
     "Criar landing page para utilizadores que acedem via PC",
@@ -149,6 +154,13 @@
       "improvement": "Correções finais de UX e gerador de dados teste",
       "description": "Corrigido filtro Bíceps/Tríceps, layout das abas, legenda do gráfico apenas com exercícios com histórico, e adicionado gerador de dados de teste",
       "files": ["src/components/ExerciseSelectionModal.tsx", "src/pages/Evolution.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "FASE 2 - Animações Visuais e Otimizações de Performance",
+      "description": "Implementadas animações suaves, transições de página, loading states, lazy loading, memoização de dados, e virtual lists para melhor performance",
+      "files": ["src/components/ui/loading.tsx", "src/components/ui/page-transition.tsx", "src/components/ui/card.tsx", "src/components/ui/button.tsx", "src/hooks/useLazyLoading.ts", "src/hooks/useMemoizedData.ts", "src/components/ui/virtual-list.tsx", "src/pages/WorkoutPlans.tsx", "src/pages/Evolution.tsx", "src/pages/WorkoutHistory.tsx"],
       "status": "completed"
     }
   ]

@@ -8,6 +8,8 @@ import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
 import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 import { mockExercises, CompletedWorkout, WorkoutExercise } from "@/data/mockData";
+import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
+import { LoadingSpinner } from "@/components/ui/loading";
 
 const Evolution = () => {
   const navigate = useNavigate();
@@ -257,16 +259,18 @@ const Evolution = () => {
   };
 
   return (
-    <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-              Evolução dos Treinos
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Acompanhe o seu progresso ao longo do tempo
-            </p>
-          </div>
+    <PageTransition>
+      <div className="space-y-6">
+        <FadeIn delay={100}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
+                Evolução dos Treinos
+              </h1>
+              <p className="mt-2 text-muted-foreground">
+                Acompanhe o seu progresso ao longo do tempo
+              </p>
+            </div>
           <div className="flex gap-2">
             <Button 
               onClick={generateTestData}
@@ -586,7 +590,8 @@ const Evolution = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </PageTransition>
   );
 };
 

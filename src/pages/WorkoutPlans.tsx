@@ -8,6 +8,8 @@ import { getPlans } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 import { isNewUser, isOnboardingComplete } from "@/utils/onboardingUtils";
 import OnboardingModal from "@/components/OnboardingModal";
+import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
+import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
 
 const WorkoutPlans = () => {
   const [plans, setPlans] = useState<WorkoutPlan[]>([]);
@@ -75,7 +77,7 @@ const WorkoutPlans = () => {
         <Card className="bg-card/50 border-border/50 p-8">
           <CardContent className="flex flex-col items-center gap-4">
             <div className="rounded-lg bg-gradient-to-r from-fitness-primary to-fitness-secondary p-3">
-              <Dumbbell className="h-8 w-8 text-white animate-pulse" />
+              <LoadingSpinner size="lg" className="text-white" />
             </div>
             <p className="text-muted-foreground">A carregar...</p>
           </CardContent>
@@ -85,17 +87,20 @@ const WorkoutPlans = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-          Planos de Treino
-        </h1>
-        {plans.length > 0 && (
-          <p className="mt-2 text-muted-foreground">
-            Escolha um plano para treinar ou editar
-          </p>
-        )}
-      </div>
+    <PageTransition>
+      <div className="space-y-6">
+        <FadeIn delay={100}>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
+              Planos de Treino
+            </h1>
+            {plans.length > 0 && (
+              <p className="mt-2 text-muted-foreground">
+                Escolha um plano para treinar ou editar
+              </p>
+            )}
+          </div>
+        </FadeIn>
 
       {/* Botão apenas quando há planos */}
       {plans.length > 0 && (
@@ -137,11 +142,11 @@ const WorkoutPlans = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {plans.map((plan) => (
-          <Card 
-            key={plan.id} 
-            className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-lg"
-          >
+        {plans.map((plan, index) => (
+          <SlideIn key={plan.id} delay={200 + (index * 100)} direction="up">
+            <Card 
+              className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-lg"
+            >
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
@@ -199,7 +204,8 @@ const WorkoutPlans = () => {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+            </Card>
+          </SlideIn>
         ))}
       </div>
 
@@ -227,13 +233,14 @@ const WorkoutPlans = () => {
         </CardContent>
       </Card>
 
-      {/* Modal de Onboarding */}
-      <OnboardingModal
-        isOpen={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
-        onComplete={handleOnboardingComplete}
-      />
-    </div>
+        {/* Modal de Onboarding */}
+        <OnboardingModal
+          isOpen={showOnboarding}
+          onClose={() => setShowOnboarding(false)}
+          onComplete={handleOnboardingComplete}
+        />
+      </div>
+    </PageTransition>
   );
 };
 

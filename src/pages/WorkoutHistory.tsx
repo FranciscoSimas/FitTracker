@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,9 @@ import { Calendar, Clock, Eye, Filter } from "lucide-react";
 import { CompletedWorkout } from "@/data/mockData";
 import { getCompletedWorkouts, clearCompletedWorkouts, setCompletedWorkouts } from "@/data/storage";
 import { parseFreeformWorkouts } from "@/lib/utils";
+import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
+import { InfiniteScroll } from "@/components/ui/virtual-list";
+import { useMemoizedWorkouts, useMemoizedStats } from "@/hooks/useMemoizedData";
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState<CompletedWorkout[]>([]);
@@ -18,9 +21,16 @@ const WorkoutHistory = () => {
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
 
-  const uniquePlans = workouts.length > 0 
-    ? ["all", ...Array.from(new Set(workouts.map(w => w.planName).filter(Boolean)))]
-    : ["all"];
+  // Memoized data processing
+  const memoizedWorkouts = useMemoizedWorkouts(workouts);
+  const stats = useMemoizedStats(workouts);
+  
+  const uniquePlans = useMemo(() => 
+    workouts.length > 0 
+      ? ["all", ...Array.from(new Set(workouts.map(w => w.planName).filter(Boolean)))]
+      : ["all"],
+    [workouts]
+  );
 
   useEffect(() => {
     refreshData();
