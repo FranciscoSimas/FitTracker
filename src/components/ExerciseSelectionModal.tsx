@@ -85,8 +85,8 @@ const ExerciseSelectionModal = ({
     { id: "Peito", name: "Peito" },
     { id: "Costas", name: "Costas" },
     { id: "Ombros", name: "Ombros" },
-    { id: "Bíceps", name: "Bíceps" },
-    { id: "Tríceps", name: "Tríceps" },
+    { id: "Bícep", name: "Bíceps" },
+    { id: "Trícep", name: "Tríceps" },
     { id: "Pernas", name: "Pernas" },
     { id: "Core", name: "Core" },
   ];
@@ -122,8 +122,8 @@ const ExerciseSelectionModal = ({
       "Peito": "bg-red-500/10 text-red-600 border-red-200",
       "Costas": "bg-blue-500/10 text-blue-600 border-blue-200",
       "Ombros": "bg-yellow-500/10 text-yellow-600 border-yellow-200",
-      "Bíceps": "bg-green-500/10 text-green-600 border-green-200",
-      "Tríceps": "bg-emerald-500/10 text-emerald-600 border-emerald-200",
+      "Bícep": "bg-green-500/10 text-green-600 border-green-200",
+      "Trícep": "bg-emerald-500/10 text-emerald-600 border-emerald-200",
       "Pernas": "bg-purple-500/10 text-purple-600 border-purple-200",
       "Core": "bg-orange-500/10 text-orange-600 border-orange-200",
     };
@@ -153,7 +153,7 @@ const ExerciseSelectionModal = ({
 
           {/* Filtros por grupo muscular */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
               {muscleGroups.map((group) => (
                 <TabsTrigger key={group.id} value={group.id}>
                   <span className="hidden sm:inline">{group.name}</span>

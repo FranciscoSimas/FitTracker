@@ -5,13 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
-import { mockExercises } from "@/data/mockData";
-import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight } from "@/data/storage";
+import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
+import { mockExercises, CompletedWorkout, WorkoutExercise } from "@/data/mockData";
 
 const Evolution = () => {
   const navigate = useNavigate();
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("all");
+  const [isGeneratingData, setIsGeneratingData] = useState(false);
 
   const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
@@ -86,12 +87,17 @@ const Evolution = () => {
       });
     }
 
-    // Get individual exercises for the selected muscle group
+    // Get individual exercises for the selected muscle group that have history
     const exercisesInGroup = allExercises.filter(ex => ex.muscleGroup === muscleGroup);
+    const exercisesWithHistory = exercisesInGroup.filter(exercise => {
+      const exerciseData = getExerciseEvolution(exercise.id);
+      return exerciseData.length > 0;
+    });
+    
     const allDates = new Set<string>();
     
-    // Collect all unique dates for exercises in this group
-    exercisesInGroup.forEach(exercise => {
+    // Collect all unique dates for exercises with history in this group
+    exercisesWithHistory.forEach(exercise => {
       const exerciseData = getExerciseEvolution(exercise.id);
       exerciseData.forEach(d => allDates.add(d.date));
     });
@@ -100,7 +106,7 @@ const Evolution = () => {
     return Array.from(allDates).map(date => {
       const dataPoint: any = { date };
       
-      exercisesInGroup.forEach(exercise => {
+      exercisesWithHistory.forEach(exercise => {
         const exerciseData = getExerciseEvolution(exercise.id);
         const point = exerciseData.find(d => d.date === date);
         dataPoint[exercise.name] = point ? point.weight : null;
@@ -149,6 +155,107 @@ const Evolution = () => {
     };
   });
 
+  // Generate test data for chart visualization
+  const generateTestData = async () => {
+    setIsGeneratingData(true);
+    try {
+      // Define different workout plans with specific exercises
+      const workoutPlans = [
+        {
+          name: "Plano Peito e Tríceps",
+          exercises: [
+            { name: "Supino Reto", baseWeight: 80 },
+            { name: "Supino Inclinado", baseWeight: 70 },
+            { name: "Trícep Pulley", baseWeight: 40 },
+            { name: "Trícep Francês", baseWeight: 25 },
+          ]
+        },
+        {
+          name: "Plano Costas e Bíceps", 
+          exercises: [
+            { name: "Remada", baseWeight: 60 },
+            { name: "Puxada Frontal", baseWeight: 50 },
+            { name: "Rosca Direta", baseWeight: 20 },
+            { name: "Rosca Alternada", baseWeight: 15 },
+          ]
+        },
+        {
+          name: "Plano Pernas",
+          exercises: [
+            { name: "Leg Press", baseWeight: 120 },
+            { name: "Agachamento", baseWeight: 80 },
+            { name: "Extensão de Pernas", baseWeight: 40 },
+            { name: "Flexão de Pernas", baseWeight: 35 },
+          ]
+        },
+        {
+          name: "Plano Ombros e Core",
+          exercises: [
+            { name: "Desenvolvimento", baseWeight: 30 },
+            { name: "Elevação Lateral", baseWeight: 12 },
+            { name: "Prancha", baseWeight: 0 }, // Bodyweight
+            { name: "Abdominal", baseWeight: 0 }, // Bodyweight
+          ]
+        }
+      ];
+
+      const dates = [-21, -18, -14, -11, -7, -4, 0]; // 7 workouts over 3 weeks
+      
+      for (const daysAgo of dates) {
+        const date = new Date();
+        date.setDate(date.getDate() + daysAgo);
+        
+        // Select a random plan for this workout
+        const selectedPlan = workoutPlans[Math.floor(Math.random() * workoutPlans.length)];
+        
+        const workoutExercises: WorkoutExercise[] = selectedPlan.exercises.map((planExercise, index) => {
+          const exercise = mockExercises.find(ex => ex.name === planExercise.name);
+          if (!exercise) return null;
+          
+          // Progressive weight increase over time
+          const progressFactor = Math.abs(daysAgo) * 0.5; // Weight increases over time
+          const weight = planExercise.baseWeight + progressFactor + (index * 2);
+          
+          return {
+            id: `we_${Date.now()}_${exercise.id}_${daysAgo}_${index}`,
+            exerciseId: exercise.id,
+            exercise: exercise,
+            sets: [
+              { id: `s1_${Date.now()}_${index}`, reps: 12, weight: Math.max(weight - 5, 0), completed: true },
+              { id: `s2_${Date.now()}_${index}`, reps: 10, weight: Math.max(weight - 2.5, 0), completed: true },
+              { id: `s3_${Date.now()}_${index}`, reps: 8, weight: Math.max(weight, 0), completed: true },
+            ]
+          };
+        }).filter(Boolean) as WorkoutExercise[];
+
+        const testWorkout: CompletedWorkout = {
+          id: `test_${Date.now()}_${daysAgo}`,
+          planId: `test_plan_${selectedPlan.name.replace(/\s+/g, '_')}`,
+          planName: selectedPlan.name,
+          date: date.toISOString().split('T')[0],
+          startTime: "10:00",
+          endTime: "11:30",
+          duration: 90,
+          exercises: workoutExercises,
+          completed: true,
+        };
+
+        await addCompletedWorkout(testWorkout);
+      }
+
+      // Reload data
+      const workouts = await getCompletedWorkouts();
+      setCompleted(workouts);
+      
+      alert("Dados de teste gerados com sucesso! 🎉\n\nCriados 7 treinos com 4 planos diferentes para testar os gráficos.");
+    } catch (error) {
+      console.error('Error generating test data:', error);
+      alert("Erro ao gerar dados de teste");
+    } finally {
+      setIsGeneratingData(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -160,14 +267,25 @@ const Evolution = () => {
               Acompanhe o seu progresso ao longo do tempo
             </p>
           </div>
-          <Button 
-            onClick={() => navigate("/historico")}
-            variant="outline"
-            className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-          >
-            <History className="h-4 w-4 mr-2" />
-            Ver Histórico
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={generateTestData}
+              disabled={isGeneratingData}
+              variant="outline"
+              className="border-fitness-secondary/20 text-fitness-secondary hover:bg-fitness-secondary/10"
+            >
+              <Dumbbell className="h-4 w-4 mr-2" />
+              {isGeneratingData ? "Gerando..." : "Gerar Dados Teste"}
+            </Button>
+            <Button 
+              onClick={() => navigate("/historico")}
+              variant="outline"
+              className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+            >
+              <History className="h-4 w-4 mr-2" />
+              Ver Histórico
+            </Button>
+          </div>
         </div>
 
       {/* Stats Overview */}
@@ -298,9 +416,13 @@ const Evolution = () => {
                     );
                   })
                 ) : (
-                  // Show individual exercises in the selected muscle group
+                  // Show individual exercises in the selected muscle group that have history
                   allExercises
                     .filter(ex => ex.muscleGroup === selectedMuscleGroup)
+                    .filter(exercise => {
+                      const exerciseData = getExerciseEvolution(exercise.id);
+                      return exerciseData.length > 0;
+                    })
                     .map((exercise, index) => {
                       const colors = [
                         'hsl(var(--fitness-primary))',
@@ -355,6 +477,10 @@ const Evolution = () => {
             ) : (
               allExercises
                 .filter(ex => ex.muscleGroup === selectedMuscleGroup)
+                .filter(exercise => {
+                  const exerciseData = getExerciseEvolution(exercise.id);
+                  return exerciseData.length > 0;
+                })
                 .map((exercise, index) => {
                   const colors = [
                     'bg-fitness-primary',

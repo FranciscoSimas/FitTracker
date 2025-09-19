@@ -10,6 +10,11 @@
   },
   "recentCommits": [
     {
+      "hash": "6df17b7",
+      "message": "fix: Resolve multiple UX issues and add test data generator",
+      "date": "2025-01-17"
+    },
+    {
       "hash": "f975a31",
       "message": "revert: Restore onboarding modal to original two-option layout",
       "date": "2025-01-17"
@@ -137,6 +142,13 @@
       "improvement": "Correções de UX e Funcionalidades",
       "description": "Corrigida aba Braços para mostrar Bíceps e Tríceps separadamente, corrigida funcionalidade de pausar tempo, e redesenhados gráficos de evolução",
       "files": ["src/components/ExerciseSelectionModal.tsx", "src/pages/ActiveWorkout.tsx", "src/pages/Evolution.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Correções finais de UX e gerador de dados teste",
+      "description": "Corrigido filtro Bíceps/Tríceps, layout das abas, legenda do gráfico apenas com exercícios com histórico, e adicionado gerador de dados de teste",
+      "files": ["src/components/ExerciseSelectionModal.tsx", "src/pages/Evolution.tsx"],
       "status": "completed"
     }
   ]
