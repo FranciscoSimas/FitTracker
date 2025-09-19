@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise, Exercise } from "@/data/mockData";
 import { getExercises, getPlanById, updatePlan, removePlan } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
+import ExerciseSelectionModal from "@/components/ExerciseSelectionModal";
 
 const EditWorkoutPlan = () => {
   const { planId } = useParams();
@@ -18,8 +18,7 @@ const EditWorkoutPlan = () => {
   
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [planName, setPlanName] = useState("");
-  const [selectedExercise, setSelectedExercise] = useState("");
-  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+  const [showExerciseModal, setShowExerciseModal] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -28,35 +27,33 @@ const EditWorkoutPlan = () => {
         setPlan(foundPlan);
         setPlanName(foundPlan.name);
       }
-      
-      const exercises = await getExercises(mockExercises);
-      setAllExercises(exercises);
     };
     loadData();
   }, [planId]);
 
-  const addExercise = () => {
-    if (!selectedExercise || !plan) return;
-    
-    const exercise = allExercises.find(ex => ex.id === selectedExercise);
-    if (!exercise) return;
+  const handleAddExercises = (selectedExercises: Exercise[]) => {
+    if (!plan || selectedExercises.length === 0) return;
 
-    const newWorkoutExercise: WorkoutExercise = {
-      id: `we_${Date.now()}`,
+    const newWorkoutExercises: WorkoutExercise[] = selectedExercises.map(exercise => ({
+      id: `we_${Date.now()}_${exercise.id}`,
       exerciseId: exercise.id,
       exercise,
       sets: [
-        { id: `s_${Date.now()}_1`, reps: 12, weight: 0, completed: false },
-        { id: `s_${Date.now()}_2`, reps: 10, weight: 0, completed: false },
-        { id: `s_${Date.now()}_3`, reps: 8, weight: 0, completed: false },
+        { id: `s_${Date.now()}_${exercise.id}_1`, reps: 12, weight: 0, completed: false },
+        { id: `s_${Date.now()}_${exercise.id}_2`, reps: 10, weight: 0, completed: false },
+        { id: `s_${Date.now()}_${exercise.id}_3`, reps: 8, weight: 0, completed: false },
       ]
-    };
+    }));
 
     setPlan(prev => prev ? {
       ...prev,
-      exercises: [...prev.exercises, newWorkoutExercise]
+      exercises: [...prev.exercises, ...newWorkoutExercises]
     } : null);
-    setSelectedExercise("");
+
+    toast({
+      title: "Exercícios adicionados! 🎉",
+      description: `${selectedExercises.length} exercício${selectedExercises.length !== 1 ? 's' : ''} adicionado${selectedExercises.length !== 1 ? 's' : ''} ao plano.`,
+    });
   };
 
   const removeExercise = (exerciseId: string) => {
@@ -138,35 +135,13 @@ const EditWorkoutPlan = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Exercícios do Plano</CardTitle>
-            <div className="flex gap-2">
-              <Select value={selectedExercise} onValueChange={setSelectedExercise}>
-                <SelectTrigger className="w-64 bg-background/80 border-border/50">
-                  <SelectValue placeholder="Selecionar exercício" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Array.from(new Map(allExercises.map(e => [e.muscleGroup, true])).keys()).map((group) => (
-                    <div key={group}>
-                      <SelectItem value={`__header_${group}`} disabled>
-                        {group}
-                      </SelectItem>
-                      {allExercises.filter(e => e.muscleGroup === group).map((exercise) => (
-                        <SelectItem key={exercise.id} value={exercise.id}>
-                          {exercise.name}
-                        </SelectItem>
-                      ))}
-                    </div>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button 
-                onClick={addExercise}
-                disabled={!selectedExercise}
-                className="bg-gradient-to-r from-fitness-success to-fitness-success/80 hover:from-fitness-success/90 hover:to-fitness-success/70 text-white border-0"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Adicionar
-              </Button>
-            </div>
+            <Button 
+              onClick={() => setShowExerciseModal(true)}
+              className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Adicionar Exercícios
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -233,6 +208,14 @@ const EditWorkoutPlan = () => {
           Remover Plano
         </Button>
       </div>
+
+      {/* Modal de Seleção de Exercícios */}
+      <ExerciseSelectionModal
+        isOpen={showExerciseModal}
+        onClose={() => setShowExerciseModal(false)}
+        onConfirm={handleAddExercises}
+        excludeExercises={plan?.exercises.map(ex => ex.exerciseId) || []}
+      />
     </div>
   );
 };

@@ -83,6 +83,15 @@ export async function initializeNewUser(): Promise<{
  */
 export async function initializeBasicExercises(): Promise<Exercise[]> {
   try {
+    // Verifica se o usuário já tem exercícios
+    const existingExercises = await getExercises([]);
+    
+    // Se já tem exercícios, retorna os existentes
+    if (existingExercises.length > 0) {
+      return existingExercises;
+    }
+    
+    // Se não tem exercícios, carrega a biblioteca básica
     return await loadBasicExerciseLibrary();
   } catch (error) {
     console.error('Error initializing basic exercises:', error);

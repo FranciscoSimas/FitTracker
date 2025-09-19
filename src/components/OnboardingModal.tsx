@@ -28,13 +28,25 @@ const OnboardingModal = ({ isOpen, onClose, onComplete }: OnboardingModalProps) 
   const handleCreateCustom = async () => {
     setIsLoading(true);
     try {
+      // Verifica se o usuário já tem exercícios
+      const { getExercises } = await import("@/data/storage");
+      const existingExercises = await getExercises([]);
+      const isNewUser = existingExercises.length === 0;
+      
       // Inicializa apenas a biblioteca de exercícios (não os planos)
       const exercises = await initializeBasicExercises();
       
-      toast({
-        title: "Biblioteca carregada! 🎉",
-        description: `${exercises.length} exercícios básicos disponíveis. Redirecionando para criar o seu primeiro plano...`,
-      });
+      if (isNewUser) {
+        toast({
+          title: "Biblioteca carregada! 🎉",
+          description: `${exercises.length} exercícios básicos disponíveis. Redirecionando para criar o seu primeiro plano...`,
+        });
+      } else {
+        toast({
+          title: "Pronto! 🚀",
+          description: "Redirecionando para criar o seu plano...",
+        });
+      }
       
       markOnboardingComplete();
       onComplete();
