@@ -260,7 +260,7 @@ const Evolution = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <FadeIn delay={100}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>

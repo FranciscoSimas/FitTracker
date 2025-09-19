@@ -10,6 +10,7 @@ import { mockWorkoutPlans } from "@/data/mockData";
 import { getPlanById, addCompletedWorkout } from "@/data/storage";
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
+import { PageTransition, FadeIn } from "@/components/ui/page-transition";
 
 const ActiveWorkout = () => {
   const { planId } = useParams();
@@ -209,9 +210,11 @@ const ActiveWorkout = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card className="bg-gradient-to-r from-fitness-primary/10 to-fitness-secondary/10 border-fitness-primary/20">
+    <PageTransition>
+      <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <FadeIn delay={100}>
+          {/* Header */}
+          <Card className="bg-gradient-to-r from-fitness-primary/10 to-fitness-secondary/10 border-fitness-primary/20">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
@@ -424,7 +427,9 @@ const ActiveWorkout = () => {
           />
         </CardContent>
       </Card>
-    </div>
+        </FadeIn>
+      </div>
+    </PageTransition>
   );
 };
 

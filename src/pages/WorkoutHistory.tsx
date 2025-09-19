@@ -207,8 +207,10 @@ const WorkoutHistory = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <PageTransition>
+      <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <FadeIn delay={100}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
             Histórico de Treinos
@@ -322,7 +324,9 @@ const WorkoutHistory = () => {
           </CardContent>
         </Card>
       )}
-    </div>
+        </FadeIn>
+      </div>
+    </PageTransition>
   );
 };
 

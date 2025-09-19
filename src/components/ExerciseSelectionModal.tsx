@@ -132,14 +132,14 @@ const ExerciseSelectionModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="px-6 pt-6 pb-4">
           <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
             Selecionar Exercícios
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden flex flex-col space-y-4">
+        <div className="flex-1 overflow-hidden flex flex-col space-y-4 px-6">
           {/* Busca */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -163,8 +163,8 @@ const ExerciseSelectionModal = ({
             </TabsList>
 
             {/* Conteúdo dos exercícios */}
-            <div className="flex-1 overflow-y-auto">
-              <TabsContent value={activeTab} className="mt-4 space-y-4">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">
+              <TabsContent value={activeTab} className="mt-4 space-y-4 pr-2">
                 {/* Header com seleção */}
                 <div className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/30 to-muted/50 rounded-lg border border-border/50">
                   <div className="flex items-center gap-3">
@@ -285,11 +285,11 @@ const ExerciseSelectionModal = ({
         </div>
 
         {/* Botões de ação */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between pt-4 border-t">
+        <div className="flex flex-col sm:flex-row gap-4 justify-between p-6 border-t border-border/50 bg-muted/20">
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 sm:flex-none"
+            className="flex-1 sm:flex-none order-2 sm:order-1"
           >
             <X className="h-4 w-4 mr-2" />
             Cancelar
@@ -297,7 +297,7 @@ const ExerciseSelectionModal = ({
           <Button
             onClick={handleConfirm}
             disabled={selectedExercises.length === 0}
-            className="flex-1 sm:flex-none bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white"
+            className="flex-1 sm:flex-none bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white order-1 sm:order-2"
           >
             <CheckCircle className="h-4 w-4 mr-2" />
             Adicionar {selectedExercises.length} Exercício{selectedExercises.length !== 1 ? 's' : ''}

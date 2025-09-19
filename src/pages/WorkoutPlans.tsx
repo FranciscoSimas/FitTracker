@@ -88,7 +88,7 @@ const WorkoutPlans = () => {
 
   return (
     <PageTransition>
-      <div className="space-y-6">
+      <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <FadeIn delay={100}>
           <div className="text-center">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
@@ -141,7 +141,7 @@ const WorkoutPlans = () => {
         </Card>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {plans.map((plan, index) => (
           <SlideIn key={plan.id} delay={200 + (index * 100)} direction="up">
             <Card 
