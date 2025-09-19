@@ -10,6 +10,11 @@
   },
   "recentCommits": [
     {
+      "hash": "33fa216",
+      "message": "fix: Correct multiple UX issues and improve functionality - Fix arms tab separation, workout timer pause, and evolution charts redesign",
+      "date": "2025-01-17"
+    },
+    {
       "hash": "70325b4",
       "message": "feat: Implement 4 major UX/UI improvements - workout timer pause/resume, muscle group evolution charts, improved onboarding flow, and enhanced exercise selection",
       "date": "2025-01-17"
@@ -44,9 +49,9 @@
     "deployment": "Ativo em produção (fittrackerplus.vercel.app)",
     "repository": "Limpo e organizado para público",
     "settings": "Página UserProfile funcional",
-    "workoutTimer": "Funcionalidade de pausar/continuar implementada",
-    "evolutionCharts": "Gráficos por grupo muscular implementados",
-    "exerciseSelection": "Modal avançado com filtros e seleção múltipla"
+    "workoutTimer": "Funcionalidade de pausar/continuar implementada e corrigida",
+    "evolutionCharts": "Gráficos por grupo muscular implementados com dropdown e exercícios individuais",
+    "exerciseSelection": "Modal avançado com filtros e seleção múltipla - Bíceps e Tríceps separados"
   },
   "nextSteps": [
     "FASE 1 - UX/UI Melhorias (CONCLUÍDA ✅):",
@@ -120,6 +125,13 @@
       "improvement": "Sistema de Seleção de Exercícios Aprimorado",
       "description": "Melhorado modal de seleção com indicadores visuais aprimorados para exercícios selecionados",
       "files": ["src/components/ExerciseSelectionModal.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Correções de UX e Funcionalidades",
+      "description": "Corrigida aba Braços para mostrar Bíceps e Tríceps separadamente, corrigida funcionalidade de pausar tempo, e redesenhados gráficos de evolução",
+      "files": ["src/components/ExerciseSelectionModal.tsx", "src/pages/ActiveWorkout.tsx", "src/pages/Evolution.tsx"],
       "status": "completed"
     }
   ]
