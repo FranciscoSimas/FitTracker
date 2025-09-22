@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PWAInstaller from "./components/PWAInstaller";
 import { useServiceWorker } from "./hooks/useServiceWorker";
 import Login from "./pages/Login";
+import LandingPage from "./pages/LandingPage";
 import UserProfile from "./pages/UserProfile";
 import EmailConfirmed from "./pages/EmailConfirmed";
 import ResetPassword from "./pages/ResetPassword";
@@ -35,6 +36,7 @@ const App = () => {
         <BrowserRouter>
           <AuthProvider>
             <Routes>
+              <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/email-confirmed" element={<EmailConfirmed />} />
               <Route path="/reset-password" element={<ResetPassword />} />
