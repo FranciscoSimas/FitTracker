@@ -30,7 +30,6 @@ const AddWorkoutPlan = () => {
     const newPlan: WorkoutPlan = {
       id: `plan_${Date.now()}`,
       name: planName.trim(),
-      description: planDescription.trim() || undefined,
       exercises: [], // Empty plan, user can add exercises later
     };
 

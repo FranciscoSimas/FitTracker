@@ -129,7 +129,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan1",
     name: "Peito e Trícep - Iniciante",
-    description: "Plano básico para desenvolvimento do peito e trícep",
     exercises: [
       {
         id: "we1",
@@ -188,7 +187,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan2",
     name: "Costas e Bícep - Iniciante",
-    description: "Plano básico para desenvolvimento das costas e bícep",
     exercises: [
       {
         id: "we6",
@@ -247,7 +245,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan3",
     name: "Ombros - Completo",
-    description: "Plano completo para desenvolvimento dos ombros",
     exercises: [
       {
         id: "we11",
@@ -296,7 +293,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan4",
     name: "Pernas - Completo",
-    description: "Plano completo para desenvolvimento das pernas",
     exercises: [
       {
         id: "we15",
@@ -365,7 +361,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan5",
     name: "Abdominais - Core",
-    description: "Plano para fortalecimento do core e abdominais",
     exercises: [
       {
         id: "we21",
@@ -414,7 +409,6 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   {
     id: "plan6",
     name: "Treino Completo - PPL",
-    description: "Plano Push/Pull/Legs para treino completo do corpo",
     exercises: [
       {
         id: "we25",
