@@ -85,7 +85,8 @@
     "monorepo": "Estrutura criada mas removida devido a incompatibilidade com Vercel",
     "mobileApp": "Estrutura Flutter criada em /mobile/ - Pronto para desenvolvimento",
     "developmentEnvironment": "Limitações de privilégios no PC atual - Node.js/Flutter não instaláveis",
-    "nextEnvironment": "Preparado para desenvolvimento em PC com privilégios administrativos"
+    "nextEnvironment": "Preparado para desenvolvimento em PC com privilégios administrativos",
+    "landingPage": "Landing page profissional implementada com PT-PT, screenshots da app, avaliações e UX otimizada"
   },
   "nextSteps": [
     "FASE 1 - UX/UI Melhorias (CONCLUÍDA ✅):",
@@ -106,9 +107,10 @@
     "13. ⏳ AGUARDANDO: Instalação do Flutter SDK em PC com privilégios",
     "FASE 4 - User Experience Enhancements (EM PROGRESSO 🚀):",
     "14. ✅ Evolução por plano de treino - Gráfico com exercícios individuais",
-    "15. 🔄 CSS Polish - Fix overlays, scrollbars, padding issues",
-    "16. 🔄 Settings page - Units (KG/LB), themes, app configuration",
-    "17. 🔄 Internationalization (i18n) - PT/EN support",
+    "15. ✅ Landing page profissional - PT-PT, screenshots, avaliações",
+    "16. 🔄 CSS Polish - Fix overlays, scrollbars, padding issues",
+    "17. 🔄 Settings page - Units (KG/LB), themes, app configuration",
+    "18. 🔄 Internationalization (i18n) - PT/EN support",
     "FASE 5 - Desenvolvimento Mobile (PRÓXIMA FASE 🎯):",
     "18. ⏳ Instalar Flutter SDK e configurar ambiente de desenvolvimento",
     "19. ⏳ Implementar funcionalidades core da app mobile",
@@ -121,24 +123,31 @@
     "• Desenvolvimento mobile pausado até mudança de ambiente",
     "FUTURO:",
     "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
-    "Criar landing page para utilizadores que acedem via PC",
     "Implementar customização de temas (Dark/Light mode)",
     "Adicionar sistema de notificações push",
     "Implementar gamificação básica (streaks, achievements)",
     "Melhorar analytics e relatórios de progresso",
     "Adicionar funcionalidades sociais (compartilhar treinos)",
-    "Otimizar performance e adicionar mais funcionalidades PWA"
+    "Otimizar performance e adicionar mais funcionalidades PWA",
+    "LANDING PAGE FUTURO:",
+    "Adicionar screenshots reais da app em funcionamento",
+    "Implementar lógica diferente para botões Entrar vs Criar Conta",
+    "Adicionar seção de FAQ (Perguntas Frequentes)",
+    "Implementar animações mais avançadas e micro-interações",
+    "Adicionar seção de preços/planos (se aplicável)",
+    "Integrar com Google Analytics para tracking de conversão"
   ],
   "projectStructure": {
     "webApp": {
-    "mainPages": [
-      "WorkoutPlans.tsx - Página principal com lista de planos de treino",
-      "Exercises.tsx - Gestão de exercícios",
-      "Evolution.tsx - Acompanhamento de evolução",
-      "ActiveWorkout.tsx - Treino ativo",
-      "Login.tsx - Autenticação com Google OAuth",
-      "UserProfile.tsx - Página de configurações da conta"
-    ],
+      "mainPages": [
+        "LandingPage.tsx - Página de apresentação para utilizadores não autenticados",
+        "WorkoutPlans.tsx - Página principal com lista de planos de treino",
+        "Exercises.tsx - Gestão de exercícios",
+        "Evolution.tsx - Acompanhamento de evolução",
+        "ActiveWorkout.tsx - Treino ativo",
+        "Login.tsx - Autenticação com Google OAuth",
+        "UserProfile.tsx - Página de configurações da conta"
+      ],
     "components": [
       "Layout.tsx - Layout principal com navegação",
         "OnboardingModal.tsx - Modal de onboarding para novos usuários (melhorado)",
@@ -244,6 +253,20 @@
       "improvement": "FASE 4 - Evolução por Plano de Treino",
       "description": "Implementado novo gráfico de evolução que permite selecionar planos de treino específicos e visualizar a evolução individual de cada exercício dentro desse plano",
       "files": ["src/pages/Evolution.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Landing Page Profissional - Versão Inicial",
+      "description": "Criada landing page básica para utilizadores não autenticados com hero section, features e CTA",
+      "files": ["src/pages/LandingPage.tsx", "src/App.tsx", "src/components/ProtectedRoute.tsx"],
+      "status": "completed"
+    },
+    {
+      "date": "2025-01-17",
+      "improvement": "Landing Page Melhorada - PT-PT e UX Aprimorada",
+      "description": "Melhorada landing page com linguagem PT-PT, remoção de repetições, seção de screenshots da app, botões separados (Entrar vs Criar Conta), e seção de avaliações para Google Play",
+      "files": ["src/pages/LandingPage.tsx"],
       "status": "completed"
     }
   ],
