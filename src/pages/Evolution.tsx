@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
-import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout, BodyWeightEntry } from "@/data/storage";
+import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout, BodyWeightEntry, generateTestWorkoutData } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
 import { mockExercises, CompletedWorkout, WorkoutExercise, Exercise } from "@/data/mockData";
 import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
@@ -20,6 +20,7 @@ const Evolution = () => {
   const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
   const [allExercises, setAllExercises] = useState<Exercise[]>([]);
   const [bodyWeights, setBodyWeights] = useState<BodyWeightEntry[]>([]);
+  const [isGeneratingTestData, setIsGeneratingTestData] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,6 +35,26 @@ const Evolution = () => {
     };
     loadData();
   }, []);
+
+  const handleGenerateTestData = async () => {
+    setIsGeneratingTestData(true);
+    try {
+      generateTestWorkoutData();
+      // Reload data after generating
+      const [workouts, exercises, weights] = await Promise.all([
+        getCompletedWorkouts(),
+        getExercises(mockExercises),
+        getBodyWeights()
+      ]);
+      setCompleted(workouts);
+      setAllExercises(exercises);
+      setBodyWeights(weights);
+    } catch (error) {
+      console.error('Error generating test data:', error);
+    } finally {
+      setIsGeneratingTestData(false);
+    }
+  };
 
   // Process data for charts
   const getExerciseEvolution = (exerciseId: string) => {
@@ -328,10 +349,28 @@ const Evolution = () => {
               </p>
             </div>
             <div className="flex gap-2">
-            <Button 
-              onClick={generateTestData}
-              disabled={isGeneratingData}
-              variant="outline"
+              <Button 
+                onClick={handleGenerateTestData}
+                disabled={isGeneratingTestData}
+                variant="outline"
+                className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+              >
+                {isGeneratingTestData ? (
+                  <>
+                    <LoadingSpinner size="sm" className="mr-2" />
+                    Gerando...
+                  </>
+                ) : (
+                  <>
+                    <Dumbbell className="h-4 w-4 mr-2" />
+                    Dados de Teste
+                  </>
+                )}
+              </Button>
+              <Button 
+                onClick={generateTestData}
+                disabled={isGeneratingData}
+                variant="outline"
               className="border-fitness-secondary/20 text-fitness-secondary hover:bg-fitness-secondary/10"
             >
               <Dumbbell className="h-4 w-4 mr-2" />
