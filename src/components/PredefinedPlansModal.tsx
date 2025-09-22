@@ -157,7 +157,7 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
                           {plan.name}
                         </h4>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {plan.description}
+                          {plan.exercises.length} exercícios
                         </p>
                         <div className="flex items-center gap-2 mt-2">
                           <Badge variant="secondary" className="text-xs">

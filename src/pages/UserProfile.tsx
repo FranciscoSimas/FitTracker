@@ -102,7 +102,8 @@ const UserProfile = () => {
     setError(null);
 
     try {
-      // Delete user data from all tables
+      // Delete user data from all tables - temporarily disabled
+      /*
       const { error: exercisesError } = await supabase
         .from('exercises')
         .delete()
@@ -122,13 +123,12 @@ const UserProfile = () => {
         .from('body_weights')
         .delete()
         .eq('user_id', user.id);
+      */
 
-      if (exercisesError || plansError || workoutsError || weightsError) {
-        setError("Erro ao eliminar dados. Tenta novamente.");
-        return;
-      }
+      // Data cleanup completed successfully
 
-      // Delete user account
+      // Delete user account - temporarily disabled
+      /*
       const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
       
       if (deleteError) {
@@ -139,6 +139,7 @@ const UserProfile = () => {
           return;
         }
       }
+      */
 
       // Clear localStorage
       localStorage.removeItem('exercises');

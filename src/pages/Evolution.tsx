@@ -5,9 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
-import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout } from "@/data/storage";
+import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout, BodyWeightEntry } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
-import { mockExercises, CompletedWorkout, WorkoutExercise } from "@/data/mockData";
+import { mockExercises, CompletedWorkout, WorkoutExercise, Exercise } from "@/data/mockData";
 import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
 import { LoadingSpinner } from "@/components/ui/loading";
 

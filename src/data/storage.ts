@@ -1,232 +1,267 @@
 import { Exercise, WorkoutPlan, CompletedWorkout } from "./mockData";
 import * as remote from "./remote";
 
-const EXERCISES_KEY = "tdp_exercises";
-const PLANS_KEY = "tdp_workout_plans";
-const COMPLETED_KEY = "tdp_completed_workouts";
-const BODY_WEIGHT_KEY = "tdp_body_weights"; // [{ date: ISO, weight: number }]
+const EXERCISES_KEY = "fittracker_exercises";
+const PLANS_KEY = "fittracker_plans";
+const COMPLETED_WORKOUTS_KEY = "fittracker_completed_workouts";
+const BODY_WEIGHTS_KEY = "fittracker_body_weights";
 
-function safeParse<T>(raw: string | null, fallback: T): T {
-  if (!raw) return fallback;
-  try {
-    return JSON.parse(raw) as T;
-  } catch {
-    return fallback;
+export interface BodyWeightEntry {
+  date: string;
+  weight: number;
+}
+
+function clearDataFromIndexedDB(): void {
+  if (typeof window !== "undefined" && "indexedDB" in window) {
+    // Logic to clear IndexedDB can be added here if needed
   }
 }
 
 export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
   try {
-    // Try remote first
-    const remoteExercises = await remote.getExercisesRemote();
-    if (remoteExercises.length > 0) {
-      // Sync to localStorage
-      localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
-      return remoteExercises;
+    // Try remote first - disabled for now
+    // const remoteExercises = await remote.getUserExercisesRemote('');
+    // if (remoteExercises.length > 0) {
+    //   localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+    //   return remoteExercises;
+    // }
+
+    // Fallback to localStorage
+    const stored = localStorage.getItem(EXERCISES_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : initial;
     }
     
-    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
-    return [];
+    return initial;
   } catch (error) {
-    console.error('Error fetching remote exercises:', error);
+    console.error("Error getting exercises:", error);
+    return initial;
   }
-  
-  // Fallback to localStorage only if remote fails
-  const stored = safeParse<Exercise[]>(localStorage.getItem(EXERCISES_KEY), []);
-  return stored;
 }
 
 export function setExercises(exercises: Exercise[]): void {
   localStorage.setItem(EXERCISES_KEY, JSON.stringify(exercises));
 }
 
-export async function addExercise(exercise: Exercise, initial: Exercise[]): Promise<Exercise[]> {
+export async function addExercise(exercise: Exercise, allExercises: Exercise[]): Promise<Exercise[]> {
   try {
-    // Try remote first
-    await remote.addExerciseRemote(exercise);
+    const newExercises = [...allExercises, exercise];
+    setExercises(newExercises);
+    
+    // Try to add to remote - disabled for now
+    // await remote.addExerciseRemote(exercise, '');
+    
+    return newExercises;
   } catch (error) {
-    console.error('Error adding remote exercise:', error);
+    console.error("Error adding exercise:", error);
+    return allExercises;
   }
-  
-  // Get current exercises from localStorage directly to avoid recursion
-  const stored = localStorage.getItem(EXERCISES_KEY);
-  const current = stored ? safeParse<Exercise[]>(stored, []) : initial;
-  const updated = [...current, exercise];
-  setExercises(updated);
-  
-  return updated;
 }
 
-export async function removeExercise(exerciseId: string, initial: Exercise[]): Promise<Exercise[]> {
+export async function removeExercise(exerciseId: string, allExercises: Exercise[]): Promise<Exercise[]> {
   try {
-    // Try remote first
-    await remote.removeExerciseRemote(exerciseId);
+    const newExercises = allExercises.filter(ex => ex.id !== exerciseId);
+    setExercises(newExercises);
+    
+    // Try to remove from remote - disabled for now
+    // await remote.deleteExerciseRemote(exerciseId, '');
+    
+    return newExercises;
   } catch (error) {
-    console.error('Error removing remote exercise:', error);
+    console.error("Error removing exercise:", error);
+    return allExercises;
   }
-  
-  // Get current exercises from localStorage directly to avoid recursion
-  const stored = localStorage.getItem(EXERCISES_KEY);
-  const current = stored ? safeParse<Exercise[]>(stored, []) : initial;
-  const updated = current.filter((ex) => ex.id !== exerciseId);
-  setExercises(updated);
-  return updated;
 }
 
 export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
   try {
-    // Try remote first
-    const remotePlans = await remote.getPlansRemote();
-    if (remotePlans.length > 0) {
-      // Sync to localStorage
-      localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
-      return remotePlans;
+    // Try remote first - disabled for now
+    // const remotePlans = await remote.getUserPlansRemote('');
+    // if (remotePlans.length > 0) {
+    //   localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
+    //   return remotePlans;
+    // }
+
+    // Fallback to localStorage
+    const stored = localStorage.getItem(PLANS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : initial;
     }
     
-    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
-    return [];
+    return initial;
   } catch (error) {
-    console.error('Error fetching remote plans:', error);
+    console.error("Error getting plans:", error);
+    return initial;
   }
-  
-  // Fallback to localStorage only if remote fails
-  const stored = safeParse<WorkoutPlan[]>(localStorage.getItem(PLANS_KEY), []);
-  return stored;
 }
 
 export function setPlans(plans: WorkoutPlan[]): void {
   localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
 }
 
-export async function getPlanById(planId: string, initial: WorkoutPlan[]): Promise<WorkoutPlan | null> {
-  const plans = await getPlans(initial);
-  return plans.find((p) => p.id === planId) || null;
-}
-
-export async function updatePlan(updatedPlan: WorkoutPlan, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+export async function addPlan(plan: WorkoutPlan, allPlans: WorkoutPlan[]): Promise<WorkoutPlan[]> {
   try {
-    // Try remote first
-    await remote.updatePlanRemote(updatedPlan);
-  } catch (error) {
-    console.error('Error updating remote plan:', error);
-  }
-  
-  const plans = await getPlans(initial);
-  const updatedPlans = plans.map((p) => (p.id === updatedPlan.id ? updatedPlan : p));
-  setPlans(updatedPlans);
-  return updatedPlans;
-}
-
-export async function addPlan(newPlan: WorkoutPlan, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
-  try {
-    // Try remote first
-    await remote.addPlanRemote(newPlan);
-  } catch (error) {
-    console.error('Error adding remote plan:', error);
-  }
-  
-  const plans = await getPlans(initial);
-  const updatedPlans = [...plans, newPlan];
-  setPlans(updatedPlans);
-  return updatedPlans;
-}
-
-export async function removePlan(planId: string, initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
-  try {
-    // Try remote first
-    await remote.removePlanRemote(planId);
-  } catch (error) {
-    console.error('Error removing remote plan:', error);
-  }
-  
-  const plans = await getPlans(initial);
-  const updatedPlans = plans.filter((p) => p.id !== planId);
-  setPlans(updatedPlans);
-  return updatedPlans;
-}
-
-// Completed workouts
-export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
-  try {
-    // Try remote first
-    const remoteWorkouts = await remote.getCompletedWorkoutsRemote();
-    if (remoteWorkouts.length > 0) {
-      // Sync to localStorage
-      localStorage.setItem(COMPLETED_KEY, JSON.stringify(remoteWorkouts));
-      return remoteWorkouts;
+    const existingIndex = allPlans.findIndex(p => p.id === plan.id);
+    let newPlans: WorkoutPlan[];
+    
+    if (existingIndex >= 0) {
+      newPlans = [...allPlans];
+      newPlans[existingIndex] = plan;
+    } else {
+      newPlans = [...allPlans, plan];
     }
     
-    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
-    return [];
+    setPlans(newPlans);
+    
+    // Try to add to remote - disabled for now
+    // await remote.addPlanRemote(plan, '');
+    
+    return newPlans;
   } catch (error) {
-    console.error('Error fetching remote completed workouts:', error);
+    console.error("Error adding plan:", error);
+    return allPlans;
   }
-  
-  // Fallback to localStorage only if remote fails
-  return safeParse<CompletedWorkout[]>(localStorage.getItem(COMPLETED_KEY), []);
 }
 
-export async function addCompletedWorkout(workout: CompletedWorkout): Promise<CompletedWorkout[]> {
-  // Try remote first
-  await remote.addCompletedWorkoutRemote(workout);
-  
-  const current = await getCompletedWorkouts();
-  const updated = [...current, workout];
-  localStorage.setItem(COMPLETED_KEY, JSON.stringify(updated));
-  return updated;
+export async function updatePlan(plan: WorkoutPlan, allPlans: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    const newPlans = allPlans.map(p => p.id === plan.id ? plan : p);
+    setPlans(newPlans);
+    
+    // Try to update remote - disabled for now
+    // await remote.updatePlanRemote(plan, '');
+    
+    return newPlans;
+  } catch (error) {
+    console.error("Error updating plan:", error);
+    return allPlans;
+  }
+}
+
+export async function removePlan(planId: string, allPlans: WorkoutPlan[]): Promise<WorkoutPlan[]> {
+  try {
+    const newPlans = allPlans.filter(p => p.id !== planId);
+    setPlans(newPlans);
+    
+    // Try to remove from remote - disabled for now
+    // await remote.deletePlanRemote(planId, '');
+    
+    return newPlans;
+  } catch (error) {
+    console.error("Error removing plan:", error);
+    return allPlans;
+  }
+}
+
+export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
+  try {
+    // Try remote first - disabled for now
+    // const remoteWorkouts = await remote.getWorkoutHistoryRemote('');
+    // if (remoteWorkouts.length > 0) {
+    //   localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(remoteWorkouts));
+    //   return remoteWorkouts;
+    // }
+
+    const stored = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error getting completed workouts:", error);
+    return [];
+  }
+}
+
+export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
+  localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(workouts));
+}
+
+export async function addCompletedWorkout(workout: CompletedWorkout): Promise<void> {
+  try {
+    const existing = await getCompletedWorkouts();
+    const updated = [...existing, workout];
+    setCompletedWorkouts(updated);
+    
+    // Try to add to remote - disabled for now
+    // await remote.addWorkoutHistoryRemote(workout, '');
+  } catch (error) {
+    console.error("Error adding completed workout:", error);
+  }
 }
 
 export async function clearCompletedWorkouts(): Promise<void> {
   try {
-    // Clear remote data first
-    await remote.clearCompletedWorkoutsRemote();
+    localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
+    
+    // Try to clear remote - disabled for now
+    // await remote.clearCompletedWorkoutsRemote('');
   } catch (error) {
-    console.error('Error clearing remote completed workouts:', error);
+    console.error("Error clearing completed workouts:", error);
   }
-  
-  // Clear localStorage
-  localStorage.setItem(COMPLETED_KEY, JSON.stringify([]));
 }
-
-export function setCompletedWorkouts(workouts: CompletedWorkout[]): void {
-  localStorage.setItem(COMPLETED_KEY, JSON.stringify(workouts));
-}
-
-// Body weight tracking
-export type BodyWeightEntry = { date: string; weight: number };
 
 export async function getBodyWeights(): Promise<BodyWeightEntry[]> {
   try {
-    // Try remote first
-    const remoteWeights = await remote.getBodyWeightsRemote();
-    if (remoteWeights.length > 0) {
-      // Sync to localStorage
-      localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(remoteWeights));
-      return remoteWeights;
+    // Try remote first - disabled for now
+    // const remoteWeights = await remote.getBodyWeightsRemote('');
+    // if (remoteWeights.length > 0) {
+    //   localStorage.setItem(BODY_WEIGHTS_KEY, JSON.stringify(remoteWeights));
+    //   return remoteWeights;
+    // }
+
+    const stored = localStorage.getItem(BODY_WEIGHTS_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : [];
     }
     
-    // If remote returns empty array, return empty array (don't load mock data for authenticated users)
     return [];
   } catch (error) {
-    console.error('Error fetching remote body weights:', error);
+    console.error("Error getting body weights:", error);
+    return [];
   }
-  
-  // Fallback to localStorage only if remote fails
-  return safeParse<BodyWeightEntry[]>(localStorage.getItem(BODY_WEIGHT_KEY), []);
 }
 
-export function setBodyWeights(entries: BodyWeightEntry[]): void {
-  localStorage.setItem(BODY_WEIGHT_KEY, JSON.stringify(entries));
+export function setBodyWeights(weights: BodyWeightEntry[]): void {
+  localStorage.setItem(BODY_WEIGHTS_KEY, JSON.stringify(weights));
 }
 
-export async function addBodyWeight(entry: BodyWeightEntry): Promise<BodyWeightEntry[]> {
-  // Try remote first
-  await remote.addBodyWeightRemote(entry);
-  
-  const current = await getBodyWeights();
-  const updated = [...current.filter(e => e.date !== entry.date), entry].sort((a,b) => a.date.localeCompare(b.date));
-  setBodyWeights(updated);
-  return updated;
+export async function addBodyWeight(entry: BodyWeightEntry): Promise<void> {
+  try {
+    const existing = await getBodyWeights();
+    
+    const existingIndex = existing.findIndex(w => w.date === entry.date);
+    let updated: BodyWeightEntry[];
+    
+    if (existingIndex >= 0) {
+      updated = [...existing];
+      updated[existingIndex] = entry;
+    } else {
+      updated = [...existing, entry].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }
+    
+    setBodyWeights(updated);
+    
+    // Try to add to remote - disabled for now
+    // await remote.addBodyWeightRemote(entry, '');
+  } catch (error) {
+    console.error("Error adding body weight:", error);
+  }
 }
 
+export async function getPlanById(planId: string, allPlans: WorkoutPlan[]): Promise<WorkoutPlan | undefined> {
+  return allPlans.find(plan => plan.id === planId);
+}
 
+export function clearAllData(): void {
+  localStorage.removeItem(EXERCISES_KEY);
+  localStorage.removeItem(PLANS_KEY);
+  localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
+  localStorage.removeItem(BODY_WEIGHTS_KEY);
+  clearDataFromIndexedDB();
+}
