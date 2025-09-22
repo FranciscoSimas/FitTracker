@@ -72,6 +72,7 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
       
       markOnboardingComplete();
       onComplete();
+      onClose(); // Fecha o modal após completar
     } catch (error) {
       console.error('Error loading selected plans:', error);
       toast({

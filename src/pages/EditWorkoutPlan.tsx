@@ -19,10 +19,12 @@ const EditWorkoutPlan = () => {
   const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [planName, setPlanName] = useState("");
   const [showExerciseModal, setShowExerciseModal] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
-      const foundPlan = planId ? await getPlanById(planId, mockWorkoutPlans) : null;
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      const foundPlan = planId ? await getPlanById(planId, currentPlans) : null;
       if (foundPlan) {
         setPlan(foundPlan);
         setPlanName(foundPlan.name);
@@ -30,6 +32,31 @@ const EditWorkoutPlan = () => {
     };
     loadData();
   }, [planId]);
+
+  // Auto-save quando o plano ou nome é modificado
+  useEffect(() => {
+    if (!plan || !planId) return;
+    
+    const autoSave = async () => {
+      setIsAutoSaving(true);
+      try {
+        const currentPlans = await getPlans(mockWorkoutPlans);
+        const planToSave: WorkoutPlan = {
+          ...plan,
+          name: planName || plan.name,
+        };
+        await updatePlan(planToSave, currentPlans);
+      } catch (error) {
+        console.error('Auto-save error:', error);
+      } finally {
+        setIsAutoSaving(false);
+      }
+    };
+
+    // Debounce auto-save para evitar muitas chamadas
+    const timeoutId = setTimeout(autoSave, 1000);
+    return () => clearTimeout(timeoutId);
+  }, [plan, planName, planId]);
 
   const handleAddExercises = (selectedExercises: Exercise[]) => {
     if (!plan || selectedExercises.length === 0) return;
@@ -111,9 +138,16 @@ const EditWorkoutPlan = () => {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-          Editar Plano de Treino
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
+            Editar Plano de Treino
+          </h1>
+          {isAutoSaving && (
+            <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-600 border-blue-200">
+              Guardando...
+            </Badge>
+          )}
+        </div>
       </div>
 
       <Card className="bg-card/50 border-border/50">
@@ -186,20 +220,24 @@ const EditWorkoutPlan = () => {
         </CardContent>
       </Card>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center">
+        <div className="flex-1 text-sm text-muted-foreground">
+          💡 As alterações são guardadas automaticamente
+        </div>
         <Button 
           onClick={savePlan}
-          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+          variant="outline"
+          className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
         >
           <Save className="h-4 w-4 mr-2" />
-          Salvar Alterações
+          Guardar Agora
         </Button>
         <Button 
           variant="outline"
           onClick={() => navigate("/")}
           className="border-border/50"
         >
-          Cancelar
+          Voltar aos Planos
         </Button>
         <Button 
           variant="outline"

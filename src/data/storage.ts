@@ -88,13 +88,14 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     const stored = localStorage.getItem(PLANS_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : initial;
+      return Array.isArray(parsed) ? parsed : [];
     }
     
-    return initial;
+    // Return empty array instead of initial mock data
+    return [];
   } catch (error) {
     console.error("Error getting plans:", error);
-    return initial;
+    return [];
   }
 }
 
@@ -304,4 +305,17 @@ export function saveLastWeight(exerciseId: string, weight: number, reps: number)
 export function getLastWeightForExercise(exerciseId: string): LastWeightEntry | null {
   const lastWeights = getLastWeights();
   return lastWeights[exerciseId] || null;
+}
+
+// Test data generator - generates realistic workout history for testing
+export function generateTestWorkoutData(): void {
+  const { mockCompletedWorkouts } = require('./mockData');
+  
+  // Clear existing data
+  localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
+  
+  // Add test data
+  localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(mockCompletedWorkouts));
+  
+  console.log('Test workout data generated successfully!');
 }

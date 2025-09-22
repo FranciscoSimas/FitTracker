@@ -474,18 +474,22 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
   },
 ];
 
-// Generate more realistic completed workouts
+// Generate more realistic completed workouts with progressive weight evolution
 const generateCompletedWorkouts = (): CompletedWorkout[] => {
   const workouts: CompletedWorkout[] = [];
   const today = new Date();
   
-  // Generate workouts for the last 30 days
-  for (let i = 0; i < 15; i++) {
+  // Generate workouts for the last 60 days (more data for better charts)
+  for (let i = 0; i < 30; i++) {
     const date = new Date(today);
     date.setDate(date.getDate() - (i * 2)); // Every 2 days
     
     const planIndex = i % 4;
     const plan = mockWorkoutPlans[planIndex];
+    
+    // Progressive weight increase over time (older workouts have lower weights)
+    const progressFactor = (30 - i) / 30; // 0 to 1, where 0 is oldest (lowest weights)
+    const baseWeightIncrease = progressFactor * 25; // Up to 25kg increase over time
     
     const workout: CompletedWorkout = {
       id: `cw${i + 1}`,
@@ -498,13 +502,34 @@ const generateCompletedWorkouts = (): CompletedWorkout[] => {
       completed: true,
       exercises: plan.exercises.map(ex => ({
         ...ex,
-        sets: ex.sets.map(set => ({
-          ...set,
-          weight: set.weight + (Math.random() * 10 - 5), // Slight weight variations
-          completed: true
-        }))
+        sets: ex.sets.map((set, setIndex) => {
+          // Base weight for each exercise type
+          let baseWeight = 0;
+          if (ex.exercise.name.includes("Supino")) baseWeight = 20;
+          else if (ex.exercise.name.includes("Agachamento")) baseWeight = 30;
+          else if (ex.exercise.name.includes("Levantamento")) baseWeight = 15;
+          else if (ex.exercise.name.includes("Rosca")) baseWeight = 8;
+          else if (ex.exercise.name.includes("Trícep")) baseWeight = 12;
+          else if (ex.exercise.name.includes("Puxada")) baseWeight = 25;
+          else if (ex.exercise.name.includes("Remada")) baseWeight = 18;
+          else if (ex.exercise.name.includes("Desenvolvimento")) baseWeight = 10;
+          else if (ex.exercise.name.includes("Crucifixo")) baseWeight = 6;
+          else baseWeight = 5;
+          
+          // Progressive weight increase + some variation
+          const progressiveWeight = baseWeight + baseWeightIncrease + (Math.random() * 4 - 2);
+          const finalWeight = Math.max(0, Math.round(progressiveWeight * 10) / 10); // Round to 1 decimal
+          
+          return {
+            ...set,
+            weight: finalWeight,
+            completed: true
+          };
+        })
       })),
-      notes: i % 3 === 0 ? "Bom treino hoje!" : undefined
+      notes: i % 4 === 0 ? `Treino ${i + 1} - Evolução constante!` : 
+             i % 7 === 0 ? "Dia difícil mas consegui!" : 
+             i % 10 === 0 ? "Novo recorde pessoal!" : undefined
     };
     
     workouts.push(workout);

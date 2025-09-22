@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Save } from "lucide-react";
 import { mockWorkoutPlans, WorkoutPlan } from "@/data/mockData";
-import { addPlan } from "@/data/storage";
+import { addPlan, getPlans } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const AddWorkoutPlan = () => {
@@ -34,7 +34,8 @@ const AddWorkoutPlan = () => {
     };
 
     try {
-      await addPlan(newPlan, mockWorkoutPlans);
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await addPlan(newPlan, currentPlans);
       toast({
         title: "Plano criado!",
         description: `${planName} foi criado com sucesso. Redirecionando para editar...`,
