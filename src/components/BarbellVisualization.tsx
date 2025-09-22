@@ -2,10 +2,15 @@ import React from 'react';
 
 interface BarbellVisualizationProps {
   weight: number;
+  equipment: string;
   className?: string;
 }
 
-const BarbellVisualization: React.FC<BarbellVisualizationProps> = ({ weight, className = "" }) => {
+const BarbellVisualization: React.FC<BarbellVisualizationProps> = ({ weight, equipment, className = "" }) => {
+  // Only show barbell visualization for barbell exercises
+  if (equipment !== "Barra") {
+    return null;
+  }
   // Calculate plates needed for each side
   const calculatePlates = (totalWeight: number) => {
     const barWeight = 20; // Standard barbell weight
@@ -59,32 +64,62 @@ const BarbellVisualization: React.FC<BarbellVisualizationProps> = ({ weight, cla
   };
 
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <svg width="140" height="50" viewBox="0 0 140 50" className="overflow-visible">
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+      <div className="text-xs text-muted-foreground mb-1 font-medium">
+        Configuração da Barra
+      </div>
+      <svg width="160" height="60" viewBox="0 0 160 60" className="overflow-visible">
+        {/* Barbell bar with 3D effect */}
+        <defs>
+          <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#8B4513" />
+            <stop offset="50%" stopColor="#654321" />
+            <stop offset="100%" stopColor="#4A2C17" />
+          </linearGradient>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="1" dy="1" stdDeviation="1" floodColor="#000000" floodOpacity="0.3"/>
+          </filter>
+        </defs>
+        
         {/* Barbell bar */}
-        <rect x="15" y="22" width="110" height="6" fill="#8B4513" rx="3" />
-        <rect x="15" y="24" width="110" height="2" fill="#654321" rx="1" />
+        <rect x="20" y="26" width="120" height="8" fill="url(#barGradient)" rx="4" filter="url(#shadow)" />
+        <rect x="20" y="28" width="120" height="4" fill="#654321" rx="2" />
+        
+        {/* Bar collars */}
+        <rect x="15" y="28" width="8" height="4" fill="#C0C0C0" rx="2" />
+        <rect x="137" y="28" width="8" height="4" fill="#C0C0C0" rx="2" />
         
         {/* Left side plates */}
         {plates.slice(0, Math.ceil(plates.length / 2)).map((plate, index) => {
           const size = getPlateSize(plate);
           const color = getPlateColor(plate);
           const strokeColor = getPlateStroke(plate);
-          const y = 25 - size / 2;
-          const x = 15 - (index + 1) * (size + 1);
+          const y = 30 - size / 2;
+          const x = 20 - (index + 1) * (size + 1.5);
           
           return (
-            <rect
-              key={`left-${index}`}
-              x={x}
-              y={y}
-              width={size}
-              height={size}
-              fill={color}
-              rx="1"
-              stroke={strokeColor}
-              strokeWidth="0.5"
-            />
+            <g key={`left-${index}`}>
+              <rect
+                x={x}
+                y={y}
+                width={size}
+                height={size}
+                fill={color}
+                rx="2"
+                stroke={strokeColor}
+                strokeWidth="0.8"
+                filter="url(#shadow)"
+              />
+              <text
+                x={x + size / 2}
+                y={y + size / 2 + 2}
+                textAnchor="middle"
+                className="text-xs font-bold fill-current"
+                style={{ fontSize: '7px' }}
+              >
+                {plate}
+              </text>
+            </g>
           );
         })}
         
@@ -93,73 +128,46 @@ const BarbellVisualization: React.FC<BarbellVisualizationProps> = ({ weight, cla
           const size = getPlateSize(plate);
           const color = getPlateColor(plate);
           const strokeColor = getPlateStroke(plate);
-          const y = 25 - size / 2;
-          const x = 125 + (index + 1) * (size + 1);
+          const y = 30 - size / 2;
+          const x = 140 + (index + 1) * (size + 1.5);
           
           return (
-            <rect
-              key={`right-${index}`}
-              x={x}
-              y={y}
-              width={size}
-              height={size}
-              fill={color}
-              rx="1"
-              stroke={strokeColor}
-              strokeWidth="0.5"
-            />
+            <g key={`right-${index}`}>
+              <rect
+                x={x}
+                y={y}
+                width={size}
+                height={size}
+                fill={color}
+                rx="2"
+                stroke={strokeColor}
+                strokeWidth="0.8"
+                filter="url(#shadow)"
+              />
+              <text
+                x={x + size / 2}
+                y={y + size / 2 + 2}
+                textAnchor="middle"
+                className="text-xs font-bold fill-current"
+                style={{ fontSize: '7px' }}
+              >
+                {plate}
+              </text>
+            </g>
           );
         })}
         
-        {/* Weight text */}
+        {/* Total weight display */}
+        <rect x="60" y="45" width="40" height="12" fill="rgba(0,0,0,0.1)" rx="6" />
         <text
-          x="70"
-          y="42"
+          x="80"
+          y="54"
           textAnchor="middle"
           className="text-xs font-bold fill-current"
-          style={{ fontSize: '11px' }}
+          style={{ fontSize: '10px' }}
         >
           {weight}kg
         </text>
-        
-        {/* Plate weight indicators (small text on plates) */}
-        {plates.slice(0, Math.ceil(plates.length / 2)).map((plate, index) => {
-          const size = getPlateSize(plate);
-          const x = 15 - (index + 1) * (size + 1) + size / 2;
-          const y = 25;
-          
-          return (
-            <text
-              key={`left-text-${index}`}
-              x={x}
-              y={y}
-              textAnchor="middle"
-              className="text-xs font-bold fill-current"
-              style={{ fontSize: '8px' }}
-            >
-              {plate}
-            </text>
-          );
-        })}
-        
-        {plates.slice(Math.ceil(plates.length / 2)).map((plate, index) => {
-          const size = getPlateSize(plate);
-          const x = 125 + (index + 1) * (size + 1) + size / 2;
-          const y = 25;
-          
-          return (
-            <text
-              key={`right-text-${index}`}
-              x={x}
-              y={y}
-              textAnchor="middle"
-              className="text-xs font-bold fill-current"
-              style={{ fontSize: '8px' }}
-            >
-              {plate}
-            </text>
-          );
-        })}
       </svg>
     </div>
   );
