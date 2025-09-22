@@ -5,6 +5,7 @@ const EXERCISES_KEY = "fittracker_exercises";
 const PLANS_KEY = "fittracker_plans";
 const COMPLETED_WORKOUTS_KEY = "fittracker_completed_workouts";
 const BODY_WEIGHTS_KEY = "fittracker_body_weights";
+const LAST_WEIGHTS_KEY = "fittracker_last_weights";
 
 export interface BodyWeightEntry {
   date: string;
@@ -263,5 +264,44 @@ export function clearAllData(): void {
   localStorage.removeItem(PLANS_KEY);
   localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
   localStorage.removeItem(BODY_WEIGHTS_KEY);
+  localStorage.removeItem(LAST_WEIGHTS_KEY);
   clearDataFromIndexedDB();
+}
+
+// Last weights management
+export interface LastWeightEntry {
+  exerciseId: string;
+  weight: number;
+  reps: number;
+  lastUsed: string; // ISO date
+}
+
+export function getLastWeights(): Record<string, LastWeightEntry> {
+  try {
+    const stored = localStorage.getItem(LAST_WEIGHTS_KEY);
+    return stored ? JSON.parse(stored) : {};
+  } catch (error) {
+    console.error("Error getting last weights:", error);
+    return {};
+  }
+}
+
+export function saveLastWeight(exerciseId: string, weight: number, reps: number): void {
+  try {
+    const lastWeights = getLastWeights();
+    lastWeights[exerciseId] = {
+      exerciseId,
+      weight,
+      reps,
+      lastUsed: new Date().toISOString()
+    };
+    localStorage.setItem(LAST_WEIGHTS_KEY, JSON.stringify(lastWeights));
+  } catch (error) {
+    console.error("Error saving last weight:", error);
+  }
+}
+
+export function getLastWeightForExercise(exerciseId: string): LastWeightEntry | null {
+  const lastWeights = getLastWeights();
+  return lastWeights[exerciseId] || null;
 }

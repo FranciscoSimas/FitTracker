@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Plus, X, Save } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise, Exercise } from "@/data/mockData";
-import { getExercises, getPlanById, updatePlan, removePlan } from "@/data/storage";
+import { getExercises, getPlanById, updatePlan, removePlan, getPlans } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 import ExerciseSelectionModal from "@/components/ExerciseSelectionModal";
 
@@ -69,7 +69,8 @@ const EditWorkoutPlan = () => {
       ...plan,
       name: planName || plan.name,
     };
-    await updatePlan(planToSave, mockWorkoutPlans);
+    const currentPlans = await getPlans(mockWorkoutPlans);
+    await updatePlan(planToSave, currentPlans);
     toast({
       title: "Plano salvo!",
       description: "As alterações foram guardadas com sucesso.",
@@ -81,7 +82,8 @@ const EditWorkoutPlan = () => {
     if (!plan) return;
     
     if (window.confirm(`Tem certeza que deseja remover o plano "${plan.name}"? Esta ação não pode ser desfeita.`)) {
-      await removePlan(plan.id, mockWorkoutPlans);
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await removePlan(plan.id, currentPlans);
       toast({
         title: "Plano removido!",
         description: "O plano foi removido com sucesso.",

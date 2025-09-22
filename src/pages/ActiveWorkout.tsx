@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
 import { mockWorkoutPlans } from "@/data/mockData";
-import { getPlanById, addCompletedWorkout } from "@/data/storage";
+import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight } from "@/data/storage";
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { PageTransition, FadeIn } from "@/components/ui/page-transition";
@@ -23,7 +23,27 @@ const ActiveWorkout = () => {
     const loadPlan = async () => {
       if (planId) {
         const found = await getPlanById(planId, mockWorkoutPlans);
-        if (found) setPlan(found);
+        if (found) {
+          // Load last weights for each exercise
+          const planWithLastWeights = {
+            ...found,
+            exercises: found.exercises.map(exercise => {
+              const lastWeight = getLastWeightForExercise(exercise.exerciseId);
+              if (lastWeight) {
+                return {
+                  ...exercise,
+                  sets: exercise.sets.map(set => ({
+                    ...set,
+                    weight: lastWeight.weight,
+                    reps: lastWeight.reps
+                  }))
+                };
+              }
+              return exercise;
+            })
+          };
+          setPlan(planWithLastWeights);
+        }
       }
     };
     loadPlan();
@@ -97,6 +117,18 @@ const ActiveWorkout = () => {
     const completedSets = plan?.exercises.reduce((total, ex) => 
       total + ex.sets.filter(set => set.completed).length, 0
     ) || 0;
+    
+    // Save last weights for each exercise
+    if (plan) {
+      plan.exercises.forEach(exercise => {
+        // Find the last completed set to save as reference
+        const completedSets = exercise.sets.filter(set => set.completed);
+        if (completedSets.length > 0) {
+          const lastSet = completedSets[completedSets.length - 1];
+          saveLastWeight(exercise.exerciseId, lastSet.weight, lastSet.reps);
+        }
+      });
+    }
     
     // Persist completed workout
     if (plan && startTime) {
@@ -296,15 +328,28 @@ const ActiveWorkout = () => {
                 <Badge variant="outline" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
                   {exercise.exercise.muscleGroup}
                 </Badge>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => addSet(exercise.id)}
-                  className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Set
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => addSet(exercise.id)}
+                    className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Set
+                  </Button>
+                  {exercise.sets.length > 1 && (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => removeSet(exercise.id, exercise.sets[exercise.sets.length - 1].id)}
+                      className="text-red-600 hover:bg-red-500/10"
+                    >
+                      <Minus className="h-3 w-3 mr-1" />
+                      Remover
+                    </Button>
+                  )}
+                </div>
               </div>
               
               {exercise.sets.map((set, index) => (
@@ -320,30 +365,18 @@ const ActiveWorkout = () => {
                     <Badge variant="outline" className="w-12 justify-center">
                       {index + 1}
                     </Badge>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant={set.completed ? "default" : "outline"}
-                        onClick={() => toggleSetComplete(exercise.id, set.id)}
-                        className={set.completed 
-                          ? "bg-fitness-success hover:bg-fitness-success/90 text-white" 
-                          : "border-fitness-success/20 text-fitness-success hover:bg-fitness-success/10"
-                        }
-                      >
-                        <CheckCircle className={`h-4 w-4 ${set.completed ? "" : "mr-2"}`} />
-                        {!set.completed && "Marcar"}
-                      </Button>
-                      {exercise.sets.length > 1 && (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => removeSet(exercise.id, set.id)}
-                          className="text-red-600 hover:bg-red-500/10 h-8 w-8 p-0"
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
+                    <Button
+                      size="sm"
+                      variant={set.completed ? "default" : "outline"}
+                      onClick={() => toggleSetComplete(exercise.id, set.id)}
+                      className={set.completed 
+                        ? "bg-fitness-success hover:bg-fitness-success/90 text-white" 
+                        : "border-fitness-success/20 text-fitness-success hover:bg-fitness-success/10"
+                      }
+                    >
+                      <CheckCircle className={`h-4 w-4 ${set.completed ? "" : "mr-2"}`} />
+                      {!set.completed && "Marcar"}
+                    </Button>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-4">
