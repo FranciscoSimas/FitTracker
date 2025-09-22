@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
 import { mockWorkoutPlans } from "@/data/mockData";
-import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight } from "@/data/storage";
+import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight, getPlans } from "@/data/storage";
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { PageTransition, FadeIn } from "@/components/ui/page-transition";
@@ -22,7 +22,8 @@ const ActiveWorkout = () => {
   useEffect(() => {
     const loadPlan = async () => {
       if (planId) {
-        const found = await getPlanById(planId, mockWorkoutPlans);
+        const currentPlans = await getPlans(mockWorkoutPlans);
+        const found = await getPlanById(planId, currentPlans);
         if (found) {
           // Load last weights for each exercise
           const planWithLastWeights = {

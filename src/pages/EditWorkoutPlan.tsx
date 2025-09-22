@@ -220,18 +220,7 @@ const EditWorkoutPlan = () => {
         </CardContent>
       </Card>
 
-      <div className="flex gap-4 items-center">
-        <div className="flex-1 text-sm text-muted-foreground">
-          💡 As alterações são guardadas automaticamente
-        </div>
-        <Button 
-          onClick={savePlan}
-          variant="outline"
-          className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          Guardar Agora
-        </Button>
+      <div className="flex gap-4">
         <Button 
           variant="outline"
           onClick={() => navigate("/")}
