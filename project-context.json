@@ -82,9 +82,10 @@
     "workoutTimer": "Funcionalidade de pausar/continuar implementada e corrigida",
     "evolutionCharts": "Gráficos por grupo muscular implementados com dropdown e exercícios individuais",
     "exerciseSelection": "Modal avançado com filtros e seleção múltipla - Bíceps e Tríceps separados",
-    "monorepo": "Planejamento de estrutura compatível com Vercel",
-    "mobileApp": "Preparação para app mobile nativa - abordagem alternativa necessária",
-    "evolutionCharts": "Gráficos por grupo muscular e por plano de treino implementados"
+    "monorepo": "Estrutura criada mas removida devido a incompatibilidade com Vercel",
+    "mobileApp": "Estrutura Flutter criada em /mobile/ - Pronto para desenvolvimento",
+    "developmentEnvironment": "Limitações de privilégios no PC atual - Node.js/Flutter não instaláveis",
+    "nextEnvironment": "Preparado para desenvolvimento em PC com privilégios administrativos"
   },
   "nextSteps": [
     "FASE 1 - UX/UI Melhorias (CONCLUÍDA ✅):",
@@ -97,17 +98,27 @@
     "6. ✅ Melhorias visuais - Animações, transições",
     "7. ✅ Performance - Otimizações",
     "8. ✅ Polimento profissional - Layouts, scrollbars, espaçamentos",
-    "FASE 3 - Mobile App & Monorepo (PLANEJAMENTO 📋):",
-    "9. 🔄 Setup monorepo com abordagem compatível com Vercel",
-    "10. 🔄 Migração da app web para estrutura monorepo",
-    "11. 🔄 Criação da app mobile nativa com React Native",
-    "12. 🔄 Implementação de código compartilhado",
-    "13. 🔄 Testes e otimizações mobile",
+    "FASE 3 - Mobile App Flutter (ESTRUTURA CRIADA 📱):",
+    "9. ✅ Estrutura Flutter criada em /mobile/ com configuração completa",
+    "10. ✅ Configuração de temas, roteamento, e layouts",
+    "11. ✅ Integração com Supabase preparada",
+    "12. ✅ Páginas base criadas (auth, workouts, exercises, evolution, profile)",
+    "13. ⏳ AGUARDANDO: Instalação do Flutter SDK em PC com privilégios",
     "FASE 4 - User Experience Enhancements (EM PROGRESSO 🚀):",
     "14. ✅ Evolução por plano de treino - Gráfico com exercícios individuais",
     "15. 🔄 CSS Polish - Fix overlays, scrollbars, padding issues",
     "16. 🔄 Settings page - Units (KG/LB), themes, app configuration",
     "17. 🔄 Internationalization (i18n) - PT/EN support",
+    "FASE 5 - Desenvolvimento Mobile (PRÓXIMA FASE 🎯):",
+    "18. ⏳ Instalar Flutter SDK e configurar ambiente de desenvolvimento",
+    "19. ⏳ Implementar funcionalidades core da app mobile",
+    "20. ⏳ Sincronização de dados entre web e mobile",
+    "21. ⏳ Testes e otimizações mobile",
+    "22. ⏳ Publicação nas app stores",
+    "LIMITAÇÕES ATUAIS:",
+    "• PC atual sem privilégios administrativos",
+    "• Node.js e Flutter não podem ser instalados",
+    "• Desenvolvimento mobile pausado até mudança de ambiente",
     "FUTURO:",
     "Instalar Node.js e implementar sistema i18n completo (PT/EN)",
     "Criar landing page para utilizadores que acedem via PC",
@@ -119,6 +130,7 @@
     "Otimizar performance e adicionar mais funcionalidades PWA"
   ],
   "projectStructure": {
+    "webApp": {
     "mainPages": [
       "WorkoutPlans.tsx - Página principal com lista de planos de treino",
       "Exercises.tsx - Gestão de exercícios",
@@ -129,9 +141,9 @@
     ],
     "components": [
       "Layout.tsx - Layout principal com navegação",
-      "OnboardingModal.tsx - Modal de onboarding para novos usuários (melhorado)",
-      "PredefinedPlansModal.tsx - Modal de seleção de planos pré-definidos",
-      "ExerciseSelectionModal.tsx - Modal avançado de seleção de exercícios com filtros",
+        "OnboardingModal.tsx - Modal de onboarding para novos usuários (melhorado)",
+        "PredefinedPlansModal.tsx - Modal de seleção de planos pré-definidos",
+        "ExerciseSelectionModal.tsx - Modal avançado de seleção de exercícios com filtros",
       "ProtectedRoute.tsx - Rota protegida para usuários autenticados"
     ],
     "contexts": [
@@ -142,6 +154,33 @@
       "storage.ts - Funções de armazenamento local",
       "remote.ts - Integração com Supabase"
     ]
+    },
+    "mobileApp": {
+      "structure": "Flutter app em /mobile/",
+      "mainFiles": [
+        "pubspec.yaml - Dependências e configuração Flutter",
+        "lib/main.dart - Entry point da aplicação",
+        "lib/core/constants/app_constants.dart - Constantes da app",
+        "lib/core/theme/app_theme.dart - Temas light/dark",
+        "lib/core/router/app_router.dart - Configuração de rotas",
+        "lib/core/services/supabase_service.dart - Integração Supabase"
+      ],
+      "layouts": [
+        "lib/shared/presentation/layouts/main_layout.dart - Layout principal com bottom nav",
+        "lib/shared/presentation/layouts/auth_layout.dart - Layout para autenticação"
+      ],
+      "features": [
+        "lib/features/auth/presentation/pages/ - Login, Splash",
+        "lib/features/workouts/presentation/pages/ - Planos de treino, treino ativo",
+        "lib/features/exercises/presentation/pages/ - Lista de exercícios",
+        "lib/features/evolution/presentation/pages/ - Gráficos de evolução",
+        "lib/features/profile/presentation/pages/ - Perfil do usuário"
+      ],
+      "platformConfig": [
+        "android/app/build.gradle - Configuração Android",
+        "ios/Runner/Info.plist - Configuração iOS"
+      ]
+    }
   },
   "recentImprovements": [
     {
@@ -207,5 +246,78 @@
       "files": ["src/pages/Evolution.tsx"],
       "status": "completed"
     }
-  ]
+  ],
+  "currentLimitations": {
+    "environment": "PC sem privilégios administrativos",
+    "blockedInstallations": [
+      "Node.js - Necessário para desenvolvimento web e i18n",
+      "Flutter SDK - Necessário para desenvolvimento mobile",
+      "Git - Pode estar limitado para algumas operações"
+    ],
+    "currentCapabilities": [
+      "Edição de código existente",
+      "Commits e push para GitHub",
+      "Deploy automático via Vercel",
+      "Desenvolvimento web (se Node.js já estiver instalado)"
+    ],
+    "nextEnvironmentRequirements": [
+      "PC com privilégios administrativos",
+      "Instalação do Flutter SDK",
+      "Instalação do Node.js (se necessário)",
+      "Configuração do ambiente de desenvolvimento mobile"
+    ]
+  },
+  "mobileAppSetup": {
+    "flutterInstallation": {
+      "method": "VS Code Flutter Extension",
+      "steps": [
+        "1. Abrir VS Code",
+        "2. Pressionar Ctrl+Shift+P",
+        "3. Digitar 'flutter'",
+        "4. Selecionar 'Flutter: New Project'",
+        "5. Clicar 'Download SDK' se não tiver Flutter instalado",
+        "6. Escolher local de instalação (ex: C:\\dev)",
+        "7. Clicar 'Clone Flutter'",
+        "8. Aguardar download e instalação",
+        "9. Clicar 'Add SDK to PATH' quando solicitado",
+        "10. Reiniciar VS Code e PowerShell"
+      ],
+      "alternativeMethod": "Instalação manual via site oficial do Flutter"
+    },
+    "projectStructure": {
+      "location": "/mobile/",
+      "status": "Estrutura completa criada",
+      "readyForDevelopment": true,
+      "nextSteps": [
+        "Instalar Flutter SDK",
+        "Executar 'flutter pub get' na pasta /mobile/",
+        "Configurar Supabase URL e keys em app_constants.dart",
+        "Executar 'flutter run' para testar"
+      ]
+    },
+    "configurationNeeded": {
+      "supabaseUrl": "Atualizar em lib/core/constants/app_constants.dart",
+      "supabaseAnonKey": "Atualizar em lib/core/constants/app_constants.dart",
+      "deepLink": "Configurar em lib/core/services/supabase_service.dart",
+      "androidConfig": "Atualizar applicationId em android/app/build.gradle",
+      "iosConfig": "Atualizar bundle identifier em ios/Runner/Info.plist"
+    }
+  },
+  "developmentInstructions": {
+    "forNextSession": [
+      "1. Verificar se Flutter SDK está instalado: 'flutter doctor'",
+      "2. Navegar para pasta /mobile/",
+      "3. Executar 'flutter pub get' para instalar dependências",
+      "4. Configurar constantes do Supabase",
+      "5. Executar 'flutter run' para testar a app",
+      "6. Implementar funcionalidades core da app mobile",
+      "7. Sincronizar dados com a app web existente"
+    ],
+    "troubleshooting": {
+      "flutterNotRecognized": "Verificar se Flutter está no PATH do sistema",
+      "dependenciesError": "Executar 'flutter clean' e depois 'flutter pub get'",
+      "buildError": "Verificar configurações do Android/iOS",
+      "supabaseError": "Verificar URL e keys do Supabase"
+    }
+  }
 }
