@@ -1,5 +1,5 @@
 import React from 'react';
-import BarbellVisualization from './BarbellVisualization';
+import AdvancedBarbellVisualization from './AdvancedBarbellVisualization';
 
 interface EquipmentVisualizationProps {
   weight: number;
@@ -13,39 +13,41 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
     return null;
   }
 
-  // Barbell exercises - show barbell visualization
+  // Barbell exercises - show advanced barbell visualization
   if (equipment === "Barra") {
-    return <BarbellVisualization weight={weight} equipment={equipment} className={className} />;
+    return <AdvancedBarbellVisualization weight={weight} equipment={equipment} className={className} />;
   }
 
-  // Dumbbell exercises - show dumbbell visualization
+  // Dumbbell exercises - show advanced dumbbell visualization
   if (equipment === "Halteres") {
+    const weightPerDumbbell = weight / 2;
+    
     return (
       <div className={`flex flex-col items-center justify-center ${className}`}>
-        <div className="text-xs text-muted-foreground mb-1 font-medium">
+        <div className="text-xs text-muted-foreground mb-2 font-medium">
           Halteres
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           {/* Left dumbbell */}
           <div className="flex items-center">
-            <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
-            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-white">{weight/2}</span>
+            <div className="w-1.5 h-10 bg-gradient-to-b from-gray-300 to-gray-500 rounded-full shadow-sm"></div>
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-md border-2 border-blue-300">
+              <span className="text-xs font-bold text-white">{weightPerDumbbell}</span>
             </div>
-            <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
+            <div className="w-1.5 h-10 bg-gradient-to-b from-gray-300 to-gray-500 rounded-full shadow-sm"></div>
           </div>
           
           {/* Right dumbbell */}
           <div className="flex items-center">
-            <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
-            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-white">{weight/2}</span>
+            <div className="w-1.5 h-10 bg-gradient-to-b from-gray-300 to-gray-500 rounded-full shadow-sm"></div>
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-md border-2 border-blue-300">
+              <span className="text-xs font-bold text-white">{weightPerDumbbell}</span>
             </div>
-            <div className="w-2 h-8 bg-gray-400 rounded-full"></div>
+            <div className="w-1.5 h-10 bg-gradient-to-b from-gray-300 to-gray-500 rounded-full shadow-sm"></div>
           </div>
         </div>
-        <div className="text-xs text-muted-foreground mt-1">
-          {weight}kg total ({weight/2}kg cada)
+        <div className="text-xs text-muted-foreground mt-2 bg-muted/50 px-3 py-1 rounded-full">
+          {weight}kg total ({weightPerDumbbell}kg cada)
         </div>
       </div>
     );
@@ -55,14 +57,17 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
   if (equipment === "Máquina") {
     return (
       <div className={`flex flex-col items-center justify-center ${className}`}>
-        <div className="text-xs text-muted-foreground mb-1 font-medium">
+        <div className="text-xs text-muted-foreground mb-2 font-medium">
           Máquina
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-6 bg-gray-600 rounded flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-8 bg-gradient-to-br from-gray-500 to-gray-700 rounded-lg flex items-center justify-center shadow-md border-2 border-gray-400">
             <span className="text-xs font-bold text-white">{weight}</span>
           </div>
-          <div className="text-xs text-muted-foreground">kg</div>
+          <div className="text-xs text-muted-foreground font-medium">kg</div>
+        </div>
+        <div className="text-xs text-muted-foreground mt-1 bg-muted/50 px-2 py-1 rounded-full">
+          Peso da máquina
         </div>
       </div>
     );
@@ -72,14 +77,17 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
   if (equipment === "Cabo") {
     return (
       <div className={`flex flex-col items-center justify-center ${className}`}>
-        <div className="text-xs text-muted-foreground mb-1 font-medium">
+        <div className="text-xs text-muted-foreground mb-2 font-medium">
           Cabo
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-8 bg-gray-700 rounded flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-10 bg-gradient-to-br from-gray-600 to-gray-800 rounded-lg flex items-center justify-center shadow-md border-2 border-gray-500">
             <span className="text-xs font-bold text-white">{weight}</span>
           </div>
-          <div className="text-xs text-muted-foreground">kg</div>
+          <div className="text-xs text-muted-foreground font-medium">kg</div>
+        </div>
+        <div className="text-xs text-muted-foreground mt-1 bg-muted/50 px-2 py-1 rounded-full">
+          Peso do cabo
         </div>
       </div>
     );
@@ -89,14 +97,17 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
   if (equipment === "Peso Corporal") {
     return (
       <div className={`flex flex-col items-center justify-center ${className}`}>
-        <div className="text-xs text-muted-foreground mb-1 font-medium">
+        <div className="text-xs text-muted-foreground mb-2 font-medium">
           Peso Corporal
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-md border-2 border-green-300">
             <span className="text-xs font-bold text-white">BW</span>
           </div>
-          <div className="text-xs text-muted-foreground">Bodyweight</div>
+          <div className="text-xs text-muted-foreground font-medium">Bodyweight</div>
+        </div>
+        <div className="text-xs text-muted-foreground mt-1 bg-muted/50 px-2 py-1 rounded-full">
+          Sem peso adicional
         </div>
       </div>
     );
@@ -105,14 +116,17 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
   // Default case - show simple weight display
   return (
     <div className={`flex flex-col items-center justify-center ${className}`}>
-      <div className="text-xs text-muted-foreground mb-1 font-medium">
+      <div className="text-xs text-muted-foreground mb-2 font-medium">
         Peso
       </div>
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-6 bg-gray-500 rounded flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-8 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg flex items-center justify-center shadow-md border-2 border-slate-400">
           <span className="text-xs font-bold text-white">{weight}</span>
         </div>
-        <div className="text-xs text-muted-foreground">kg</div>
+        <div className="text-xs text-muted-foreground font-medium">kg</div>
+      </div>
+      <div className="text-xs text-muted-foreground mt-1 bg-muted/50 px-2 py-1 rounded-full">
+        {equipment}
       </div>
     </div>
   );

@@ -33,9 +33,9 @@ const EditWorkoutPlan = () => {
     loadData();
   }, [planId]);
 
-  // Auto-save quando o plano ou nome é modificado
+  // Auto-save quando o plano ou nome é modificado (mas não quando está adicionando exercícios)
   useEffect(() => {
-    if (!plan || !planId) return;
+    if (!plan || !planId || showExerciseModal) return;
     
     const autoSave = async () => {
       setIsAutoSaving(true);
@@ -56,9 +56,9 @@ const EditWorkoutPlan = () => {
     // Debounce auto-save para evitar muitas chamadas
     const timeoutId = setTimeout(autoSave, 1000);
     return () => clearTimeout(timeoutId);
-  }, [plan, planName, planId]);
+  }, [plan, planName, planId, showExerciseModal]);
 
-  const handleAddExercises = (selectedExercises: Exercise[]) => {
+  const handleAddExercises = async (selectedExercises: Exercise[]) => {
     if (!plan || selectedExercises.length === 0) return;
 
     const newWorkoutExercises: WorkoutExercise[] = selectedExercises.map(exercise => ({
@@ -72,10 +72,20 @@ const EditWorkoutPlan = () => {
       ]
     }));
 
-    setPlan(prev => prev ? {
-      ...prev,
-      exercises: [...prev.exercises, ...newWorkoutExercises]
-    } : null);
+    const updatedPlan = {
+      ...plan,
+      exercises: [...plan.exercises, ...newWorkoutExercises]
+    };
+
+    setPlan(updatedPlan);
+
+    // Save immediately after adding exercises
+    try {
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await updatePlan(updatedPlan, currentPlans);
+    } catch (error) {
+      console.error('Error saving after adding exercises:', error);
+    }
 
     toast({
       title: "Exercícios adicionados! 🎉",
