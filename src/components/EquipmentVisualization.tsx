@@ -1,5 +1,5 @@
 import React from 'react';
-import AdvancedBarbellVisualization from './AdvancedBarbellVisualization';
+import ProfessionalBarbellVisualization from './ProfessionalBarbellVisualization';
 
 interface EquipmentVisualizationProps {
   weight: number;
@@ -13,9 +13,9 @@ const EquipmentVisualization: React.FC<EquipmentVisualizationProps> = ({ weight,
     return null;
   }
 
-  // Barbell exercises - show advanced barbell visualization
+  // Barbell exercises - show professional barbell visualization
   if (equipment === "Barra") {
-    return <AdvancedBarbellVisualization weight={weight} equipment={equipment} className={className} />;
+    return <ProfessionalBarbellVisualization weight={weight} equipment={equipment} className={className} />;
   }
 
   // Dumbbell exercises - show advanced dumbbell visualization

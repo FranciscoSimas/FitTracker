@@ -33,30 +33,37 @@ const EditWorkoutPlan = () => {
     loadData();
   }, [planId]);
 
-  // Auto-save quando o plano ou nome é modificado (mas não quando está adicionando exercícios)
+  // Manual save function
+  const savePlan = async () => {
+    if (!plan || !planId) return;
+    
+    setIsAutoSaving(true);
+    try {
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      const planToSave: WorkoutPlan = {
+        ...plan,
+        name: planName || plan.name,
+      };
+      await updatePlan(planToSave, currentPlans);
+    } catch (error) {
+      console.error('Save error:', error);
+    } finally {
+      setIsAutoSaving(false);
+    }
+  };
+
+  // Auto-save only for name changes (not exercises)
   useEffect(() => {
     if (!plan || !planId || showExerciseModal) return;
     
-    const autoSave = async () => {
-      setIsAutoSaving(true);
-      try {
-        const currentPlans = await getPlans(mockWorkoutPlans);
-        const planToSave: WorkoutPlan = {
-          ...plan,
-          name: planName || plan.name,
-        };
-        await updatePlan(planToSave, currentPlans);
-      } catch (error) {
-        console.error('Auto-save error:', error);
-      } finally {
-        setIsAutoSaving(false);
+    const timeoutId = setTimeout(() => {
+      if (planName !== plan.name) {
+        savePlan();
       }
-    };
-
-    // Debounce auto-save para evitar muitas chamadas
-    const timeoutId = setTimeout(autoSave, 1000);
+    }, 1000);
+    
     return () => clearTimeout(timeoutId);
-  }, [plan, planName, planId, showExerciseModal]);
+  }, [planName, planId, showExerciseModal]);
 
   const handleAddExercises = async (selectedExercises: Exercise[]) => {
     if (!plan || selectedExercises.length === 0) return;
@@ -80,12 +87,7 @@ const EditWorkoutPlan = () => {
     setPlan(updatedPlan);
 
     // Save immediately after adding exercises
-    try {
-      const currentPlans = await getPlans(mockWorkoutPlans);
-      await updatePlan(updatedPlan, currentPlans);
-    } catch (error) {
-      console.error('Error saving after adding exercises:', error);
-    }
+    await savePlan();
 
     toast({
       title: "Exercícios adicionados! 🎉",
@@ -93,27 +95,16 @@ const EditWorkoutPlan = () => {
     });
   };
 
-  const removeExercise = (exerciseId: string) => {
-    setPlan(prev => prev ? {
-      ...prev,
-      exercises: prev.exercises.filter(ex => ex.id !== exerciseId)
-    } : null);
+  const removeExercise = async (exerciseId: string) => {
+    const updatedPlan = plan ? {
+      ...plan,
+      exercises: plan.exercises.filter(ex => ex.id !== exerciseId)
+    } : null;
+    
+    setPlan(updatedPlan);
+    await savePlan();
   };
 
-  const savePlan = async () => {
-    if (!plan) return;
-    const planToSave: WorkoutPlan = {
-      ...plan,
-      name: planName || plan.name,
-    };
-    const currentPlans = await getPlans(mockWorkoutPlans);
-    await updatePlan(planToSave, currentPlans);
-    toast({
-      title: "Plano salvo!",
-      description: "As alterações foram guardadas com sucesso.",
-    });
-    navigate("/");
-  };
 
   const deletePlan = async () => {
     if (!plan) return;
