@@ -11,7 +11,6 @@ import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWei
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { PageTransition, FadeIn } from "@/components/ui/page-transition";
-import EquipmentVisualization from "@/components/EquipmentVisualization";
 
 const ActiveWorkout = () => {
   const { planId } = useParams();
@@ -444,16 +443,6 @@ const ActiveWorkout = () => {
                       </div>
                     </div>
                     
-                    {/* Equipment Visualization */}
-                    {set.weight > 0 && (
-                      <div className="flex justify-center py-2">
-                        <EquipmentVisualization 
-                          weight={set.weight}
-                          equipment={exercise.exercise.equipment}
-                          className="opacity-80 hover:opacity-100 transition-opacity"
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
