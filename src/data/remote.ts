@@ -519,11 +519,11 @@ export async function populateInitialExercises(userId: string): Promise<void> {
 }
 
 // Função para limpar exercícios órfãos (que não pertencem a nenhum utilizador)
-export async function cleanupOrphanedExercises(): Promise<void> {
+export async function cleanupOrphanedExercises(): Promise<{deleted: number, total: number, inUse: number}> {
   try {
     const { supabase } = await import('../integrations/supabase/client');
     
-    console.log('🧹 Limpando exercícios órfãos...');
+    console.log('🧹 Limpando exercícios órfãos automaticamente...');
     
     // Primeiro, buscar todos os IDs de exercícios que estão em user_exercises
     const { data: usedExercises, error: usedError } = await supabase
@@ -570,8 +570,18 @@ export async function cleanupOrphanedExercises(): Promise<void> {
       }
       
       console.log(`✅ ${orphanedIds.length} exercícios órfãos eliminados com sucesso!`);
+      return {
+        deleted: orphanedIds.length,
+        total: allExerciseIds.length,
+        inUse: usedExerciseIds.length
+      };
     } else {
       console.log('✅ Nenhum exercício órfão encontrado');
+      return {
+        deleted: 0,
+        total: allExerciseIds.length,
+        inUse: usedExerciseIds.length
+      };
     }
     
   } catch (error) {

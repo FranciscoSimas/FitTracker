@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
 import { getExercises, removeExercise as persistRemoveExercise, setExercises as persistSetExercises } from "@/data/storage";
+import { cleanupOrphanedExercises } from "@/data/remote";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -71,6 +72,29 @@ const Exercises = () => {
     });
   };
 
+  const handleCleanupOrphanedExercises = async () => {
+    try {
+      const result = await cleanupOrphanedExercises();
+      toast({
+        title: "Limpeza concluída!",
+        description: `${result.deleted} exercícios órfãos eliminados. Total: ${result.total}, Em uso: ${result.inUse}`,
+      });
+      
+      // Recarregar exercícios para refletir as mudanças
+      const data = await getExercises(mockExercises);
+      setExercises(data);
+      setFilteredExercises(data);
+      filterExercises(searchTerm, selectedMuscleGroup);
+    } catch (error) {
+      console.error('Erro ao limpar exercícios órfãos:', error);
+      toast({
+        title: "Erro na limpeza",
+        description: "Não foi possível limpar os exercícios órfãos. Verifica a consola para mais detalhes.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   const getMuscleGroupColor = (muscleGroup: string) => {
     const colors: { [key: string]: string } = {
@@ -95,13 +119,23 @@ const Exercises = () => {
             Gerencie seus exercícios e adicione novos
           </p>
         </div>
-        <Button 
-          onClick={() => navigate("/adicionar-exercicio")}
-          className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar Exercício
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleCleanupOrphanedExercises}
+            variant="outline"
+            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Limpar Órfãos
+          </Button>
+          <Button 
+            onClick={() => navigate("/adicionar-exercicio")}
+            className="bg-gradient-to-r from-fitness-primary to-fitness-secondary hover:from-fitness-primary/90 hover:to-fitness-secondary/90 text-white border-0"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Exercício
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
