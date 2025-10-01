@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addExercise as persistAddExercise, getExercises } from "@/data/storage";
@@ -17,6 +18,7 @@ const AddExercise = () => {
   const [exerciseName, setExerciseName] = useState("");
   const [muscleGroup, setMuscleGroup] = useState("");
   const [equipment, setEquipment] = useState("");
+  const [isTimeBased, setIsTimeBased] = useState(false);
   const [currentExercises, setCurrentExercises] = useState<Exercise[]>([]);
 
   const muscleGroups = ["Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas", "Core", "Cardio", "Funcional"];
@@ -60,6 +62,7 @@ const AddExercise = () => {
       name: exerciseName.trim(),
       muscleGroup,
       equipment: equipment || undefined,
+      isTimeBased: isTimeBased,
     };
     
     // Usar os exercícios atuais em vez dos mockExercises
@@ -133,6 +136,20 @@ const AddExercise = () => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="space-y-0.5">
+              <Label htmlFor="isTimeBased">Exercício por tempo</Label>
+              <p className="text-sm text-muted-foreground">
+                Marque se o exercício é baseado em tempo (ex: Prancha, Burpees)
+              </p>
+            </div>
+            <Switch
+              id="isTimeBased"
+              checked={isTimeBased}
+              onCheckedChange={setIsTimeBased}
+            />
           </div>
 
           <div className="flex gap-4 pt-4">

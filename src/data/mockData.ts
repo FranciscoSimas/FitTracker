@@ -4,6 +4,7 @@ export interface Exercise {
   muscleGroup: string;
   equipment?: string;
   type?: 'strength' | 'cardio'; // Tipo de exercício
+  isTimeBased?: boolean; // Se o exercício é baseado em tempo (ex: Prancha, Burpees)
   cardioFields?: {
     duration?: number; // em minutos
     intensity?: 'Baixa' | 'Moderada' | 'Alta';
@@ -121,16 +122,16 @@ export const mockExercises: Exercise[] = [
   
   // CORE
   { id: "61", name: "Abdominal Crunch", muscleGroup: "Core", equipment: "Peso Corporal" },
-  { id: "62", name: "Prancha", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "62", name: "Prancha", muscleGroup: "Core", equipment: "Peso Corporal", isTimeBased: true },
   { id: "63", name: "Abdominal Bicicleta", muscleGroup: "Core", equipment: "Peso Corporal" },
-  { id: "64", name: "Mountain Climber", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "64", name: "Mountain Climber", muscleGroup: "Core", equipment: "Peso Corporal", isTimeBased: true },
   { id: "65", name: "Abdominal com Peso", muscleGroup: "Core", equipment: "Halteres" },
-  { id: "66", name: "Prancha Lateral", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "66", name: "Prancha Lateral", muscleGroup: "Core", equipment: "Peso Corporal", isTimeBased: true },
   { id: "67", name: "Abdominal na Máquina", muscleGroup: "Core", equipment: "Máquina" },
   { id: "68", name: "Russian Twist", muscleGroup: "Core", equipment: "Peso Corporal" },
   { id: "69", name: "Dead Bug", muscleGroup: "Core", equipment: "Peso Corporal" },
   { id: "70", name: "Bird Dog", muscleGroup: "Core", equipment: "Peso Corporal" },
-  { id: "71", name: "Hollow Hold", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "71", name: "Hollow Hold", muscleGroup: "Core", equipment: "Peso Corporal", isTimeBased: true },
   { id: "72", name: "Leg Raises", muscleGroup: "Core", equipment: "Peso Corporal" },
   
   // CARDIO
@@ -149,12 +150,12 @@ export const mockExercises: Exercise[] = [
   { id: "83", name: "Deadlift", muscleGroup: "Funcional", equipment: "Barra" },
   { id: "84", name: "Kettlebell Swing", muscleGroup: "Funcional", equipment: "Kettlebell" },
   { id: "85", name: "Turkish Get-up", muscleGroup: "Funcional", equipment: "Kettlebell" },
-  { id: "86", name: "Farmer's Walk", muscleGroup: "Funcional", equipment: "Halteres" },
-  { id: "87", name: "Battle Ropes", muscleGroup: "Funcional", equipment: "Cabo" },
+  { id: "86", name: "Farmer's Walk", muscleGroup: "Funcional", equipment: "Halteres", isTimeBased: true },
+  { id: "87", name: "Battle Ropes", muscleGroup: "Funcional", equipment: "Cabo", isTimeBased: true },
   { id: "88", name: "Box Jump", muscleGroup: "Funcional", equipment: "Caixa" },
   { id: "89", name: "Medicine Ball Slam", muscleGroup: "Funcional", equipment: "Medicine Ball" },
-  { id: "90", name: "Bear Crawl", muscleGroup: "Funcional", equipment: "Peso Corporal" },
-  { id: "91", name: "Crab Walk", muscleGroup: "Funcional", equipment: "Peso Corporal" },
+  { id: "90", name: "Bear Crawl", muscleGroup: "Funcional", equipment: "Peso Corporal", isTimeBased: true },
+  { id: "91", name: "Crab Walk", muscleGroup: "Funcional", equipment: "Peso Corporal", isTimeBased: true },
   { id: "92", name: "Single Leg Deadlift", muscleGroup: "Funcional", equipment: "Halteres" },
 ];
 
@@ -450,7 +451,7 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
         exerciseId: "78",
         exercise: mockExercises[77], // Burpees
         sets: [
-          { id: "s91", reps: 10, weight: 0, completed: false }, // 10 minutos
+          { id: "s91", reps: 5, weight: 0, completed: false }, // 5 minutos
         ],
       },
       {
@@ -466,7 +467,7 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
         exerciseId: "82",
         exercise: mockExercises[81], // Corda
         sets: [
-          { id: "s93", reps: 15, weight: 0, completed: false }, // 15 minutos
+          { id: "s93", reps: 5, weight: 0, completed: false }, // 5 minutos
         ],
       },
     ],

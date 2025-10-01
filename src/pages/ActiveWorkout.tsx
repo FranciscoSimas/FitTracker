@@ -369,7 +369,7 @@ const ActiveWorkout = () => {
                     {exercise.exercise.muscleGroup}
                   </Badge>
                 <div className="flex items-center gap-2">
-                  {exercise.exercise.type !== 'cardio' && (
+                  {exercise.exercise.type !== 'cardio' && !exercise.exercise.isTimeBased && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -423,7 +423,7 @@ const ActiveWorkout = () => {
                   
                   <div className="space-y-4">
                     {/* Renderização condicional baseada no tipo de exercício */}
-                    {exercise.exercise.type === 'cardio' ? (
+                    {exercise.exercise.type === 'cardio' || exercise.exercise.isTimeBased ? (
                       /* Cardio Controls */
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
