@@ -26,8 +26,18 @@ function markMigrationComplete(): void {
 
 // Migração simplificada - remove dados antigos e deixa a nova biblioteca ser carregada automaticamente
 
+// Função para forçar migração novamente (para debug/teste)
+export function forceMigration(): void {
+  console.log("🔄 Forçando migração novamente...");
+  localStorage.removeItem(MIGRATION_VERSION_KEY);
+  localStorage.removeItem(EXERCISES_KEY);
+  localStorage.removeItem(PLANS_KEY);
+  console.log("✅ Dados limpos, migração será executada na próxima vez que carregar dados");
+}
+
 async function performDataMigration(): Promise<void> {
   if (!needsMigration()) {
+    console.log("✅ Migração já foi executada, versão atual:", CURRENT_MIGRATION_VERSION);
     return;
   }
 
@@ -111,8 +121,9 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          console.log(`💪 Exercícios carregados do localStorage: ${parsed.length} exercícios`);
+          return parsed; // Retorna mesmo se for array vazio
         }
       } catch (parseError) {
         console.error("Error parsing stored exercises:", parseError);
@@ -120,6 +131,7 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
       }
     }
     
+    console.log(`💪 Nenhum exercício encontrado no localStorage, retornando mockData: ${initial.length} exercícios`);
     return initial;
   } catch (error) {
     console.error("Error getting exercises:", error);
@@ -178,8 +190,9 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+        if (Array.isArray(parsed)) {
+          console.log(`📋 Planos carregados do localStorage: ${parsed.length} planos`);
+          return parsed; // Retorna mesmo se for array vazio
         }
       } catch (parseError) {
         console.error("Error parsing stored plans:", parseError);
@@ -187,11 +200,13 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
       }
     }
     
-    // Return initial mock data if no stored data
-    return initial;
+    // Se não há dados no localStorage, retorna array vazio
+    // Os planos pré-definidos só aparecem se o utilizador os adicionar explicitamente
+    console.log("📋 Nenhum plano encontrado no localStorage, retornando array vazio");
+    return [];
   } catch (error) {
     console.error("Error getting plans:", error);
-    return initial;
+    return [];
   }
 }
 
