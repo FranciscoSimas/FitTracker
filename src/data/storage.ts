@@ -115,9 +115,18 @@ async function performDataMigration(): Promise<void> {
 
     // Tentar limpar também a base de dados Supabase
     try {
-      const { clearOldDataFromDatabase } = await import('./remote');
+      const { clearOldDataFromDatabase, cleanupOrphanedExercises } = await import('./remote');
       await clearOldDataFromDatabase();
       console.log("✅ Base de dados Supabase limpa");
+      
+      // Limpeza automática de exercícios órfãos (manutenção de backend)
+      try {
+        const cleanupResult = await cleanupOrphanedExercises();
+        console.log(`🧹 Limpeza automática: ${cleanupResult.deleted} exercícios órfãos eliminados`);
+      } catch (cleanupError) {
+        console.warn("⚠️ Erro na limpeza automática de exercícios órfãos:", cleanupError);
+        // Não falha a migração por causa da limpeza
+      }
     } catch (dbError) {
       console.warn("⚠️ Não foi possível limpar a base de dados Supabase:", dbError);
       console.log("📝 A migração continuará apenas com localStorage");
