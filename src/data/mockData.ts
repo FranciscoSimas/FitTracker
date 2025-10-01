@@ -450,7 +450,7 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
         exerciseId: "78",
         exercise: mockExercises[77], // Burpees
         sets: [
-          { id: "s91", reps: 1, weight: 0, completed: false }, // 10 minutos
+          { id: "s91", reps: 10, weight: 0, completed: false }, // 10 minutos
         ],
       },
       {
@@ -458,7 +458,7 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
         exerciseId: "79",
         exercise: mockExercises[78], // Jumping Jacks
         sets: [
-          { id: "s92", reps: 1, weight: 0, completed: false }, // 5 minutos
+          { id: "s92", reps: 5, weight: 0, completed: false }, // 5 minutos
         ],
       },
       {
@@ -466,7 +466,7 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
         exerciseId: "82",
         exercise: mockExercises[81], // Corda
         sets: [
-          { id: "s93", reps: 1, weight: 0, completed: false }, // 15 minutos
+          { id: "s93", reps: 15, weight: 0, completed: false }, // 15 minutos
         ],
       },
     ],

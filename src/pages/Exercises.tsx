@@ -20,7 +20,7 @@ const Exercises = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<string>("all");
 
-  const muscleGroups = ["all", "Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas"];
+  const muscleGroups = ["all", "Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas", "Core", "Cardio", "Funcional"];
 
   useEffect(() => {
     const loadData = async () => {
@@ -121,10 +121,10 @@ const Exercises = () => {
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Select value={selectedMuscleGroup} onValueChange={handleMuscleGroupFilter}>
                 <SelectTrigger className="w-48 bg-background/80 border-border/50">
-                  <SelectValue placeholder="Filtrar por grupo" />
+                  <SelectValue placeholder="Filtrar por categoria" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os grupos</SelectItem>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
                   {muscleGroups.slice(1).map((group) => (
                     <SelectItem key={group} value={group}>{group}</SelectItem>
                   ))}

@@ -394,17 +394,9 @@
       "Implementar sistema de notificações push",
       "Adicionar mais idiomas (inglês, espanhol)",
       "Implementar sistema de backup automático",
-      "Adicionar analytics e tracking de eventos"
+      "Adicionar analytics e tracking de eventos",
+      "Grafico de alteres com barra",
+      "Gravar os ultimos dados que o user fez quando for iniciar o exercicio."
     ]
   }
 }
-
-
-
-//Notas:
-//Grafico de alteres com barra
-//Mudar o botao de retirar o set para cima
-//Gravar os ultimos dados que o user fez quando for iniciar o exercicio.
-
-
-

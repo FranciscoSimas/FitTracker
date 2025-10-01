@@ -18,6 +18,7 @@ const ActiveWorkout = () => {
   const { toast } = useToast();
 
   const [plan, setPlan] = useState(null);
+  const [expandedExercises, setExpandedExercises] = useState<Set<string>>(new Set());
   
   useEffect(() => {
     const loadPlan = async () => {
@@ -233,6 +234,18 @@ const ActiveWorkout = () => {
     });
   };
 
+  const toggleExerciseExpanded = (exerciseId: string) => {
+    setExpandedExercises(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(exerciseId)) {
+        newSet.delete(exerciseId);
+      } else {
+        newSet.add(exerciseId);
+      }
+      return newSet;
+    });
+  };
+
   if (!plan) {
     return (
       <div className="text-center py-12">
@@ -316,29 +329,57 @@ const ActiveWorkout = () => {
 
       {/* Exercises */}
       <div className="space-y-4">
-        {plan.exercises.map((exercise) => (
-          <Card key={exercise.id} className="bg-card/50 border-border/50">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-fitness-primary"></div>
-                {exercise.exercise.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between mb-3">
-                <Badge variant="outline" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
-                  {exercise.exercise.muscleGroup}
-                </Badge>
+        {plan.exercises.map((exercise) => {
+          const isExpanded = expandedExercises.has(exercise.id);
+          const allSetsCompleted = exercise.sets.every(set => set.completed);
+          
+          return (
+            <Card key={exercise.id} className="bg-card/50 border-border/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => toggleExerciseExpanded(exercise.id)}
+                      className="p-1 h-8 w-8"
+                    >
+                      {isExpanded ? (
+                        <Minus className="h-4 w-4" />
+                      ) : (
+                        <Plus className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-fitness-primary"></div>
+                      {exercise.exercise.name}
+                    </CardTitle>
+                    {allSetsCompleted && (
+                      <Badge variant="outline" className="bg-green-100 text-green-700 border-green-200">
+                        Concluído
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+            {isExpanded && (
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between mb-3">
+                  <Badge variant="outline" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
+                    {exercise.exercise.muscleGroup}
+                  </Badge>
                 <div className="flex items-center gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => addSet(exercise.id)}
-                    className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-                  >
-                    <Plus className="h-3 w-3 mr-1" />
-                    Set
-                  </Button>
+                  {exercise.exercise.type !== 'cardio' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => addSet(exercise.id)}
+                      className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Set
+                    </Button>
+                  )}
                   {exercise.sets.length > 1 && (
                     <Button
                       size="sm"
@@ -391,7 +432,7 @@ const ActiveWorkout = () => {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => updateSet(exercise.id, set.id, 'reps', Math.max(1, set.reps - 5))}
+                              onClick={() => updateSet(exercise.id, set.id, 'reps', Math.max(5, set.reps - 5))}
                               className="h-8 w-8 p-0"
                             >
                               <Minus className="h-3 w-3" />
@@ -524,9 +565,11 @@ const ActiveWorkout = () => {
                   </div>
                 </div>
               ))}
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
-        ))}
+          );
+        })}
       </div>
 
       {/* Notes */}

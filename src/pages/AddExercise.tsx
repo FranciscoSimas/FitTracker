@@ -19,8 +19,8 @@ const AddExercise = () => {
   const [equipment, setEquipment] = useState("");
   const [currentExercises, setCurrentExercises] = useState<Exercise[]>([]);
 
-  const muscleGroups = ["Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas"];
-  const equipmentOptions = ["Barra", "Halteres", "Cabo", "Máquina", "Peso Corporal"];
+  const muscleGroups = ["Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas", "Core", "Cardio", "Funcional"];
+  const equipmentOptions = ["Barra", "Halteres", "Cabo", "Máquina", "Peso Corporal", "Kettlebell", "Medicine Ball", "Corda", "Caixa"];
 
   // Carregar exercícios atuais ao montar o componente
   useEffect(() => {
@@ -104,10 +104,10 @@ const AddExercise = () => {
           </div>
 
           <div>
-            <Label htmlFor="muscleGroup">Grupo Muscular *</Label>
+            <Label htmlFor="muscleGroup">Categoria *</Label>
             <Select value={muscleGroup} onValueChange={setMuscleGroup}>
               <SelectTrigger className="bg-background/80 border-border/50">
-                <SelectValue placeholder="Selecionar grupo muscular" />
+                <SelectValue placeholder="Selecionar categoria" />
               </SelectTrigger>
               <SelectContent>
                 {muscleGroups.map((group) => (
