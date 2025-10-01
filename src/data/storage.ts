@@ -418,8 +418,17 @@ export async function addCompletedWorkout(workout: CompletedWorkout): Promise<vo
     const updated = [...existing, workout];
     setCompletedWorkouts(updated);
     
-    // Try to add to remote - disabled for now
-    // await remote.addWorkoutHistoryRemote(workout, '');
+    // Salvar no Supabase
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.addWorkoutHistoryRemote(workout, userId);
+        console.log('✅ Treino completado salvo no Supabase');
+      } catch (remoteError) {
+        console.error('Erro ao salvar treino no Supabase:', remoteError);
+        // Continua mesmo se falhar no Supabase
+      }
+    }
   } catch (error) {
     console.error("Error adding completed workout:", error);
   }

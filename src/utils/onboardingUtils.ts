@@ -25,14 +25,10 @@ export async function isNewUser(): Promise<boolean> {
  */
 export async function loadBasicExerciseLibrary(): Promise<Exercise[]> {
   try {
-    // Carrega todos os exercícios básicos para localStorage
-    setExercises(mockExercises);
-    
-    // Salva também na base de dados remota usando bulk insert
-    const { addExercisesBulkRemote } = await import("@/data/remote");
-    await addExercisesBulkRemote(mockExercises);
-    
-    return mockExercises;
+    // Não precisa fazer nada aqui - os exercícios já são carregados automaticamente
+    // quando o utilizador entra na app através do getExercises()
+    console.log('📡 Exercícios básicos já carregados automaticamente');
+    return [];
   } catch (error) {
     console.error('Error loading basic exercise library:', error);
     return [];

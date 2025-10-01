@@ -323,7 +323,41 @@ export async function getWorkoutHistoryRemote(userId: string) {
 }
 
 export async function addWorkoutHistoryRemote(workout: any, userId: string) {
-  return null;
+  try {
+    const { supabase } = await import('../integrations/supabase/client');
+    
+    console.log('📡 Salvando treino completado no Supabase...');
+    
+    // Inserir treino completado na tabela completed_workouts
+    const { data: workoutData, error: workoutError } = await supabase
+      .from('completed_workouts')
+      .insert([{
+        id: workout.id,
+        user_id: userId,
+        plan_id: workout.planId,
+        plan_name: workout.planName,
+        date: workout.date,
+        start_time: workout.startTime,
+        end_time: workout.endTime,
+        duration: workout.duration,
+        exercises: workout.exercises,
+        notes: workout.notes,
+        completed: workout.completed
+      }])
+      .select()
+      .single();
+    
+    if (workoutError) {
+      console.error('Error saving completed workout:', workoutError);
+      throw workoutError;
+    }
+    
+    console.log(`📡 Treino completado salvo no Supabase: ${workout.planName}`);
+    return workoutData;
+  } catch (error) {
+    console.error('Error saving completed workout to Supabase:', error);
+    throw error;
+  }
 }
 
 // Função para popular exercícios iniciais no Supabase
