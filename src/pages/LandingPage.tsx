@@ -109,135 +109,181 @@ const LandingPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Dumbbell className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">FitTracker</span>
+    <div className="min-h-screen bg-background">
+      {/* Header - Minimalist & Professional */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+              <Dumbbell className="h-5 w-5 text-white" />
+            </div>
+            <span className="text-xl font-semibold tracking-tight">FitTracker</span>
           </div>
-          <div className="flex items-center space-x-4">
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Funcionalidades</a>
+            <a href="#screenshots" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">App</a>
+            <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Avaliações</a>
+          </nav>
+          <div className="flex items-center space-x-3">
             <Link to="/login">
-              <Button variant="ghost">Entrar</Button>
+              <Button variant="ghost" size="sm" className="text-sm">Entrar</Button>
             </Link>
             <Link to="/login">
-              <Button className="bg-primary hover:bg-primary/90">
-                Criar Conta
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-sm px-6">
+                Começar
               </Button>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-4xl mx-auto">
-          <Badge variant="secondary" className="mb-4">
-            <Zap className="h-4 w-4 mr-1" />
-            Nova versão disponível
-          </Badge>
-          
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            Transforma o teu treino em resultados
-          </h1>
-          
-          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-            A plataforma completa para criar, gerir e acompanhar os teus planos de treino. 
-            Com gráficos de evolução, timer integrado e sincronização em tempo real.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Link to="/login">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 py-6">
-                Começar Gratuitamente
-                <ArrowRight className="ml-2 h-5 w-5" />
+      {/* Hero Section - Modern & Clean */}
+      <section className="pt-32 pb-20 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
+              <div className="w-2 h-2 bg-primary rounded-full mr-3 animate-pulse"></div>
+              <span className="text-sm font-medium text-primary">Nova versão disponível</span>
+            </div>
+            
+            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight tracking-tight">
+              <span className="block text-foreground">Transforma o teu</span>
+              <span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+                treino em resultados
+              </span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+              A plataforma profissional para criar, gerir e acompanhar os teus planos de treino. 
+              <br className="hidden md:block" />
+              Com gráficos avançados, timer integrado e sincronização em tempo real.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+              <Link to="/login">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                  Começar Gratuitamente
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="text-lg px-12 py-6 rounded-full border-2 hover:bg-muted/50 transition-all duration-300">
+                Ver Demonstração
               </Button>
-            </Link>
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">100+</div>
-              <div className="text-muted-foreground">Exercícios</div>
+          {/* Hero Stats - Elegant Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300">
+              <div className="text-4xl font-bold text-primary mb-2">100+</div>
+              <div className="text-muted-foreground font-medium">Exercícios Pré-cadastrados</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">∞</div>
-              <div className="text-muted-foreground">Planos Personalizados</div>
+            <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300">
+              <div className="text-4xl font-bold text-primary mb-2">∞</div>
+              <div className="text-muted-foreground font-medium">Planos Personalizados</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary">24/7</div>
-              <div className="text-muted-foreground">Acesso</div>
+            <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300">
+              <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+              <div className="text-muted-foreground font-medium">Acesso Total</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Tudo o que precisas para treinar melhor</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Funcionalidades desenvolvidas pensando na experiência real de quem treina
+      {/* Features Section - Modern Grid */}
+      <section id="features" className="py-24 px-6 bg-gradient-to-b from-background to-muted/20">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <span className="text-foreground">Tudo o que precisas</span>
+              <br />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                para treinar melhor
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Funcionalidades desenvolvidas pensando na experiência real de quem treina a sério
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex justify-center mb-4">
-                    {feature.icon}
-                  </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-base">
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
+              <div key={index} className="group">
+                <Card className="h-full text-center border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-center mb-6">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        {feature.icon}
+                      </div>
+                    </div>
+                    <CardTitle className="text-xl font-semibold mb-3">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <CardDescription className="text-base leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* App Screenshots Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Vê como funciona</h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Interface simples e funcionalidades poderosas para maximizar os teus resultados
+      {/* App Screenshots Section - Professional Mockups */}
+      <section id="screenshots" className="py-24 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <span className="text-foreground">Vê como</span>
+              <br />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                funciona
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Interface elegante e funcionalidades poderosas para maximizar os teus resultados
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {appScreenshots.map((screenshot, index) => (
-              <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-4xl">{screenshot.image}</div>
-                    <div>
-                      <CardTitle className="text-2xl">{screenshot.title}</CardTitle>
-                      <CardDescription className="text-base mt-2">
-                        {screenshot.description}
-                      </CardDescription>
+              <div key={index} className="group">
+                <Card className="overflow-hidden border-0 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-500">
+                  <CardHeader className="pb-6">
+                    <div className="flex items-start space-x-6">
+                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                        {screenshot.image}
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-2xl font-bold mb-3">{screenshot.title}</CardTitle>
+                        <CardDescription className="text-base leading-relaxed text-muted-foreground">
+                          {screenshot.description}
+                        </CardDescription>
+                      </div>
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {screenshot.features.map((feature, featureIndex) => (
-                      <Badge key={featureIndex} variant="secondary">
-                        {feature}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap gap-3">
+                      {screenshot.features.map((feature, featureIndex) => (
+                        <Badge key={featureIndex} variant="secondary" className="px-4 py-2 text-sm font-medium bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors">
+                          {feature}
+                        </Badge>
+                      ))}
+                    </div>
+                    
+                    {/* Placeholder for future screenshot */}
+                    <div className="mt-6 p-8 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary/20 flex items-center justify-center">
+                        <Smartphone className="h-8 w-8 text-primary" />
+                      </div>
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Screenshot da app em breve
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             ))}
           </div>
         </div>
@@ -287,110 +333,169 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">O que os nossos utilizadores dizem</h2>
-            <p className="text-xl text-muted-foreground">
-              Histórias reais de quem transformou os seus treinos
+      {/* Reviews Section - Elegant Testimonials */}
+      <section id="reviews" className="py-24 px-6 bg-gradient-to-b from-muted/20 to-background">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <span className="text-foreground">O que os nossos</span>
+              <br />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                utilizadores dizem
+              </span>
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Histórias reais de quem transformou os seus treinos com o FitTracker
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {reviews.map((review, index) => (
-              <Card key={index} className="text-center">
-                <CardHeader>
-                  <div className="flex justify-center space-x-1 mb-4">
-                    {[...Array(review.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <CardDescription className="text-base italic">
-                    "{review.content}"
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="font-semibold">{review.name}</div>
-                  <div className="text-sm text-muted-foreground">{review.role}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{review.date}</div>
-                </CardContent>
-              </Card>
+              <div key={index} className="group">
+                <Card className="h-full text-center border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex justify-center space-x-1 mb-6">
+                      {[...Array(review.rating)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400 group-hover:scale-110 transition-transform duration-300" style={{ transitionDelay: `${i * 50}ms` }} />
+                      ))}
+                    </div>
+                    <CardDescription className="text-base italic leading-relaxed text-muted-foreground">
+                      "{review.content}"
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="font-semibold text-lg mb-1">{review.name}</div>
+                    <div className="text-sm text-primary font-medium mb-2">{review.role}</div>
+                    <div className="text-xs text-muted-foreground">{review.date}</div>
+                  </CardContent>
+                </Card>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h2 className="text-4xl font-bold mb-6">Pronto para transformar os teus treinos?</h2>
-            <p className="text-xl text-muted-foreground mb-8">
+      {/* CTA Section - Final Call to Action */}
+      <section className="py-24 px-6 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
+        <div className="container mx-auto max-w-4xl text-center">
+          <div className="mb-12">
+            <h2 className="text-5xl md:text-6xl font-bold mb-8 tracking-tight">
+              <span className="text-foreground">Pronto para</span>
+              <br />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                transformar os teus treinos?
+              </span>
+            </h2>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
               Junta-te a milhares de pessoas que já descobriram uma forma melhor de treinar.
             </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
+            <Link to="/login">
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Começar Agora - É Grátis
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to="/login">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-8 py-6">
-                  Começar Agora - É Grátis
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              
-              <div className="text-sm text-muted-foreground">
-                <Users className="h-4 w-4 inline mr-1" />
-                Sem cartão de crédito • Setup em 2 minutos
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Users className="h-4 w-4 mr-2" />
+              <span>Sem cartão de crédito • Setup em 2 minutos</span>
+            </div>
+          </div>
+
+          {/* Trust indicators */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                <Shield className="h-6 w-6 text-primary" />
               </div>
+              <p className="text-sm font-medium text-muted-foreground">100% Seguro</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                <Zap className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground">Setup Rápido</p>
+            </div>
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-primary/20 flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-primary" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground">Sempre Gratuito</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-background py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Dumbbell className="h-6 w-6 text-primary" />
+      {/* Footer - Modern & Clean */}
+      <footer className="border-t border-border/50 bg-background/50 backdrop-blur-sm py-16 px-6">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+            <div className="md:col-span-1">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                  <Dumbbell className="h-5 w-5 text-white" />
+                </div>
                 <span className="text-xl font-bold text-primary">FitTracker</span>
               </div>
-              <p className="text-muted-foreground">
-                A plataforma completa para gerir os teus treinos e acompanhar a tua evolução.
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                A plataforma profissional para gerir os teus treinos e acompanhar a tua evolução.
               </p>
+              <div className="flex space-x-4">
+                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
+                  <span className="text-sm font-semibold">f</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
+                  <span className="text-sm font-semibold">t</span>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
+                  <span className="text-sm font-semibold">in</span>
+                </div>
+              </div>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Produto</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground">Funcionalidades</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">Preços</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">App Mobile</Link></li>
+              <h3 className="font-semibold text-lg mb-6">Produto</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Funcionalidades</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Preços</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">App Mobile</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">API</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Suporte</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground">Central de Ajuda</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">Contacto</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">Status</Link></li>
+              <h3 className="font-semibold text-lg mb-6">Suporte</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Central de Ajuda</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Contacto</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Status</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Comunidade</Link></li>
               </ul>
             </div>
             
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-2 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground">Privacidade</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">Termos</Link></li>
-                <li><Link to="/login" className="hover:text-foreground">Cookies</Link></li>
+              <h3 className="font-semibold text-lg mb-6">Legal</h3>
+              <ul className="space-y-3 text-muted-foreground">
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Privacidade</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Termos</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">Cookies</Link></li>
+                <li><Link to="/login" className="hover:text-foreground transition-colors">GDPR</Link></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t mt-8 pt-8 text-center text-muted-foreground">
-            <p>&copy; 2025 FitTracker. Todos os direitos reservados.</p>
+          <div className="border-t border-border/50 mt-12 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-muted-foreground text-sm">
+                &copy; 2025 FitTracker. Todos os direitos reservados.
+              </p>
+              <div className="flex items-center space-x-6 mt-4 md:mt-0">
+                <span className="text-sm text-muted-foreground">Feito com ❤️ em Portugal</span>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

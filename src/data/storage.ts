@@ -20,18 +20,29 @@ function clearDataFromIndexedDB(): void {
 
 export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
   try {
-    // Try remote first - disabled for now
-    // const remoteExercises = await remote.getUserExercisesRemote('');
-    // if (remoteExercises.length > 0) {
-    //   localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
-    //   return remoteExercises;
-    // }
+    // Try remote first - with better error handling
+    try {
+      const remoteExercises = await remote.getUserExercisesRemote('');
+      if (remoteExercises && remoteExercises.length > 0) {
+        localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+        return remoteExercises;
+      }
+    } catch (remoteError) {
+      console.warn("Remote exercises unavailable, using local storage:", remoteError);
+    }
 
-    // Fallback to localStorage
+    // Fallback to localStorage with validation
     const stored = localStorage.getItem(EXERCISES_KEY);
     if (stored) {
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : initial;
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (parseError) {
+        console.error("Error parsing stored exercises:", parseError);
+        localStorage.removeItem(EXERCISES_KEY); // Clear corrupted data
+      }
     }
     
     return initial;

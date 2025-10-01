@@ -1,8 +1,31 @@
-// Remote data functions are temporarily disabled
+// Remote data functions with improved structure and error handling
 // These functions will be implemented when the backend is properly configured
 
-export async function getUserExercisesRemote(userId: string) {
-  return [];
+import { Exercise, WorkoutPlan, CompletedWorkout } from "./mockData";
+
+export interface RemoteResponse<T> {
+  data: T | null;
+  error: string | null;
+  success: boolean;
+}
+
+export async function getUserExercisesRemote(userId: string): Promise<Exercise[]> {
+  try {
+    // TODO: Implement actual Supabase integration
+    // const { data, error } = await supabase
+    //   .from('exercises')
+    //   .select('*')
+    //   .eq('user_id', userId);
+    
+    // if (error) throw error;
+    // return data || [];
+    
+    // For now, return empty array
+    return [];
+  } catch (error) {
+    console.error('Error fetching remote exercises:', error);
+    throw error;
+  }
 }
 
 export async function addExerciseRemote(exercise: any, userId: string) {

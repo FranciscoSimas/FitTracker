@@ -167,33 +167,67 @@
   }
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles - Professional & Modern */
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
+    scrollbar-color: hsl(262 83% 58% / 0.3) transparent;
   }
   
   .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
+    background: hsl(240 3.7% 15.9% / 0.5);
+    border-radius: 4px;
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: hsl(240 5% 64.9% / 0.2);
-    border-radius: 3px;
-    transition: background-color 0.2s ease;
+    background: linear-gradient(135deg, hsl(262 83% 58% / 0.6), hsl(217 91% 60% / 0.6));
+    border-radius: 4px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid hsl(240 3.7% 15.9% / 0.3);
   }
   
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: hsl(240 5% 64.9% / 0.3);
+    background: linear-gradient(135deg, hsl(262 83% 58% / 0.8), hsl(217 91% 60% / 0.8));
+    transform: scale(1.1);
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:active {
+    background: linear-gradient(135deg, hsl(262 83% 58%), hsl(217 91% 60%));
   }
   
   .scrollbar-thin::-webkit-scrollbar-corner {
     background: transparent;
+  }
+
+  /* Enhanced scrollbar for modals and overlays */
+  .scrollbar-modal {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(262 83% 58% / 0.4) transparent;
+  }
+  
+  .scrollbar-modal::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  
+  .scrollbar-modal::-webkit-scrollbar-track {
+    background: hsl(240 10% 3.9% / 0.8);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-modal::-webkit-scrollbar-thumb {
+    background: hsl(262 83% 58% / 0.5);
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+  
+  .scrollbar-modal::-webkit-scrollbar-thumb:hover {
+    background: hsl(262 83% 58% / 0.7);
   }
 }
 
@@ -206,4 +240,120 @@ html {
 *:focus-visible {
   outline: 2px solid hsl(262 83% 58%);
   outline-offset: 2px;
+}
+
+/* Professional Overlay and Modal Styles */
+@layer components {
+  .overlay-backdrop {
+    background: hsl(240 10% 3.9% / 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .modal-container {
+    background: hsl(240 10% 6%);
+    border: 1px solid hsl(240 3.7% 15.9% / 0.5);
+    border-radius: 12px;
+    box-shadow: 
+      0 25px 50px -12px hsl(240 10% 3.9% / 0.5),
+      0 0 0 1px hsl(262 83% 58% / 0.1);
+    animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-enhanced {
+    background: hsl(240 10% 6%);
+    border: 1px solid hsl(240 3.7% 15.9% / 0.3);
+    border-radius: 12px;
+    box-shadow: 
+      0 4px 6px -1px hsl(240 10% 3.9% / 0.1),
+      0 2px 4px -1px hsl(240 10% 3.9% / 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-enhanced:hover {
+    border-color: hsl(262 83% 58% / 0.3);
+    box-shadow: 
+      0 10px 15px -3px hsl(240 10% 3.9% / 0.1),
+      0 4px 6px -2px hsl(240 10% 3.9% / 0.05),
+      0 0 0 1px hsl(262 83% 58% / 0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Enhanced button styles */
+  .btn-primary-enhanced {
+    background: linear-gradient(135deg, hsl(262 83% 58%), hsl(217 91% 60%));
+    border: 1px solid hsl(262 83% 58% / 0.3);
+    box-shadow: 
+      0 4px 6px -1px hsl(262 83% 58% / 0.2),
+      0 2px 4px -1px hsl(262 83% 58% / 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-primary-enhanced:hover {
+    background: linear-gradient(135deg, hsl(262 83% 65%), hsl(217 91% 67%));
+    box-shadow: 
+      0 10px 15px -3px hsl(262 83% 58% / 0.3),
+      0 4px 6px -2px hsl(262 83% 58% / 0.2);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary-enhanced:active {
+    transform: translateY(0);
+    box-shadow: 
+      0 2px 4px -1px hsl(262 83% 58% / 0.2),
+      0 1px 2px -1px hsl(262 83% 58% / 0.1);
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Enhanced spacing and padding utilities */
+@layer utilities {
+  .p-section {
+    padding: 2rem 1rem;
+  }
+
+  .p-container {
+    padding: 1.5rem;
+  }
+
+  .p-card {
+    padding: 1.25rem;
+  }
+
+  .p-modal {
+    padding: 2rem;
+  }
+
+  .gap-section {
+    gap: 2rem;
+  }
+
+  .gap-container {
+    gap: 1.5rem;
+  }
+
+  .gap-card {
+    gap: 1rem;
+  }
 }
