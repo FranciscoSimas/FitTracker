@@ -1,5 +1,6 @@
 import { Exercise, WorkoutPlan, CompletedWorkout, mockExercises } from "./mockData";
 import * as remote from "./remote";
+import { getCurrentUserId } from "../utils/authUtils";
 
 const EXERCISES_KEY = "fittracker_exercises";
 const PLANS_KEY = "fittracker_plans";
@@ -106,14 +107,17 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
     await performDataMigration();
 
     // Try remote first - with better error handling
-    try {
-      const remoteExercises = await remote.getUserExercisesRemote('');
-      if (remoteExercises && remoteExercises.length > 0) {
-        localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
-        return remoteExercises;
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        const remoteExercises = await remote.getUserExercisesRemote(userId);
+        if (remoteExercises && remoteExercises.length > 0) {
+          localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+          return remoteExercises;
+        }
+      } catch (remoteError) {
+        console.warn("Remote exercises unavailable, using local storage:", remoteError);
       }
-    } catch (remoteError) {
-      console.warn("Remote exercises unavailable, using local storage:", remoteError);
     }
 
     // Fallback to localStorage with validation
@@ -148,8 +152,15 @@ export async function addExercise(exercise: Exercise, allExercises: Exercise[]):
     const newExercises = [...allExercises, exercise];
     setExercises(newExercises);
     
-    // Try to add to remote - disabled for now
-    // await remote.addExerciseRemote(exercise, '');
+    // Try to add to remote
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.addExerciseRemote(exercise, userId);
+      } catch (remoteError) {
+        console.warn("Failed to add exercise to remote:", remoteError);
+      }
+    }
     
     return newExercises;
   } catch (error) {
@@ -178,12 +189,19 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     // Executar migração antes de carregar dados
     await performDataMigration();
 
-    // Try remote first - disabled for now
-    // const remotePlans = await remote.getUserPlansRemote('');
-    // if (remotePlans.length > 0) {
-    //   localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
-    //   return remotePlans;
-    // }
+    // Try remote first
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        const remotePlans = await remote.getUserPlansRemote(userId);
+        if (remotePlans && remotePlans.length > 0) {
+          localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
+          return remotePlans;
+        }
+      } catch (remoteError) {
+        console.warn("Remote plans unavailable, using local storage:", remoteError);
+      }
+    }
 
     // Fallback to localStorage
     const stored = localStorage.getItem(PLANS_KEY);
@@ -228,8 +246,15 @@ export async function addPlan(plan: WorkoutPlan, allPlans: WorkoutPlan[]): Promi
     
     setPlans(newPlans);
     
-    // Try to add to remote - disabled for now
-    // await remote.addPlanRemote(plan, '');
+    // Try to add to remote
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.addPlanRemote(plan, userId);
+      } catch (remoteError) {
+        console.warn("Failed to add plan to remote:", remoteError);
+      }
+    }
     
     return newPlans;
   } catch (error) {
@@ -243,8 +268,15 @@ export async function updatePlan(plan: WorkoutPlan, allPlans: WorkoutPlan[]): Pr
     const newPlans = allPlans.map(p => p.id === plan.id ? plan : p);
     setPlans(newPlans);
     
-    // Try to update remote - disabled for now
-    // await remote.updatePlanRemote(plan, '');
+    // Try to update remote
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.updatePlanRemote(plan, userId);
+      } catch (remoteError) {
+        console.warn("Failed to update plan in remote:", remoteError);
+      }
+    }
     
     return newPlans;
   } catch (error) {
@@ -258,8 +290,15 @@ export async function removePlan(planId: string, allPlans: WorkoutPlan[]): Promi
     const newPlans = allPlans.filter(p => p.id !== planId);
     setPlans(newPlans);
     
-    // Try to remove from remote - disabled for now
-    // await remote.deletePlanRemote(planId, '');
+    // Try to remove from remote
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.deletePlanRemote(planId, userId);
+      } catch (remoteError) {
+        console.warn("Failed to delete plan from remote:", remoteError);
+      }
+    }
     
     return newPlans;
   } catch (error) {

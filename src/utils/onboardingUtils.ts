@@ -49,7 +49,11 @@ export async function loadPredefinedPlans(): Promise<WorkoutPlan[]> {
     
     // Salva também na base de dados remota usando bulk insert
     const { addPlansBulkRemote } = await import("@/data/remote");
-    await addPlansBulkRemote(mockWorkoutPlans);
+    const { getCurrentUserId } = await import("@/utils/authUtils");
+    const userId = getCurrentUserId();
+    if (userId) {
+      await addPlansBulkRemote(mockWorkoutPlans, userId);
+    }
     
     return mockWorkoutPlans;
   } catch (error) {

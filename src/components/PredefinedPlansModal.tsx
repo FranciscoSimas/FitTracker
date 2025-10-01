@@ -17,6 +17,7 @@ import {
 import { mockWorkoutPlans } from "@/data/mockData";
 import { loadBasicExerciseLibrary, markOnboardingComplete } from "@/utils/onboardingUtils";
 import { addPlansBulkRemote } from "@/data/remote";
+import { getCurrentUserId } from "@/utils/authUtils";
 import { setPlans, getPlans } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
@@ -69,7 +70,10 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
       
       // Salva os novos planos na base de dados usando bulk insert
       if (newPlans.length > 0) {
-        await addPlansBulkRemote(newPlans);
+        const userId = getCurrentUserId();
+        if (userId) {
+          await addPlansBulkRemote(newPlans, userId);
+        }
         
         // Adiciona os novos planos aos existentes
         const allPlans = [...existingPlans, ...newPlans];

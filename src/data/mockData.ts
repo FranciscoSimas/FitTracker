@@ -30,6 +30,7 @@ export interface WorkoutExercise {
 export interface WorkoutPlan {
   id: string;
   name: string;
+  description?: string;
   exercises: WorkoutExercise[];
 }
 
