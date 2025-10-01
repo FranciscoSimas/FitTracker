@@ -41,9 +41,16 @@ export async function getUserExercisesRemote(userId: string): Promise<Exercise[]
       throw exercisesError;
     }
     
-    console.log(`📡 Exercícios carregados do Supabase: ${exercises?.length || 0} exercícios`);
+    // Converter muscle_group para muscleGroup para compatibilidade com o frontend
+    const convertedExercises = exercises?.map(exercise => ({
+      ...exercise,
+      muscleGroup: exercise.muscle_group, // Converter snake_case para camelCase
+      muscle_group: undefined // Remover a propriedade antiga
+    })) || [];
     
-    return exercises as Exercise[] || [];
+    console.log(`📡 Exercícios carregados do Supabase: ${convertedExercises.length} exercícios`);
+    
+    return convertedExercises as Exercise[];
   } catch (error) {
     console.error('Error fetching remote exercises:', error);
     throw error;
@@ -54,13 +61,13 @@ export async function addExerciseRemote(exercise: Exercise, userId: string) {
   try {
     const { supabase } = await import('../integrations/supabase/client');
     
-    // Primeiro, inserir o exercício na tabela exercises
+    // Primeiro, inserir o exercício na tabela exercises (usando muscle_group)
     const { data: exerciseData, error: exerciseError } = await supabase
       .from('exercises')
       .insert([{
         id: exercise.id,
         name: exercise.name,
-        muscleGroup: exercise.muscleGroup,
+        muscle_group: exercise.muscleGroup, // Converter camelCase para snake_case
         equipment: exercise.equipment,
         type: exercise.type,
         isTimeBased: exercise.isTimeBased,
@@ -88,7 +95,15 @@ export async function addExerciseRemote(exercise: Exercise, userId: string) {
     }
     
     console.log(`📡 Exercício adicionado ao Supabase: ${exercise.name}`);
-    return exerciseData;
+    
+    // Converter de volta para o formato do frontend
+    const convertedExercise = {
+      ...exerciseData,
+      muscleGroup: exerciseData.muscle_group,
+      muscle_group: undefined
+    };
+    
+    return convertedExercise;
   } catch (error) {
     console.error('Error adding exercise to remote:', error);
     throw error;
