@@ -26,7 +26,7 @@ function markMigrationComplete(): void {
 
 // Migração simplificada - remove dados antigos e deixa a nova biblioteca ser carregada automaticamente
 
-function performDataMigration(): void {
+async function performDataMigration(): Promise<void> {
   if (!needsMigration()) {
     return;
   }
@@ -34,15 +34,15 @@ function performDataMigration(): void {
   console.log("🔄 Iniciando migração limpa para versão", CURRENT_MIGRATION_VERSION);
 
   try {
-    // Limpar completamente os exercícios antigos
+    // Limpar completamente os exercícios antigos do localStorage
     // Os utilizadores receberão a nova biblioteca limpa automaticamente
     localStorage.removeItem(EXERCISES_KEY);
-    console.log("✅ Exercícios antigos removidos - nova biblioteca será carregada");
+    console.log("✅ Exercícios antigos removidos do localStorage - nova biblioteca será carregada");
 
     // Limpar planos de treino que usam exercícios antigos
     // Os utilizadores podem recriar os planos com a nova biblioteca
     localStorage.removeItem(PLANS_KEY);
-    console.log("✅ Planos de treino antigos removidos - podem ser recriados");
+    console.log("✅ Planos de treino antigos removidos do localStorage - podem ser recriados");
 
     // Manter treinos completados mas limpar referências a exercícios inexistentes
     const storedWorkouts = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
@@ -57,6 +57,16 @@ function performDataMigration(): void {
       }));
       localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(cleanedWorkouts));
       console.log("✅ Treinos completados limpos - exercícios inexistentes removidos");
+    }
+
+    // Tentar limpar também a base de dados Supabase
+    try {
+      const { clearOldDataFromDatabase } = await import('./remote');
+      await clearOldDataFromDatabase();
+      console.log("✅ Base de dados Supabase limpa");
+    } catch (dbError) {
+      console.warn("⚠️ Não foi possível limpar a base de dados Supabase:", dbError);
+      console.log("📝 A migração continuará apenas com localStorage");
     }
 
     // Marcar migração como completa
@@ -83,7 +93,7 @@ function clearDataFromIndexedDB(): void {
 export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
   try {
     // Executar migração antes de carregar dados
-    performDataMigration();
+    await performDataMigration();
 
     // Try remote first - with better error handling
     try {
@@ -154,7 +164,7 @@ export async function removeExercise(exerciseId: string, allExercises: Exercise[
 export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
   try {
     // Executar migração antes de carregar dados
-    performDataMigration();
+    await performDataMigration();
 
     // Try remote first - disabled for now
     // const remotePlans = await remote.getUserPlansRemote('');
