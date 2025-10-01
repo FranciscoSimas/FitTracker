@@ -46,6 +46,30 @@ export function clearCorruptedData(): void {
   console.log("✅ Dados corrompidos limpos, recarregue a página");
 }
 
+// Função para forçar sincronização com Supabase
+export async function forceSupabaseSync(): Promise<void> {
+  console.log("🔄 Forçando sincronização com Supabase...");
+  const userId = getCurrentUserId();
+  if (!userId) {
+    console.error("❌ Utilizador não autenticado");
+    return;
+  }
+  
+  try {
+    // Limpar cache local
+    localStorage.removeItem(EXERCISES_KEY);
+    localStorage.removeItem(PLANS_KEY);
+    
+    // Forçar reload dos dados do Supabase
+    const { mockExercises } = await import('./mockData');
+    await remote.populateInitialExercises(userId, mockExercises);
+    
+    console.log("✅ Sincronização forçada concluída, recarregue a página");
+  } catch (error) {
+    console.error("❌ Erro na sincronização forçada:", error);
+  }
+}
+
 async function performDataMigration(): Promise<void> {
   if (!needsMigration()) {
     console.log("✅ Migração já foi executada, versão atual:", CURRENT_MIGRATION_VERSION);
@@ -116,48 +140,62 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
     // Executar migração antes de carregar dados
     await performDataMigration();
 
-    // Try remote first - with better error handling
+    // Supabase é a fonte principal - tentar sempre primeiro
     const userId = getCurrentUserId();
     if (userId) {
       try {
         const remoteExercises = await remote.getUserExercisesRemote(userId);
         if (remoteExercises && remoteExercises.length > 0) {
+          // Cache no localStorage para performance
           localStorage.setItem(EXERCISES_KEY, JSON.stringify(remoteExercises));
+          console.log(`📡 Exercícios carregados do Supabase: ${remoteExercises.length} exercícios`);
           return remoteExercises;
+        } else {
+          // Se não há exercícios no Supabase, popular com dados iniciais
+          console.log("📡 Nenhum exercício no Supabase, populando com dados iniciais...");
+          await remote.populateInitialExercises(userId, initial);
+          localStorage.setItem(EXERCISES_KEY, JSON.stringify(initial));
+          console.log(`📡 Exercícios iniciais populados no Supabase: ${initial.length} exercícios`);
+          return initial;
         }
       } catch (remoteError) {
-        console.warn("Remote exercises unavailable, using local storage:", remoteError);
+        console.error("Erro ao carregar exercícios do Supabase:", remoteError);
+        // Em caso de erro, usar localStorage como fallback
+        const stored = localStorage.getItem(EXERCISES_KEY);
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              console.log(`💾 Exercícios carregados do localStorage (fallback): ${parsed.length} exercícios`);
+              return parsed;
+            }
+          } catch (parseError) {
+            console.error("Error parsing stored exercises:", parseError);
+            localStorage.removeItem(EXERCISES_KEY);
+          }
+        }
+        // Último recurso: mockData
+        console.log(`💪 Usando mockData como último recurso: ${initial.length} exercícios`);
+        return initial;
       }
     }
-
-    // Fallback to localStorage with validation
+    
+    // Se não há userId, usar localStorage ou mockData
     const stored = localStorage.getItem(EXERCISES_KEY);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-    console.log(`💪 Exercícios carregados do localStorage: ${parsed.length} exercícios`);
-    
-    // Verificar se há exercícios duplicados
-    const uniqueExercises = parsed.filter((exercise, index, self) => 
-      index === self.findIndex(e => e.id === exercise.id)
-    );
-    
-    if (uniqueExercises.length !== parsed.length) {
-      console.warn(`⚠️ Encontrados ${parsed.length - uniqueExercises.length} exercícios duplicados, removendo...`);
-      setExercises(uniqueExercises);
-      return uniqueExercises;
-    }
-    
-    return parsed; // Retorna mesmo se for array vazio
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          console.log(`💾 Exercícios carregados do localStorage (sem auth): ${parsed.length} exercícios`);
+          return parsed;
         }
       } catch (parseError) {
         console.error("Error parsing stored exercises:", parseError);
-        localStorage.removeItem(EXERCISES_KEY); // Clear corrupted data
+        localStorage.removeItem(EXERCISES_KEY);
       }
     }
     
-    console.log(`💪 Nenhum exercício encontrado no localStorage, retornando mockData: ${initial.length} exercícios`);
+    console.log(`💪 Usando mockData (sem auth): ${initial.length} exercícios`);
     return initial;
   } catch (error) {
     console.error("Error getting exercises:", error);
@@ -211,38 +249,53 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     // Executar migração antes de carregar dados
     await performDataMigration();
 
-    // Try remote first
+    // Supabase é a fonte principal para planos também
     const userId = getCurrentUserId();
     if (userId) {
       try {
         const remotePlans = await remote.getUserPlansRemote(userId);
-        if (remotePlans && remotePlans.length > 0) {
-          localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
-          return remotePlans;
-        }
+        // Cache no localStorage para performance
+        localStorage.setItem(PLANS_KEY, JSON.stringify(remotePlans));
+        console.log(`📡 Planos carregados do Supabase: ${remotePlans.length} planos`);
+        return remotePlans;
       } catch (remoteError) {
-        console.warn("Remote plans unavailable, using local storage:", remoteError);
+        console.error("Erro ao carregar planos do Supabase:", remoteError);
+        // Em caso de erro, usar localStorage como fallback
+        const stored = localStorage.getItem(PLANS_KEY);
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              console.log(`💾 Planos carregados do localStorage (fallback): ${parsed.length} planos`);
+              return parsed;
+            }
+          } catch (parseError) {
+            console.error("Error parsing stored plans:", parseError);
+            localStorage.removeItem(PLANS_KEY);
+          }
+        }
+        // Se não há planos, retorna array vazio
+        console.log("📋 Nenhum plano encontrado, retornando array vazio");
+        return [];
       }
     }
-
-    // Fallback to localStorage
+    
+    // Se não há userId, usar localStorage
     const stored = localStorage.getItem(PLANS_KEY);
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          console.log(`📋 Planos carregados do localStorage: ${parsed.length} planos`);
-          return parsed; // Retorna mesmo se for array vazio
+          console.log(`💾 Planos carregados do localStorage (sem auth): ${parsed.length} planos`);
+          return parsed;
         }
       } catch (parseError) {
         console.error("Error parsing stored plans:", parseError);
-        localStorage.removeItem(PLANS_KEY); // Clear corrupted data
+        localStorage.removeItem(PLANS_KEY);
       }
     }
     
-    // Se não há dados no localStorage, retorna array vazio
-    // Os planos pré-definidos só aparecem se o utilizador os adicionar explicitamente
-    console.log("📋 Nenhum plano encontrado no localStorage, retornando array vazio");
+    console.log("📋 Nenhum plano encontrado, retornando array vazio");
     return [];
   } catch (error) {
     console.error("Error getting plans:", error);

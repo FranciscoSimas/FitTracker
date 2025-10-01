@@ -311,6 +311,56 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
   return null;
 }
 
+// Função para popular exercícios iniciais no Supabase
+export async function populateInitialExercises(userId: string, initialExercises: Exercise[]): Promise<void> {
+  try {
+    const { supabase } = await import('../integrations/supabase/client');
+    
+    console.log('📡 Populando exercícios iniciais no Supabase...');
+    
+    // Inserir todos os exercícios iniciais na tabela exercises
+    const { error: exercisesError } = await supabase
+      .from('exercises')
+      .upsert(initialExercises.map(exercise => ({
+        id: exercise.id,
+        name: exercise.name,
+        muscleGroup: exercise.muscleGroup,
+        equipment: exercise.equipment,
+        type: exercise.type,
+        isTimeBased: exercise.isTimeBased,
+        cardioFields: exercise.cardioFields
+      })), { 
+        onConflict: 'id' // Se já existir, atualiza
+      });
+    
+    if (exercisesError) {
+      console.error('Erro ao inserir exercícios iniciais:', exercisesError);
+      throw exercisesError;
+    }
+    
+    // Criar referências na tabela user_exercises
+    const { error: userExercisesError } = await supabase
+      .from('user_exercises')
+      .upsert(initialExercises.map(exercise => ({
+        user_id: userId,
+        exercise_id: exercise.id
+      })), { 
+        onConflict: 'user_id,exercise_id' // Se já existir, ignora
+      });
+    
+    if (userExercisesError) {
+      console.error('Erro ao criar referências de exercícios:', userExercisesError);
+      throw userExercisesError;
+    }
+    
+    console.log(`✅ ${initialExercises.length} exercícios iniciais populados no Supabase`);
+    
+  } catch (error) {
+    console.error('Erro ao popular exercícios iniciais:', error);
+    throw error;
+  }
+}
+
 // Função para limpar dados antigos da base de dados (para migração)
 export async function clearOldDataFromDatabase(): Promise<void> {
   try {
