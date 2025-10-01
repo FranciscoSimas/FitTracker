@@ -23,11 +23,8 @@ import {
   Bell,
   Shield,
   Download,
-  Upload,
   Moon,
   Sun,
-  Weight,
-  Timer,
   Volume2
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,7 +51,7 @@ interface UserSettings {
 }
 
 const UserProfile = () => {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteEmail, setDeleteEmail] = useState("");
@@ -151,7 +148,7 @@ const UserProfile = () => {
     e.preventDefault();
     if (!user?.email) return;
 
-    setLoading(true);
+    setIsLoading(true);
     setError(null);
     setSuccess(null);
 
@@ -169,7 +166,7 @@ const UserProfile = () => {
     } catch (err) {
       setError("Erro inesperado. Tenta novamente.");
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 

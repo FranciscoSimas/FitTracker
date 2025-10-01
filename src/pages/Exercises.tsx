@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
 import { mockExercises, Exercise } from "@/data/mockData";
-import { getExercises, removeExercise as persistRemoveExercise, setExercises as persistSetExercises } from "@/data/storage";
-import { useEffect } from "react";
+import { getExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 const Exercises = () => {

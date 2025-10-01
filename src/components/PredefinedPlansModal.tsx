@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +31,6 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
   const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handlePlanToggle = (planId: string) => {
     setSelectedPlans(prev => 

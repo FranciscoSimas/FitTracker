@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
-import { mockWorkoutPlans } from "@/data/mockData";
+import { mockWorkoutPlans, WorkoutPlan } from "@/data/mockData";
 import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight, getPlans } from "@/data/storage";
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
@@ -17,7 +17,7 @@ const ActiveWorkout = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [plan, setPlan] = useState(null);
+  const [plan, setPlan] = useState<WorkoutPlan | null>(null);
   const [expandedExercises, setExpandedExercises] = useState<Set<string>>(new Set());
   
   useEffect(() => {

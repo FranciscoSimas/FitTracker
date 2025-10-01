@@ -41,11 +41,11 @@ export async function getUserExercisesRemote(userId: string): Promise<Exercise[]
       throw exercisesError;
     }
     
-    // Converter muscle_group para muscleGroup para compatibilidade com o frontend
+    // Converter snake_case (Supabase) para camelCase (frontend)
     const convertedExercises = exercises?.map(exercise => ({
       ...exercise,
-      muscleGroup: exercise.muscle_group, // Converter snake_case para camelCase
-      muscle_group: undefined // Remover a propriedade antiga
+      muscleGroup: exercise.muscle_group, // snake_case -> camelCase
+      muscle_group: undefined // Remove propriedade antiga
     })) || [];
     
     console.log(`📡 Exercícios carregados do Supabase: ${convertedExercises.length} exercícios`);
