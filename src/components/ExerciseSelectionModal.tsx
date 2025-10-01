@@ -89,6 +89,8 @@ const ExerciseSelectionModal = ({
     { id: "Trícep", name: "Tríceps" },
     { id: "Pernas", name: "Pernas" },
     { id: "Core", name: "Core" },
+    { id: "Cardio", name: "Cardio" },
+    { id: "Funcional", name: "Funcional" },
   ];
 
   const handleExerciseToggle = (exerciseId: string) => {
@@ -153,7 +155,7 @@ const ExerciseSelectionModal = ({
 
           {/* Filtros por grupo muscular */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+            <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
               {muscleGroups.map((group) => (
                 <TabsTrigger key={group.id} value={group.id}>
                   <span className="hidden sm:inline">{group.name}</span>

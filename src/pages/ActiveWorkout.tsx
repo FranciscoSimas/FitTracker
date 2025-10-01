@@ -381,67 +381,145 @@ const ActiveWorkout = () => {
                   </div>
                   
                   <div className="space-y-4">
-                    {/* Weight and Reps Controls */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Repetições</label>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateSet(exercise.id, set.id, 'reps', Math.max(1, set.reps - 1))}
-                            className="h-8 w-8 p-0"
+                    {/* Renderização condicional baseada no tipo de exercício */}
+                    {exercise.exercise.type === 'cardio' ? (
+                      /* Cardio Controls */
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-muted-foreground">Duração (min)</label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'reps', Math.max(1, set.reps - 5))}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={set.reps}
+                              onChange={(e) => updateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
+                              className="w-20 text-center bg-background/80"
+                              min="1"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'reps', set.reps + 5)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-muted-foreground">Intensidade</label>
+                          <select 
+                            value={set.weight} 
+                            onChange={(e) => updateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value))}
+                            className="w-full p-2 rounded-md border bg-background/80 text-sm"
                           >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={set.reps}
-                            onChange={(e) => updateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
-                            className="w-16 text-center bg-background/80"
-                            min="1"
-                          />
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateSet(exercise.id, set.id, 'reps', set.reps + 1)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
+                            <option value={1}>Baixa</option>
+                            <option value={2}>Moderada</option>
+                            <option value={3}>Alta</option>
+                          </select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-muted-foreground">Distância (km)</label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'distance', Math.max(0, (set.distance || 0) - 0.5))}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={set.distance || 0}
+                              onChange={(e) => updateSet(exercise.id, set.id, 'distance', parseFloat(e.target.value) || 0)}
+                              className="w-20 text-center bg-background/80"
+                              min="0"
+                              step="0.5"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'distance', (set.distance || 0) + 0.5)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Peso (kg)</label>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateSet(exercise.id, set.id, 'weight', Math.max(0, set.weight - 2.5))}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <Input
-                            type="number"
-                            value={set.weight}
-                            onChange={(e) => updateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)}
-                            className="w-20 text-center bg-background/80"
-                            min="0"
-                            step="2.5"
-                          />
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => updateSet(exercise.id, set.id, 'weight', set.weight + 2.5)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
+                    ) : (
+                      /* Strength Controls */
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-muted-foreground">Repetições</label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'reps', Math.max(1, set.reps - 1))}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={set.reps}
+                              onChange={(e) => updateSet(exercise.id, set.id, 'reps', parseInt(e.target.value) || 0)}
+                              className="w-16 text-center bg-background/80"
+                              min="1"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'reps', set.reps + 1)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-muted-foreground">Peso (kg)</label>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'weight', Math.max(0, set.weight - 2.5))}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Minus className="h-3 w-3" />
+                            </Button>
+                            <Input
+                              type="number"
+                              value={set.weight}
+                              onChange={(e) => updateSet(exercise.id, set.id, 'weight', parseFloat(e.target.value) || 0)}
+                              className="w-20 text-center bg-background/80"
+                              min="0"
+                              step="2.5"
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => updateSet(exercise.id, set.id, 'weight', set.weight + 2.5)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    )}
                     
                   </div>
                 </div>

@@ -3,6 +3,12 @@ export interface Exercise {
   name: string;
   muscleGroup: string;
   equipment?: string;
+  type?: 'strength' | 'cardio'; // Tipo de exercício
+  cardioFields?: {
+    duration?: number; // em minutos
+    intensity?: 'Baixa' | 'Moderada' | 'Alta';
+    distance?: number; // em km (opcional)
+  };
 }
 
 export interface WorkoutSet {
@@ -10,6 +16,7 @@ export interface WorkoutSet {
   reps: number;
   weight: number;
   completed: boolean;
+  distance?: number; // Para exercícios de cardio (em km)
 }
 
 export interface WorkoutExercise {
@@ -112,15 +119,43 @@ export const mockExercises: Exercise[] = [
   { id: "59", name: "Panturrilha Sentado", muscleGroup: "Pernas", equipment: "Máquina" },
   { id: "60", name: "Agachamento Sumô", muscleGroup: "Pernas", equipment: "Barra" },
   
-  // ABDOMINAIS
-  { id: "61", name: "Abdominal Crunch", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
-  { id: "62", name: "Prancha", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
-  { id: "63", name: "Abdominal Bicicleta", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
-  { id: "64", name: "Mountain Climber", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
-  { id: "65", name: "Abdominal com Peso", muscleGroup: "Abdominais", equipment: "Halteres" },
-  { id: "66", name: "Prancha Lateral", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
-  { id: "67", name: "Abdominal na Máquina", muscleGroup: "Abdominais", equipment: "Máquina" },
-  { id: "68", name: "Russian Twist", muscleGroup: "Abdominais", equipment: "Peso Corporal" },
+  // CORE
+  { id: "61", name: "Abdominal Crunch", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "62", name: "Prancha", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "63", name: "Abdominal Bicicleta", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "64", name: "Mountain Climber", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "65", name: "Abdominal com Peso", muscleGroup: "Core", equipment: "Halteres" },
+  { id: "66", name: "Prancha Lateral", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "67", name: "Abdominal na Máquina", muscleGroup: "Core", equipment: "Máquina" },
+  { id: "68", name: "Russian Twist", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "69", name: "Dead Bug", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "70", name: "Bird Dog", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "71", name: "Hollow Hold", muscleGroup: "Core", equipment: "Peso Corporal" },
+  { id: "72", name: "Leg Raises", muscleGroup: "Core", equipment: "Peso Corporal" },
+  
+  // CARDIO
+  { id: "73", name: "Corrida", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 30, intensity: "Moderada" } },
+  { id: "74", name: "Caminhada", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 45, intensity: "Baixa" } },
+  { id: "75", name: "Bicicleta", muscleGroup: "Cardio", equipment: "Máquina", type: "cardio", cardioFields: { duration: 30, intensity: "Moderada" } },
+  { id: "76", name: "Elíptica", muscleGroup: "Cardio", equipment: "Máquina", type: "cardio", cardioFields: { duration: 25, intensity: "Moderada" } },
+  { id: "77", name: "Remo", muscleGroup: "Cardio", equipment: "Máquina", type: "cardio", cardioFields: { duration: 20, intensity: "Alta" } },
+  { id: "78", name: "Burpees", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 10, intensity: "Alta" } },
+  { id: "79", name: "Jumping Jacks", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 5, intensity: "Moderada" } },
+  { id: "80", name: "HIIT", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 20, intensity: "Alta" } },
+  { id: "81", name: "Natação", muscleGroup: "Cardio", equipment: "Peso Corporal", type: "cardio", cardioFields: { duration: 30, intensity: "Moderada" } },
+  { id: "82", name: "Corda", muscleGroup: "Cardio", equipment: "Corda", type: "cardio", cardioFields: { duration: 15, intensity: "Alta" } },
+  
+  // FUNCIONAL
+  { id: "83", name: "Deadlift", muscleGroup: "Funcional", equipment: "Barra" },
+  { id: "84", name: "Kettlebell Swing", muscleGroup: "Funcional", equipment: "Kettlebell" },
+  { id: "85", name: "Turkish Get-up", muscleGroup: "Funcional", equipment: "Kettlebell" },
+  { id: "86", name: "Farmer's Walk", muscleGroup: "Funcional", equipment: "Halteres" },
+  { id: "87", name: "Battle Ropes", muscleGroup: "Funcional", equipment: "Cabo" },
+  { id: "88", name: "Box Jump", muscleGroup: "Funcional", equipment: "Caixa" },
+  { id: "89", name: "Medicine Ball Slam", muscleGroup: "Funcional", equipment: "Medicine Ball" },
+  { id: "90", name: "Bear Crawl", muscleGroup: "Funcional", equipment: "Peso Corporal" },
+  { id: "91", name: "Crab Walk", muscleGroup: "Funcional", equipment: "Peso Corporal" },
+  { id: "92", name: "Single Leg Deadlift", muscleGroup: "Funcional", equipment: "Halteres" },
 ];
 
 // Planos de treino pré-definidos - Biblioteca completa para novos usuários
@@ -357,10 +392,10 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
     ],
   },
   
-  // ABDOMINAIS
+  // CORE
   {
     id: "plan5",
-    name: "Abdominais - Core",
+    name: "Core - Abdominais",
     exercises: [
       {
         id: "we21",
@@ -400,6 +435,86 @@ export const mockWorkoutPlans: WorkoutPlan[] = [
           { id: "s70", reps: 20, weight: 0, completed: false },
           { id: "s71", reps: 15, weight: 0, completed: false },
           { id: "s72", reps: 12, weight: 0, completed: false },
+        ],
+      },
+    ],
+  },
+  
+  // CARDIO
+  {
+    id: "plan7",
+    name: "Cardio - HIIT",
+    exercises: [
+      {
+        id: "we31",
+        exerciseId: "78",
+        exercise: mockExercises[77], // Burpees
+        sets: [
+          { id: "s91", reps: 1, weight: 0, completed: false }, // 10 minutos
+        ],
+      },
+      {
+        id: "we32",
+        exerciseId: "79",
+        exercise: mockExercises[78], // Jumping Jacks
+        sets: [
+          { id: "s92", reps: 1, weight: 0, completed: false }, // 5 minutos
+        ],
+      },
+      {
+        id: "we33",
+        exerciseId: "82",
+        exercise: mockExercises[81], // Corda
+        sets: [
+          { id: "s93", reps: 1, weight: 0, completed: false }, // 15 minutos
+        ],
+      },
+    ],
+  },
+  
+  // FUNCIONAL
+  {
+    id: "plan8",
+    name: "Funcional - CrossFit",
+    exercises: [
+      {
+        id: "we34",
+        exerciseId: "83",
+        exercise: mockExercises[82], // Deadlift
+        sets: [
+          { id: "s94", reps: 12, weight: 0, completed: false },
+          { id: "s95", reps: 10, weight: 0, completed: false },
+          { id: "s96", reps: 8, weight: 0, completed: false },
+        ],
+      },
+      {
+        id: "we35",
+        exerciseId: "84",
+        exercise: mockExercises[83], // Kettlebell Swing
+        sets: [
+          { id: "s97", reps: 15, weight: 0, completed: false },
+          { id: "s98", reps: 12, weight: 0, completed: false },
+          { id: "s99", reps: 10, weight: 0, completed: false },
+        ],
+      },
+      {
+        id: "we36",
+        exerciseId: "88",
+        exercise: mockExercises[87], // Box Jump
+        sets: [
+          { id: "s100", reps: 10, weight: 0, completed: false },
+          { id: "s101", reps: 8, weight: 0, completed: false },
+          { id: "s102", reps: 6, weight: 0, completed: false },
+        ],
+      },
+      {
+        id: "we37",
+        exerciseId: "90",
+        exercise: mockExercises[89], // Bear Crawl
+        sets: [
+          { id: "s103", reps: 1, weight: 0, completed: false }, // 30 segundos
+          { id: "s104", reps: 1, weight: 0, completed: false },
+          { id: "s105", reps: 1, weight: 0, completed: false },
         ],
       },
     ],
