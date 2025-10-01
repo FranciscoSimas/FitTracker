@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, X, Save } from "lucide-react";
+import { ArrowLeft, Plus, X, Save, GripVertical } from "lucide-react";
 import { mockWorkoutPlans, mockExercises, WorkoutPlan, WorkoutExercise, Exercise } from "@/data/mockData";
 import { getExercises, getPlanById, updatePlan, removePlan, getPlans } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
@@ -20,6 +20,7 @@ const EditWorkoutPlan = () => {
   const [planName, setPlanName] = useState("");
   const [showExerciseModal, setShowExerciseModal] = useState(false);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -140,6 +141,60 @@ const EditWorkoutPlan = () => {
     }
   };
 
+  // Drag & Drop functions
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', e.currentTarget.outerHTML);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex || !plan) return;
+    
+    const newExercises = [...plan.exercises];
+    const draggedExercise = newExercises[draggedIndex];
+    
+    // Remove o exercício da posição original
+    newExercises.splice(draggedIndex, 1);
+    
+    // Insere o exercício na nova posição
+    newExercises.splice(dropIndex, 0, draggedExercise);
+    
+    // Atualiza o plano
+    const updatedPlan = {
+      ...plan,
+      exercises: newExercises
+    };
+    
+    setPlan(updatedPlan);
+    setDraggedIndex(null);
+    
+    // Auto-save
+    savePlanWithExercises(updatedPlan);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  const savePlanWithExercises = async (planToSave: WorkoutPlan) => {
+    if (!planId) return;
+    
+    try {
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await updatePlan(planToSave, currentPlans);
+    } catch (error) {
+      console.error('Error saving plan:', error);
+    }
+  };
+
   if (!plan) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -208,12 +263,20 @@ const EditWorkoutPlan = () => {
             </div>
           ) : (
             <div className="space-y-3">
-              {plan.exercises.map((exercise) => (
+              {plan.exercises.map((exercise, index) => (
                 <div 
                   key={exercise.id}
-                  className="flex items-center justify-between p-4 bg-background/80 rounded-lg border border-border/50"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, index)}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`flex items-center justify-between p-4 bg-background/80 rounded-lg border border-border/50 cursor-move transition-all ${
+                    draggedIndex === index ? 'opacity-50 scale-95' : 'hover:bg-background/90'
+                  }`}
                 >
                   <div className="flex items-center gap-3">
+                    <GripVertical className="h-4 w-4 text-muted-foreground" />
                     <div>
                       <h4 className="font-medium text-foreground">{exercise.exercise.name}</h4>
                       <div className="flex items-center gap-2 mt-1">

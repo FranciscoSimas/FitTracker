@@ -98,15 +98,22 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     // Fallback to localStorage
     const stored = localStorage.getItem(PLANS_KEY);
     if (stored) {
-      const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : [];
+      try {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (parseError) {
+        console.error("Error parsing stored plans:", parseError);
+        localStorage.removeItem(PLANS_KEY); // Clear corrupted data
+      }
     }
     
-    // Return empty array instead of initial mock data
-    return [];
+    // Return initial mock data if no stored data
+    return initial;
   } catch (error) {
     console.error("Error getting plans:", error);
-    return [];
+    return initial;
   }
 }
 

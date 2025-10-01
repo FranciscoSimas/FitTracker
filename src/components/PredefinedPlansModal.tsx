@@ -17,7 +17,7 @@ import {
 import { mockWorkoutPlans } from "@/data/mockData";
 import { loadBasicExerciseLibrary, markOnboardingComplete } from "@/utils/onboardingUtils";
 import { addPlansBulkRemote } from "@/data/remote";
-import { setPlans } from "@/data/storage";
+import { setPlans, getPlans } from "@/data/storage";
 import { useToast } from "@/hooks/use-toast";
 
 interface PredefinedPlansModalProps {
@@ -59,15 +59,28 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
       // Depois carrega apenas os planos selecionados usando bulk insert
       const filteredPlans = mockWorkoutPlans.filter(plan => selectedPlans.includes(plan.id));
       
-      // Salva os planos selecionados na base de dados usando bulk insert
-      await addPlansBulkRemote(filteredPlans);
+      // Carrega planos existentes para não sobrescrever
+      const existingPlans = await getPlans(mockWorkoutPlans);
       
-      // Atualiza localStorage com os planos selecionados
-      setPlans(filteredPlans);
+      // Filtra apenas os planos que ainda não existem
+      const newPlans = filteredPlans.filter(newPlan => 
+        !existingPlans.some(existingPlan => existingPlan.id === newPlan.id)
+      );
+      
+      // Salva os novos planos na base de dados usando bulk insert
+      if (newPlans.length > 0) {
+        await addPlansBulkRemote(newPlans);
+        
+        // Adiciona os novos planos aos existentes
+        const allPlans = [...existingPlans, ...newPlans];
+        setPlans(allPlans);
+      }
       
       toast({
         title: "Planos carregados! 🚀",
-        description: `${filteredPlans.length} planos de treino prontos para usar.`,
+        description: newPlans.length > 0 
+          ? `${newPlans.length} novos planos de treino adicionados.`
+          : "Todos os planos selecionados já existem.",
       });
       
       markOnboardingComplete();
