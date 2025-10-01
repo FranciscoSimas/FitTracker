@@ -401,8 +401,8 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
         end_time: workout.endTime,
         duration: workout.duration,
         exercises: workout.exercises,
-        notes: workout.notes,
-        completed: workout.completed
+        notes: workout.notes
+        // Removido completed - não existe na tabela
       }])
       .select()
       .single();
