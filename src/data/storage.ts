@@ -407,43 +407,25 @@ export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
     // Executar migração antes de carregar dados
     performDataMigration();
 
-    // Supabase é a fonte principal para treinos completados
+    // SUPABASE É A ÚNICA FONTE - SEM FALLBACK PARA LOCALSTORAGE
     const userId = getCurrentUserId();
-    if (userId) {
-      try {
-        const remoteWorkouts = await remote.getWorkoutHistoryRemote(userId);
-        if (remoteWorkouts && remoteWorkouts.length > 0) {
-          // Cache no localStorage para performance
-          localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(remoteWorkouts));
-          console.log(`📡 Treinos completados carregados do Supabase: ${remoteWorkouts.length} treinos`);
-          return remoteWorkouts;
-        }
-      } catch (remoteError) {
-        console.error("Erro ao carregar treinos do Supabase:", remoteError);
-        // Em caso de erro, usar localStorage como fallback
-        const stored = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) {
-            console.log(`💾 Treinos completados carregados do localStorage (fallback): ${parsed.length} treinos`);
-            return parsed;
-          }
-        }
-      }
+    if (!userId) {
+      console.log("❌ Utilizador não autenticado - não é possível carregar treinos");
+      return [];
     }
-    
-    // Se não há userId ou erro, usar localStorage
-    const stored = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed)) {
-        console.log(`💾 Treinos completados carregados do localStorage (sem auth): ${parsed.length} treinos`);
-        return parsed;
-      }
+
+    try {
+      const remoteWorkouts = await remote.getWorkoutHistoryRemote(userId);
+      // Cache no localStorage para performance (mas não é fonte de dados)
+      localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(remoteWorkouts));
+      console.log(`📡 Treinos completados carregados do Supabase: ${remoteWorkouts.length} treinos`);
+      return remoteWorkouts;
+    } catch (remoteError) {
+      console.error("❌ ERRO CRÍTICO ao carregar treinos do Supabase:", remoteError);
+      console.error("❌ NÃO USANDO LOCALSTORAGE COMO FALLBACK");
+      // NÃO USAR LOCALSTORAGE - APENAS SUPABASE
+      return [];
     }
-    
-    console.log("📋 Nenhum treino completado encontrado");
-    return [];
   } catch (error) {
     console.error("Error getting completed workouts:", error);
     return [];

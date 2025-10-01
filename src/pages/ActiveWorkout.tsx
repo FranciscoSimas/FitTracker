@@ -148,7 +148,9 @@ const ActiveWorkout = () => {
         notes: notes || undefined,
         completed: true,
       };
+      console.log('🚀 Salvando treino completado:', workout);
       await addCompletedWorkout(workout);
+      console.log('✅ Treino completado salvo!');
     }
 
     toast({

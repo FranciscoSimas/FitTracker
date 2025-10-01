@@ -375,6 +375,19 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
     console.log('Workout data:', workout);
     console.log('User ID:', userId);
     
+    // Verificar se a tabela existe e tem a estrutura correta
+    const { data: tableInfo, error: tableError } = await supabase
+      .from('completed_workouts')
+      .select('*')
+      .limit(1);
+    
+    if (tableError) {
+      console.error('❌ ERRO: Tabela completed_workouts não existe ou tem problemas:', tableError);
+      throw new Error(`Tabela completed_workouts não existe: ${tableError.message}`);
+    }
+    
+    console.log('✅ Tabela completed_workouts existe e é acessível');
+    
     // Inserir treino completado na tabela completed_workouts
     const { data: workoutData, error: workoutError } = await supabase
       .from('completed_workouts')
@@ -395,17 +408,19 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
       .single();
     
     if (workoutError) {
-      console.error('Error saving completed workout:', workoutError);
-      console.error('Error details:', workoutError);
+      console.error('❌ ERRO ao salvar treino completado:', workoutError);
+      console.error('❌ Detalhes do erro:', workoutError);
+      console.error('❌ Código do erro:', workoutError.code);
+      console.error('❌ Mensagem do erro:', workoutError.message);
       throw workoutError;
     }
     
-    console.log(`📡 Treino completado salvo no Supabase: ${workout.planName}`);
-    console.log('Saved workout data:', workoutData);
+    console.log(`✅ Treino completado salvo no Supabase: ${workout.planName}`);
+    console.log('✅ Dados salvos:', workoutData);
     return workoutData;
   } catch (error) {
-    console.error('Error saving completed workout to Supabase:', error);
-    console.error('Error details:', error);
+    console.error('❌ ERRO CRÍTICO ao salvar treino no Supabase:', error);
+    console.error('❌ Detalhes completos:', error);
     throw error;
   }
 }
@@ -464,23 +479,38 @@ export async function cleanupOrphanedExercises(): Promise<void> {
     
     console.log('🧹 Limpando exercícios órfãos...');
     
-    // Buscar todos os exercícios que não têm referências em user_exercises
-    const { data: orphanedExercises, error: orphanError } = await supabase
-      .from('exercises')
-      .select('id')
-      .not('id', 'in', 
-        supabase
-          .from('user_exercises')
-          .select('exercise_id')
-      );
+    // Primeiro, buscar todos os IDs de exercícios que estão em user_exercises
+    const { data: usedExercises, error: usedError } = await supabase
+      .from('user_exercises')
+      .select('exercise_id');
     
-    if (orphanError) {
-      console.error('Erro ao buscar exercícios órfãos:', orphanError);
-      throw orphanError;
+    if (usedError) {
+      console.error('Erro ao buscar exercícios em uso:', usedError);
+      throw usedError;
     }
     
-    if (orphanedExercises && orphanedExercises.length > 0) {
-      const orphanedIds = orphanedExercises.map(ex => ex.id);
+    const usedExerciseIds = usedExercises?.map(item => item.exercise_id) || [];
+    console.log(`📊 Exercícios em uso: ${usedExerciseIds.length}`);
+    
+    // Buscar todos os exercícios
+    const { data: allExercises, error: allError } = await supabase
+      .from('exercises')
+      .select('id');
+    
+    if (allError) {
+      console.error('Erro ao buscar todos os exercícios:', allError);
+      throw allError;
+    }
+    
+    const allExerciseIds = allExercises?.map(ex => ex.id) || [];
+    console.log(`📊 Total de exercícios: ${allExerciseIds.length}`);
+    
+    // Encontrar exercícios órfãos (que não estão em user_exercises)
+    const orphanedIds = allExerciseIds.filter(id => !usedExerciseIds.includes(id));
+    console.log(`📊 Exercícios órfãos encontrados: ${orphanedIds.length}`);
+    
+    if (orphanedIds.length > 0) {
+      console.log('🗑️ Exercícios órfãos a eliminar:', orphanedIds);
       
       // Eliminar exercícios órfãos
       const { error: deleteError } = await supabase
@@ -493,7 +523,7 @@ export async function cleanupOrphanedExercises(): Promise<void> {
         throw deleteError;
       }
       
-      console.log(`✅ ${orphanedIds.length} exercícios órfãos eliminados`);
+      console.log(`✅ ${orphanedIds.length} exercícios órfãos eliminados com sucesso!`);
     } else {
       console.log('✅ Nenhum exercício órfão encontrado');
     }
