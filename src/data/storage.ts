@@ -61,8 +61,7 @@ export async function forceSupabaseSync(): Promise<void> {
     localStorage.removeItem(PLANS_KEY);
     
     // Forçar reload dos dados do Supabase
-    const { mockExercises } = await import('./mockData');
-    await remote.populateInitialExercises(userId, mockExercises);
+    await remote.populateInitialExercises(userId);
     
     console.log("✅ Sincronização forçada concluída, recarregue a página");
   } catch (error) {
@@ -153,10 +152,12 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
         } else {
           // Se não há exercícios no Supabase, popular com dados iniciais
           console.log("📡 Nenhum exercício no Supabase, populando com dados iniciais...");
-          await remote.populateInitialExercises(userId, initial);
-          localStorage.setItem(EXERCISES_KEY, JSON.stringify(initial));
-          console.log(`📡 Exercícios iniciais populados no Supabase: ${initial.length} exercícios`);
-          return initial;
+          await remote.populateInitialExercises(userId);
+          // Buscar novamente os exercícios após popular
+          const populatedExercises = await remote.getUserExercisesRemote(userId);
+          localStorage.setItem(EXERCISES_KEY, JSON.stringify(populatedExercises));
+          console.log(`📡 Exercícios iniciais populados no Supabase: ${populatedExercises.length} exercícios`);
+          return populatedExercises;
         }
       } catch (remoteError) {
         console.error("Erro ao carregar exercícios do Supabase:", remoteError);

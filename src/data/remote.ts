@@ -312,36 +312,33 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
 }
 
 // Função para popular exercícios iniciais no Supabase
-export async function populateInitialExercises(userId: string, initialExercises: Exercise[]): Promise<void> {
+// Agora pega os exercícios diretamente da tabela exercises (que já tem os 54)
+export async function populateInitialExercises(userId: string): Promise<void> {
   try {
     const { supabase } = await import('../integrations/supabase/client');
     
-    console.log('📡 Populando exercícios iniciais no Supabase...');
+    console.log('📡 Populando exercícios iniciais para novo utilizador...');
     
-    // Inserir todos os exercícios iniciais na tabela exercises
-    const { error: exercisesError } = await supabase
+    // Buscar todos os exercícios da tabela exercises (os 54 que já estão lá)
+    const { data: allExercises, error: fetchError } = await supabase
       .from('exercises')
-      .upsert(initialExercises.map(exercise => ({
-        id: exercise.id,
-        name: exercise.name,
-        muscleGroup: exercise.muscleGroup,
-        equipment: exercise.equipment,
-        type: exercise.type,
-        isTimeBased: exercise.isTimeBased,
-        cardioFields: exercise.cardioFields
-      })), { 
-        onConflict: 'id' // Se já existir, atualiza
-      });
+      .select('*')
+      .neq('id', 'dummy'); // Excluir registo dummy se existir
     
-    if (exercisesError) {
-      console.error('Erro ao inserir exercícios iniciais:', exercisesError);
-      throw exercisesError;
+    if (fetchError) {
+      console.error('Erro ao buscar exercícios da tabela:', fetchError);
+      throw fetchError;
     }
     
-    // Criar referências na tabela user_exercises
+    if (!allExercises || allExercises.length === 0) {
+      console.error('❌ Nenhum exercício encontrado na tabela exercises!');
+      throw new Error('Nenhum exercício encontrado na tabela exercises');
+    }
+    
+    // Criar referências na tabela user_exercises para todos os exercícios
     const { error: userExercisesError } = await supabase
       .from('user_exercises')
-      .upsert(initialExercises.map(exercise => ({
+      .upsert(allExercises.map(exercise => ({
         user_id: userId,
         exercise_id: exercise.id
       })), { 
@@ -353,7 +350,7 @@ export async function populateInitialExercises(userId: string, initialExercises:
       throw userExercisesError;
     }
     
-    console.log(`✅ ${initialExercises.length} exercícios iniciais populados no Supabase`);
+    console.log(`✅ ${allExercises.length} exercícios iniciais atribuídos ao utilizador`);
     
   } catch (error) {
     console.error('Erro ao popular exercícios iniciais:', error);
