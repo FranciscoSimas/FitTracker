@@ -24,228 +24,49 @@ function markMigrationComplete(): void {
   localStorage.setItem(MIGRATION_VERSION_KEY, CURRENT_MIGRATION_VERSION);
 }
 
-// Mapeamento de exercícios antigos para novos (baseado nos IDs antigos)
-const EXERCISE_MIGRATION_MAP: { [oldId: string]: string } = {
-  // Peito - IDs antigos para novos
-  "1": "1",   // Supino Reto
-  "2": "2",   // Supino Reto com Halteres (novo)
-  "3": "3",   // Supino Inclinado
-  "4": "4",   // Supino Inclinado com Halteres (novo)
-  "5": "5",   // Crucifixo
-  "6": "6",   // Flexões
-  "7": "7",   // Pec Deck
-  "8": "8",   // Chest Press
-  "9": "1",   // Supino com Halteres -> Supino Reto
-  "10": "5",  // Pec Deck -> Crucifixo
-  
-  // Trícep - IDs antigos para novos
-  "11": "9",  // Trícep Pulley
-  "12": "10", // Trícep Francês
-  "13": "11", // Trícep Testa
-  "14": "12", // Dips
-  "15": "9",  // Fundos na Máquina -> Trícep Pulley
-  "16": "10", // Trícep Coice -> Trícep Francês
-  "17": "11", // Trícep Pulley Inverso -> Trícep Testa
-  "18": "12", // Dips -> Dips
-  
-  // Costas - IDs antigos para novos
-  "19": "13", // Puxada Frontal
-  "20": "14", // Puxada Frontal com Pegada Aberta (novo)
-  "21": "15", // Remada Curvada
-  "22": "16", // Remada com Halteres
-  "23": "17", // Remada Sentada
-  "24": "13", // Pullover -> Puxada Frontal
-  "25": "15", // Puxada Alta -> Remada Curvada
-  "26": "16", // Remada T -> Remada com Halteres
-  "27": "17", // Puxada com Pegada Aberta -> Remada Sentada
-  "28": "13", // Remada Unilateral -> Puxada Frontal
-  
-  // Bícep - IDs antigos para novos
-  "29": "18", // Rosca Direta
-  "30": "19", // Rosca Alternada
-  "31": "20", // Martelo (novo nome)
-  "32": "21", // Rosca Scott
-  "33": "18", // Rosca 21 -> Rosca Direta
-  "34": "21", // Rosca Scott -> Rosca Scott
-  "35": "18", // Rosca com Cabo -> Rosca Direta
-  "36": "19", // Rosca Inversa -> Rosca Alternada
-  
-  // Ombros - IDs antigos para novos
-  "37": "22", // Desenvolvimento
-  "38": "23", // Desenvolvimento com Halteres (novo)
-  "39": "24", // Remada Alta
-  "40": "25", // Crucifixo Invertido
-  "41": "26", // Elevação Lateral
-  "42": "27", // Elevação Frontal (novo)
-  "43": "22", // Arnold Press -> Desenvolvimento
-  "44": "24", // Desenvolvimento Militar -> Remada Alta
-  "45": "25", // Crucifixo Invertido -> Crucifixo Invertido
-  "46": "22", // Desenvolvimento na Máquina -> Desenvolvimento
-  
-  // Pernas - IDs antigos para novos
-  "47": "28", // Agachamento
-  "48": "29", // Agachamento Búlgaro
-  "49": "30", // Leg Press
-  "50": "31", // Extensão de Pernas
-  "51": "32", // Flexão de Pernas
-  "52": "33", // Stiff
-  "53": "34", // Afundos
-  "54": "35", // Panturrilha em Pé
-  "55": "36", // Panturrilha Sentado
-  "56": "28", // Agachamento com Halteres -> Agachamento
-  "57": "30", // Hack Squat -> Leg Press
-  "58": "31", // Cadeira Extensora -> Extensão de Pernas
-  "59": "32", // Mesa Flexora -> Flexão de Pernas
-  "60": "28", // Agachamento Sumô -> Agachamento
-  
-  // Core - IDs antigos para novos
-  "61": "37", // Abdominal (novo nome)
-  "62": "38", // Prancha
-  "63": "39", // Abdominal Bicicleta
-  "64": "40", // Mountain Climber
-  "65": "37", // Abdominal com Peso -> Abdominal
-  "66": "38", // Prancha Lateral -> Prancha
-  "67": "37", // Abdominal na Máquina -> Abdominal
-  "68": "41", // Russian Twist
-  "69": "37", // Dead Bug -> Abdominal
-  "70": "37", // Bird Dog -> Abdominal
-  "71": "38", // Hollow Hold -> Prancha
-  "72": "42", // Leg Raises
-  
-  // Cardio - IDs antigos para novos
-  "73": "43", // Corrida
-  "74": "44", // Caminhada
-  "75": "45", // Bicicleta
-  "76": "46", // Elíptica
-  "77": "47", // Remo
-  "78": "48", // Burpees
-  "79": "43", // Jumping Jacks -> Corrida
-  "80": "48", // HIIT -> Burpees
-  "81": "43", // Natação -> Corrida
-  "82": "45", // Corda -> Bicicleta
-  
-  // Funcional - IDs antigos para novos
-  "83": "49", // Deadlift
-  "84": "51", // Kettlebell Swing
-  "85": "49", // Turkish Get-up -> Deadlift
-  "86": "52", // Farmer's Walk
-  "87": "48", // Battle Ropes -> Burpees
-  "88": "53", // Box Jump
-  "89": "54", // Medicine Ball Slam
-  "90": "48", // Bear Crawl -> Burpees
-  "91": "48", // Crab Walk -> Burpees
-  "92": "49", // Single Leg Deadlift -> Deadlift
-};
-
-function migrateExercises(exercises: Exercise[]): Exercise[] {
-  return exercises.map(exercise => {
-    const newId = EXERCISE_MIGRATION_MAP[exercise.id];
-    if (newId) {
-      // Encontrar o exercício correspondente na nova biblioteca
-      const newExercise = mockExercises.find(e => e.id === newId);
-      if (newExercise) {
-        return {
-          ...newExercise,
-          // Manter dados personalizados do utilizador se existirem
-          id: exercise.id, // Manter ID original para não quebrar referências
-        };
-      }
-    }
-    return exercise;
-  }).filter(exercise => {
-    // Remover exercícios que não têm correspondência na nova biblioteca
-    return mockExercises.some(e => e.name === exercise.name || e.id === exercise.id);
-  });
-}
-
-function migrateWorkoutPlans(plans: WorkoutPlan[]): WorkoutPlan[] {
-  return plans.map(plan => ({
-    ...plan,
-    exercises: plan.exercises.map(workoutExercise => {
-      const newId = EXERCISE_MIGRATION_MAP[workoutExercise.exerciseId];
-      if (newId) {
-        const newExercise = mockExercises.find(e => e.id === newId);
-        if (newExercise) {
-          return {
-            ...workoutExercise,
-            exerciseId: newId,
-            exercise: newExercise,
-          };
-        }
-      }
-      return workoutExercise;
-    }).filter(workoutExercise => {
-      // Remover exercícios que não existem mais
-      return mockExercises.some(e => e.id === workoutExercise.exerciseId);
-    })
-  }));
-}
-
-function migrateCompletedWorkouts(workouts: CompletedWorkout[]): CompletedWorkout[] {
-  return workouts.map(workout => ({
-    ...workout,
-    exercises: workout.exercises.map(workoutExercise => {
-      const newId = EXERCISE_MIGRATION_MAP[workoutExercise.exerciseId];
-      if (newId) {
-        const newExercise = mockExercises.find(e => e.id === newId);
-        if (newExercise) {
-          return {
-            ...workoutExercise,
-            exerciseId: newId,
-            exercise: newExercise,
-          };
-        }
-      }
-      return workoutExercise;
-    }).filter(workoutExercise => {
-      // Remover exercícios que não existem mais
-      return mockExercises.some(e => e.id === workoutExercise.exerciseId);
-    })
-  }));
-}
+// Migração simplificada - remove dados antigos e deixa a nova biblioteca ser carregada automaticamente
 
 function performDataMigration(): void {
   if (!needsMigration()) {
     return;
   }
 
-  console.log("🔄 Iniciando migração de dados para versão", CURRENT_MIGRATION_VERSION);
+  console.log("🔄 Iniciando migração limpa para versão", CURRENT_MIGRATION_VERSION);
 
   try {
-    // Migrar exercícios
-    const storedExercises = localStorage.getItem(EXERCISES_KEY);
-    if (storedExercises) {
-      const exercises = JSON.parse(storedExercises);
-      const migratedExercises = migrateExercises(exercises);
-      localStorage.setItem(EXERCISES_KEY, JSON.stringify(migratedExercises));
-      console.log("✅ Exercícios migrados:", migratedExercises.length);
-    }
+    // Limpar completamente os exercícios antigos
+    // Os utilizadores receberão a nova biblioteca limpa automaticamente
+    localStorage.removeItem(EXERCISES_KEY);
+    console.log("✅ Exercícios antigos removidos - nova biblioteca será carregada");
 
-    // Migrar planos de treino
-    const storedPlans = localStorage.getItem(PLANS_KEY);
-    if (storedPlans) {
-      const plans = JSON.parse(storedPlans);
-      const migratedPlans = migrateWorkoutPlans(plans);
-      localStorage.setItem(PLANS_KEY, JSON.stringify(migratedPlans));
-      console.log("✅ Planos de treino migrados:", migratedPlans.length);
-    }
+    // Limpar planos de treino que usam exercícios antigos
+    // Os utilizadores podem recriar os planos com a nova biblioteca
+    localStorage.removeItem(PLANS_KEY);
+    console.log("✅ Planos de treino antigos removidos - podem ser recriados");
 
-    // Migrar treinos completados
+    // Manter treinos completados mas limpar referências a exercícios inexistentes
     const storedWorkouts = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
     if (storedWorkouts) {
       const workouts = JSON.parse(storedWorkouts);
-      const migratedWorkouts = migrateCompletedWorkouts(workouts);
-      localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(migratedWorkouts));
-      console.log("✅ Treinos completados migrados:", migratedWorkouts.length);
+      const cleanedWorkouts = workouts.map(workout => ({
+        ...workout,
+        exercises: workout.exercises.filter(workoutExercise => {
+          // Manter apenas exercícios que existem na nova biblioteca
+          return mockExercises.some(e => e.name === workoutExercise.exercise.name);
+        })
+      }));
+      localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(cleanedWorkouts));
+      console.log("✅ Treinos completados limpos - exercícios inexistentes removidos");
     }
 
     // Marcar migração como completa
     markMigrationComplete();
-    console.log("🎉 Migração concluída com sucesso!");
+    console.log("🎉 Migração limpa concluída com sucesso!");
+    console.log("📝 Os utilizadores receberão automaticamente a nova biblioteca de exercícios");
 
   } catch (error) {
     console.error("❌ Erro durante a migração:", error);
-    // Em caso de erro, limpar dados corrompidos e usar dados padrão
+    // Em caso de erro, limpar tudo e usar dados padrão
     localStorage.removeItem(EXERCISES_KEY);
     localStorage.removeItem(PLANS_KEY);
     localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
