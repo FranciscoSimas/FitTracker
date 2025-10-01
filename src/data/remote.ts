@@ -16,18 +16,7 @@ export async function getUserExercisesRemote(userId: string): Promise<Exercise[]
     // Buscar exercícios do utilizador através da tabela de referência
     const { data: userExercises, error: userError } = await supabase
       .from('user_exercises')
-      .select(`
-        exercise_id,
-        exercises (
-          id,
-          name,
-          muscleGroup,
-          equipment,
-          type,
-          isTimeBased,
-          cardioFields
-        )
-      `)
+      .select('exercise_id')
       .eq('user_id', userId);
     
     if (userError) {
@@ -35,11 +24,26 @@ export async function getUserExercisesRemote(userId: string): Promise<Exercise[]
       throw userError;
     }
     
-    // Converter para formato Exercise
-    const exercises = userExercises?.map(item => item.exercises).filter(Boolean) || [];
-    console.log(`📡 Exercícios carregados do Supabase: ${exercises.length} exercícios`);
+    if (!userExercises || userExercises.length === 0) {
+      console.log('📡 Nenhum exercício encontrado para o utilizador');
+      return [];
+    }
     
-    return exercises as Exercise[];
+    // Buscar os exercícios pelos IDs
+    const exerciseIds = userExercises.map(item => item.exercise_id);
+    const { data: exercises, error: exercisesError } = await supabase
+      .from('exercises')
+      .select('*')
+      .in('id', exerciseIds);
+    
+    if (exercisesError) {
+      console.error('Error fetching exercises:', exercisesError);
+      throw exercisesError;
+    }
+    
+    console.log(`📡 Exercícios carregados do Supabase: ${exercises?.length || 0} exercícios`);
+    
+    return exercises as Exercise[] || [];
   } catch (error) {
     console.error('Error fetching remote exercises:', error);
     throw error;
@@ -114,15 +118,7 @@ export async function getUserPlansRemote(userId: string) {
     // Buscar planos do utilizador através da tabela de referência
     const { data: userPlans, error: userError } = await supabase
       .from('user_workout_plans')
-      .select(`
-        plan_id,
-        workout_plans (
-          id,
-          name,
-          description,
-          exercises
-        )
-      `)
+      .select('plan_id')
       .eq('user_id', userId);
     
     if (userError) {
@@ -130,11 +126,26 @@ export async function getUserPlansRemote(userId: string) {
       throw userError;
     }
     
-    // Converter para formato WorkoutPlan
-    const plans = userPlans?.map(item => item.workout_plans).filter(Boolean) || [];
-    console.log(`📡 Planos carregados do Supabase: ${plans.length} planos`);
+    if (!userPlans || userPlans.length === 0) {
+      console.log('📡 Nenhum plano encontrado para o utilizador');
+      return [];
+    }
     
-    return plans;
+    // Buscar os planos pelos IDs
+    const planIds = userPlans.map(item => item.plan_id);
+    const { data: plans, error: plansError } = await supabase
+      .from('workout_plans')
+      .select('*')
+      .in('id', planIds);
+    
+    if (plansError) {
+      console.error('Error fetching plans:', plansError);
+      throw plansError;
+    }
+    
+    console.log(`📡 Planos carregados do Supabase: ${plans?.length || 0} planos`);
+    
+    return plans || [];
   } catch (error) {
     console.error('Error fetching remote plans:', error);
     throw error;

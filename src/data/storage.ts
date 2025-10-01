@@ -36,6 +36,16 @@ export function forceMigration(): void {
   console.log("✅ Dados limpos, migração será executada na próxima vez que carregar dados");
 }
 
+// Função para limpar dados corrompidos e forçar reload
+export function clearCorruptedData(): void {
+  console.log("🧹 Limpando dados corrompidos...");
+  localStorage.removeItem(EXERCISES_KEY);
+  localStorage.removeItem(PLANS_KEY);
+  localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
+  localStorage.removeItem(BODY_WEIGHTS_KEY);
+  console.log("✅ Dados corrompidos limpos, recarregue a página");
+}
+
 async function performDataMigration(): Promise<void> {
   if (!needsMigration()) {
     console.log("✅ Migração já foi executada, versão atual:", CURRENT_MIGRATION_VERSION);
@@ -126,8 +136,20 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
       try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          console.log(`💪 Exercícios carregados do localStorage: ${parsed.length} exercícios`);
-          return parsed; // Retorna mesmo se for array vazio
+    console.log(`💪 Exercícios carregados do localStorage: ${parsed.length} exercícios`);
+    
+    // Verificar se há exercícios duplicados
+    const uniqueExercises = parsed.filter((exercise, index, self) => 
+      index === self.findIndex(e => e.id === exercise.id)
+    );
+    
+    if (uniqueExercises.length !== parsed.length) {
+      console.warn(`⚠️ Encontrados ${parsed.length - uniqueExercises.length} exercícios duplicados, removendo...`);
+      setExercises(uniqueExercises);
+      return uniqueExercises;
+    }
+    
+    return parsed; // Retorna mesmo se for array vazio
         }
       } catch (parseError) {
         console.error("Error parsing stored exercises:", parseError);
