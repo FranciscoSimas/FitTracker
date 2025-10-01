@@ -79,32 +79,28 @@ const LandingPage = () => {
 
   const reviews = [
     {
-      name: "João Silva",
-      role: "Personal Trainer",
-      content: "O FitTracker revolucionou como os meus clientes acompanham os treinos. Interface incrível!",
-      rating: 5,
-      date: "Há 2 dias"
+      name: "Nome",
+      role: "Utilizador",
+      content: "Comentário sobre a experiência com o FitTracker...",
+      rating: 5
     },
     {
-      name: "Maria Santos",
-      role: "Atleta",
-      content: "Finalmente uma app que entende as necessidades reais de quem treina a sério. Recomendo!",
-      rating: 5,
-      date: "Há 1 semana"
+      name: "Nome",
+      role: "Utilizador", 
+      content: "Comentário sobre a experiência com o FitTracker...",
+      rating: 4
     },
     {
-      name: "Pedro Costa",
-      role: "Iniciante",
-      content: "Perfeito para quem está a começar. Interface simples e funcionalidades completas.",
-      rating: 5,
-      date: "Há 3 dias"
+      name: "Nome",
+      role: "Utilizador",
+      content: "Comentário sobre a experiência com o FitTracker...",
+      rating: 5
     },
     {
-      name: "Ana Ferreira",
-      role: "Fitness Enthusiast",
-      content: "Os gráficos de evolução são fantásticos. Consigo ver claramente o meu progresso.",
-      rating: 5,
-      date: "Há 5 dias"
+      name: "Nome",
+      role: "Utilizador",
+      content: "Comentário sobre a experiência com o FitTracker...",
+      rating: 5
     }
   ];
 
@@ -128,9 +124,9 @@ const LandingPage = () => {
             <Link to="/login">
               <Button variant="ghost" size="sm" className="text-sm">Entrar</Button>
             </Link>
-            <Link to="/login">
+            <Link to="/signup">
               <Button size="sm" className="bg-primary hover:bg-primary/90 text-sm px-6">
-                Começar
+                Criar Conta
               </Button>
             </Link>
           </div>
@@ -141,14 +137,10 @@ const LandingPage = () => {
       <section className="pt-32 pb-20 px-6">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8">
-              <div className="w-2 h-2 bg-primary rounded-full mr-3 animate-pulse"></div>
-              <span className="text-sm font-medium text-primary">Nova versão disponível</span>
-            </div>
             
             <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight tracking-tight">
               <span className="block text-foreground">Transforma o teu</span>
-              <span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="block text-primary">
                 treino em resultados
               </span>
             </h1>
@@ -160,15 +152,12 @@ const LandingPage = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <Link to="/login">
+              <Link to="/signup">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                   Começar Gratuitamente
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg" className="text-lg px-12 py-6 rounded-full border-2 hover:bg-muted/50 transition-all duration-300">
-                Ver Demonstração
-              </Button>
             </div>
           </div>
 
@@ -197,7 +186,7 @@ const LandingPage = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
               <span className="text-foreground">Tudo o que precisas</span>
               <br />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-primary">
                 para treinar melhor
               </span>
             </h2>
@@ -237,7 +226,7 @@ const LandingPage = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
               <span className="text-foreground">Vê como</span>
               <br />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-primary">
                 funciona
               </span>
             </h2>
@@ -340,7 +329,7 @@ const LandingPage = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
               <span className="text-foreground">O que os nossos</span>
               <br />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-primary">
                 utilizadores dizem
               </span>
             </h2>
@@ -365,8 +354,7 @@ const LandingPage = () => {
                   </CardHeader>
                   <CardContent className="pt-0">
                     <div className="font-semibold text-lg mb-1">{review.name}</div>
-                    <div className="text-sm text-primary font-medium mb-2">{review.role}</div>
-                    <div className="text-xs text-muted-foreground">{review.date}</div>
+                    <div className="text-sm text-primary font-medium">{review.role}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -382,7 +370,7 @@ const LandingPage = () => {
             <h2 className="text-5xl md:text-6xl font-bold mb-8 tracking-tight">
               <span className="text-foreground">Pronto para</span>
               <br />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-primary">
                 transformar os teus treinos?
               </span>
             </h2>
@@ -392,7 +380,7 @@ const LandingPage = () => {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
-            <Link to="/login">
+            <Link to="/signup">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                 Começar Agora - É Grátis
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -429,72 +417,36 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer - Modern & Clean */}
-      <footer className="border-t border-border/50 bg-background/50 backdrop-blur-sm py-16 px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-            <div className="md:col-span-1">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
-                  <Dumbbell className="h-5 w-5 text-white" />
-                </div>
-                <span className="text-xl font-bold text-primary">FitTracker</span>
+      {/* Footer - Simple & Clean */}
+      <footer className="border-t border-border/50 bg-background/50 backdrop-blur-sm py-12 px-6">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center">
+            <div className="flex items-center justify-center space-x-3 mb-6">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Dumbbell className="h-5 w-5 text-white" />
               </div>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                A plataforma profissional para gerir os teus treinos e acompanhar a tua evolução.
-              </p>
-              <div className="flex space-x-4">
-                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
-                  <span className="text-sm font-semibold">f</span>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
-                  <span className="text-sm font-semibold">t</span>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
-                  <span className="text-sm font-semibold">in</span>
-                </div>
-              </div>
+              <span className="text-xl font-bold text-primary">FitTracker</span>
+            </div>
+            <p className="text-muted-foreground leading-relaxed mb-6 max-w-2xl mx-auto">
+              A plataforma profissional para gerir os teus treinos e acompanhar a tua evolução.
+            </p>
+            
+            <div className="flex justify-center space-x-8 mb-8">
+              <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Funcionalidades
+              </Link>
+              <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Suporte
+              </Link>
+              <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Privacidade
+              </Link>
             </div>
             
-            <div>
-              <h3 className="font-semibold text-lg mb-6">Produto</h3>
-              <ul className="space-y-3 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Funcionalidades</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Preços</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">App Mobile</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">API</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-lg mb-6">Suporte</h3>
-              <ul className="space-y-3 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Central de Ajuda</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Contacto</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Status</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Comunidade</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold text-lg mb-6">Legal</h3>
-              <ul className="space-y-3 text-muted-foreground">
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Privacidade</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Termos</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">Cookies</Link></li>
-                <li><Link to="/login" className="hover:text-foreground transition-colors">GDPR</Link></li>
-              </ul>
-            </div>
-          </div>
-          
-          <div className="border-t border-border/50 mt-12 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="border-t border-border/50 pt-6">
               <p className="text-muted-foreground text-sm">
-                &copy; 2025 FitTracker. Todos os direitos reservados.
+                &copy; 2025 FitTracker. Todos os direitos reservados. Feito com ❤️ em Portugal
               </p>
-              <div className="flex items-center space-x-6 mt-4 md:mt-0">
-                <span className="text-sm text-muted-foreground">Feito com ❤️ em Portugal</span>
-              </div>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PWAInstaller from "./components/PWAInstaller";
 import { useServiceWorker } from "./hooks/useServiceWorker";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import LandingPage from "./pages/LandingPage";
 import UserProfile from "./pages/UserProfile";
 import EmailConfirmed from "./pages/EmailConfirmed";
@@ -38,6 +39,7 @@ const App = () => {
             <Routes>
               <Route path="/landing" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/email-confirmed" element={<EmailConfirmed />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/email-changed" element={<EmailChanged />} />
