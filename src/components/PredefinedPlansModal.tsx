@@ -92,9 +92,10 @@ const PredefinedPlansModal = ({ isOpen, onClose, onComplete, onBack }: Predefine
       onClose(); // Fecha o modal após completar
     } catch (error) {
       console.error('Error loading selected plans:', error);
+      console.error('Error details:', error);
       toast({
         title: "Erro",
-        description: "Não foi possível carregar os planos selecionados.",
+        description: `Não foi possível carregar os planos selecionados. Erro: ${error.message || error}`,
         variant: "destructive",
       });
     } finally {

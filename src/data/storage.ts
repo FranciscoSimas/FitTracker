@@ -235,8 +235,17 @@ export async function removeExercise(exerciseId: string, allExercises: Exercise[
     const newExercises = allExercises.filter(ex => ex.id !== exerciseId);
     setExercises(newExercises);
     
-    // Try to remove from remote - disabled for now
-    // await remote.deleteExerciseRemote(exerciseId, '');
+    // Remover do Supabase
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.deleteExerciseRemote(exerciseId, userId);
+        console.log('✅ Exercício removido do Supabase');
+      } catch (remoteError) {
+        console.error('Erro ao remover exercício do Supabase:', remoteError);
+        // Continua mesmo se falhar no Supabase
+      }
+    }
     
     return newExercises;
   } catch (error) {

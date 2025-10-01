@@ -115,7 +115,29 @@ export async function updateExerciseRemote(exercise: any, userId: string) {
 }
 
 export async function deleteExerciseRemote(exerciseId: string, userId: string) {
-  return null;
+  try {
+    const { supabase } = await import('../integrations/supabase/client');
+    
+    console.log(`📡 Eliminando exercício do Supabase: ${exerciseId}`);
+    
+    // Remover referência da tabela user_exercises
+    const { error: userExerciseError } = await supabase
+      .from('user_exercises')
+      .delete()
+      .eq('user_id', userId)
+      .eq('exercise_id', exerciseId);
+    
+    if (userExerciseError) {
+      console.error('Error removing user exercise reference:', userExerciseError);
+      throw userExerciseError;
+    }
+    
+    console.log(`✅ Exercício removido do utilizador: ${exerciseId}`);
+    return true;
+  } catch (error) {
+    console.error('Error deleting exercise from Supabase:', error);
+    throw error;
+  }
 }
 
 export async function addExercisesBulkRemote(exercises: any[]) {
@@ -327,6 +349,8 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
     const { supabase } = await import('../integrations/supabase/client');
     
     console.log('📡 Salvando treino completado no Supabase...');
+    console.log('Workout data:', workout);
+    console.log('User ID:', userId);
     
     // Inserir treino completado na tabela completed_workouts
     const { data: workoutData, error: workoutError } = await supabase
@@ -349,13 +373,16 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
     
     if (workoutError) {
       console.error('Error saving completed workout:', workoutError);
+      console.error('Error details:', workoutError);
       throw workoutError;
     }
     
     console.log(`📡 Treino completado salvo no Supabase: ${workout.planName}`);
+    console.log('Saved workout data:', workoutData);
     return workoutData;
   } catch (error) {
     console.error('Error saving completed workout to Supabase:', error);
+    console.error('Error details:', error);
     throw error;
   }
 }
