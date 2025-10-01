@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { addExercise as persistAddExercise } from "@/data/storage";
+import { addExercise as persistAddExercise, getExercises } from "@/data/storage";
 import { mockExercises, Exercise } from "@/data/mockData";
 
 const AddExercise = () => {
@@ -17,9 +17,19 @@ const AddExercise = () => {
   const [exerciseName, setExerciseName] = useState("");
   const [muscleGroup, setMuscleGroup] = useState("");
   const [equipment, setEquipment] = useState("");
+  const [currentExercises, setCurrentExercises] = useState<Exercise[]>([]);
 
   const muscleGroups = ["Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas"];
   const equipmentOptions = ["Barra", "Halteres", "Cabo", "Máquina", "Peso Corporal"];
+
+  // Carregar exercícios atuais ao montar o componente
+  useEffect(() => {
+    const loadCurrentExercises = async () => {
+      const exercises = await getExercises(mockExercises);
+      setCurrentExercises(exercises);
+    };
+    loadCurrentExercises();
+  }, []);
 
   const saveExercise = async () => {
     if (!exerciseName || !muscleGroup) {
@@ -31,13 +41,29 @@ const AddExercise = () => {
       return;
     }
 
+    // Verificar se já existe um exercício com o mesmo nome
+    const existingExercise = currentExercises.find(
+      ex => ex.name.toLowerCase() === exerciseName.trim().toLowerCase()
+    );
+    
+    if (existingExercise) {
+      toast({
+        title: "Exercício já existe",
+        description: `Já existe um exercício chamado "${exerciseName}".`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     const newExercise: Exercise = {
       id: `ex_${Date.now()}`,
       name: exerciseName.trim(),
       muscleGroup,
       equipment: equipment || undefined,
     };
-    await persistAddExercise(newExercise, mockExercises);
+    
+    // Usar os exercícios atuais em vez dos mockExercises
+    await persistAddExercise(newExercise, currentExercises);
     toast({
       title: "Exercício adicionado!",
       description: `${exerciseName} foi adicionado à biblioteca.`,
