@@ -299,37 +299,83 @@ export async function addPlansBulkRemote(plans: WorkoutPlan[], userId: string) {
   try {
     const { supabase } = await import('../integrations/supabase/client');
     
-    // Inserir todos os planos na tabela workout_plans
-    const { data: plansData, error: plansError } = await supabase
+    // Verificar quais planos já existem
+    const planIds = plans.map(plan => plan.id);
+    const { data: existingPlans, error: checkError } = await supabase
       .from('workout_plans')
-      .insert(plans.map(plan => ({
-        id: plan.id,
-        name: plan.name,
-        description: plan.description || '',
-        exercises: plan.exercises
-      })))
-      .select();
+      .select('id')
+      .in('id', planIds);
     
-    if (plansError) {
-      console.error('Error adding plans in bulk:', plansError);
-      throw plansError;
+    if (checkError) {
+      console.error('Error checking existing plans:', checkError);
+      throw checkError;
     }
     
-    // Criar referências na tabela user_workout_plans
-    const { error: userPlansError } = await supabase
+    const existingPlanIds = existingPlans?.map(p => p.id) || [];
+    const newPlans = plans.filter(plan => !existingPlanIds.includes(plan.id));
+    
+    console.log(`📊 Planos a inserir: ${newPlans.length} de ${plans.length} (${existingPlanIds.length} já existem)`);
+    
+    if (newPlans.length === 0) {
+      console.log('📊 Todos os planos já existem, apenas criando referências de utilizador');
+    } else {
+      // Inserir apenas os planos novos na tabela workout_plans
+      const { data: plansData, error: plansError } = await supabase
+        .from('workout_plans')
+        .insert(newPlans.map(plan => ({
+          id: plan.id,
+          name: plan.name,
+          description: plan.description || '',
+          exercises: plan.exercises
+        })))
+        .select();
+      
+      if (plansError) {
+        console.error('Error adding plans in bulk:', plansError);
+        throw plansError;
+      }
+      
+      console.log(`📡 ${newPlans.length} planos novos inseridos no Supabase`);
+    }
+    
+    // Verificar quais referências de utilizador já existem
+    const { data: existingUserPlans, error: userCheckError } = await supabase
       .from('user_workout_plans')
-      .insert(plans.map(plan => ({
-        user_id: userId,
-        plan_id: plan.id
-      })));
+      .select('plan_id')
+      .eq('user_id', userId)
+      .in('plan_id', planIds);
     
-    if (userPlansError) {
-      console.error('Error linking plans to user:', userPlansError);
-      throw userPlansError;
+    if (userCheckError) {
+      console.error('Error checking existing user plans:', userCheckError);
+      throw userCheckError;
     }
     
-    console.log(`📡 ${plans.length} planos adicionados ao Supabase em bulk`);
-    return plansData;
+    const existingUserPlanIds = existingUserPlans?.map(p => p.plan_id) || [];
+    const newUserPlans = plans.filter(plan => !existingUserPlanIds.includes(plan.id));
+    
+    console.log(`📊 Referências de utilizador a criar: ${newUserPlans.length} de ${plans.length} (${existingUserPlanIds.length} já existem)`);
+    
+    if (newUserPlans.length > 0) {
+      // Criar apenas as referências novas na tabela user_workout_plans
+      const { error: userPlansError } = await supabase
+        .from('user_workout_plans')
+        .insert(newUserPlans.map(plan => ({
+          user_id: userId,
+          plan_id: plan.id
+        })));
+      
+      if (userPlansError) {
+        console.error('Error linking plans to user:', userPlansError);
+        throw userPlansError;
+      }
+      
+      console.log(`📡 ${newUserPlans.length} referências de planos criadas para o utilizador`);
+    } else {
+      console.log('📊 Todas as referências de planos já existem para este utilizador');
+    }
+    
+    console.log(`📡 ${plans.length} planos processados no Supabase em bulk`);
+    return plans;
   } catch (error) {
     console.error('Error adding plans in bulk to remote:', error);
     throw error;
