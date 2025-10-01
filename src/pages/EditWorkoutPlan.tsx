@@ -43,8 +43,11 @@ const EditWorkoutPlan = () => {
       const planToSave: WorkoutPlan = {
         ...plan,
         name: planName || plan.name,
+        // Ensure we save the current plan state with all exercises
+        exercises: plan.exercises,
       };
       await updatePlan(planToSave, currentPlans);
+      console.log('Plan saved successfully:', planToSave);
     } catch (error) {
       console.error('Save error:', error);
     } finally {
@@ -84,10 +87,17 @@ const EditWorkoutPlan = () => {
       exercises: [...plan.exercises, ...newWorkoutExercises]
     };
 
+    // Update state first
     setPlan(updatedPlan);
 
-    // Save immediately after adding exercises
-    await savePlan();
+    // Save the updated plan with exercises
+    try {
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await updatePlan(updatedPlan, currentPlans);
+      console.log('Exercises added and saved:', updatedPlan);
+    } catch (error) {
+      console.error('Error saving exercises:', error);
+    }
 
     toast({
       title: "Exercícios adicionados! 🎉",
@@ -96,13 +106,23 @@ const EditWorkoutPlan = () => {
   };
 
   const removeExercise = async (exerciseId: string) => {
-    const updatedPlan = plan ? {
+    if (!plan) return;
+    
+    const updatedPlan = {
       ...plan,
       exercises: plan.exercises.filter(ex => ex.id !== exerciseId)
-    } : null;
+    };
     
     setPlan(updatedPlan);
-    await savePlan();
+    
+    // Save the updated plan
+    try {
+      const currentPlans = await getPlans(mockWorkoutPlans);
+      await updatePlan(updatedPlan, currentPlans);
+      console.log('Exercise removed and saved:', updatedPlan);
+    } catch (error) {
+      console.error('Error saving after exercise removal:', error);
+    }
   };
 
 

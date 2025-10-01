@@ -100,7 +100,7 @@ const Layout = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6">
+      <main className="container mx-auto px-2 sm:px-4 py-6 sm:py-8">
         <Outlet />
       </main>
     </div>
