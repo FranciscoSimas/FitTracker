@@ -61,7 +61,7 @@ const Exercises = () => {
   const removeExercise = async (exerciseId: string) => {
     const exerciseToRemove = exercises.find(ex => ex.id === exerciseId);
     if (!exerciseToRemove) return;
-    const updated = await persistRemoveExercise(exerciseId, mockExercises);
+    const updated = await persistRemoveExercise(exerciseId, exercises);
     setExercises(updated);
     setFilteredExercises(updated);
     filterExercises(searchTerm, selectedMuscleGroup);

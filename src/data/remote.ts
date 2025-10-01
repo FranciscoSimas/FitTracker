@@ -341,7 +341,30 @@ export async function addUserPlansBulkRemote(plans: any[], userId: string) {
 }
 
 export async function getWorkoutHistoryRemote(userId: string) {
-  return [];
+  try {
+    const { supabase } = await import('../integrations/supabase/client');
+    
+    console.log('📡 Carregando histórico de treinos do Supabase...');
+    
+    // Buscar treinos completados do utilizador
+    const { data: workouts, error: workoutsError } = await supabase
+      .from('completed_workouts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('date', { ascending: false });
+    
+    if (workoutsError) {
+      console.error('Error fetching workout history:', workoutsError);
+      throw workoutsError;
+    }
+    
+    console.log(`📡 Histórico de treinos carregado do Supabase: ${workouts?.length || 0} treinos`);
+    
+    return workouts || [];
+  } catch (error) {
+    console.error('Error fetching workout history from Supabase:', error);
+    throw error;
+  }
 }
 
 export async function addWorkoutHistoryRemote(workout: any, userId: string) {
@@ -430,6 +453,53 @@ export async function populateInitialExercises(userId: string): Promise<void> {
     
   } catch (error) {
     console.error('Erro ao popular exercícios iniciais:', error);
+    throw error;
+  }
+}
+
+// Função para limpar exercícios órfãos (que não pertencem a nenhum utilizador)
+export async function cleanupOrphanedExercises(): Promise<void> {
+  try {
+    const { supabase } = await import('../integrations/supabase/client');
+    
+    console.log('🧹 Limpando exercícios órfãos...');
+    
+    // Buscar todos os exercícios que não têm referências em user_exercises
+    const { data: orphanedExercises, error: orphanError } = await supabase
+      .from('exercises')
+      .select('id')
+      .not('id', 'in', 
+        supabase
+          .from('user_exercises')
+          .select('exercise_id')
+      );
+    
+    if (orphanError) {
+      console.error('Erro ao buscar exercícios órfãos:', orphanError);
+      throw orphanError;
+    }
+    
+    if (orphanedExercises && orphanedExercises.length > 0) {
+      const orphanedIds = orphanedExercises.map(ex => ex.id);
+      
+      // Eliminar exercícios órfãos
+      const { error: deleteError } = await supabase
+        .from('exercises')
+        .delete()
+        .in('id', orphanedIds);
+      
+      if (deleteError) {
+        console.error('Erro ao eliminar exercícios órfãos:', deleteError);
+        throw deleteError;
+      }
+      
+      console.log(`✅ ${orphanedIds.length} exercícios órfãos eliminados`);
+    } else {
+      console.log('✅ Nenhum exercício órfão encontrado');
+    }
+    
+  } catch (error) {
+    console.error('❌ Erro ao limpar exercícios órfãos:', error);
     throw error;
   }
 }

@@ -69,6 +69,16 @@ export async function forceSupabaseSync(): Promise<void> {
   }
 }
 
+// Função para limpar exercícios órfãos
+export async function cleanupOrphanedExercises(): Promise<void> {
+  try {
+    await remote.cleanupOrphanedExercises();
+    console.log("✅ Limpeza de exercícios órfãos concluída");
+  } catch (error) {
+    console.error("❌ Erro na limpeza de exercícios órfãos:", error);
+  }
+}
+
 async function performDataMigration(): Promise<void> {
   if (!needsMigration()) {
     console.log("✅ Migração já foi executada, versão atual:", CURRENT_MIGRATION_VERSION);
@@ -397,19 +407,42 @@ export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
     // Executar migração antes de carregar dados
     performDataMigration();
 
-    // Try remote first - disabled for now
-    // const remoteWorkouts = await remote.getWorkoutHistoryRemote('');
-    // if (remoteWorkouts.length > 0) {
-    //   localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(remoteWorkouts));
-    //   return remoteWorkouts;
-    // }
-
+    // Supabase é a fonte principal para treinos completados
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        const remoteWorkouts = await remote.getWorkoutHistoryRemote(userId);
+        if (remoteWorkouts && remoteWorkouts.length > 0) {
+          // Cache no localStorage para performance
+          localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(remoteWorkouts));
+          console.log(`📡 Treinos completados carregados do Supabase: ${remoteWorkouts.length} treinos`);
+          return remoteWorkouts;
+        }
+      } catch (remoteError) {
+        console.error("Erro ao carregar treinos do Supabase:", remoteError);
+        // Em caso de erro, usar localStorage como fallback
+        const stored = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            console.log(`💾 Treinos completados carregados do localStorage (fallback): ${parsed.length} treinos`);
+            return parsed;
+          }
+        }
+      }
+    }
+    
+    // Se não há userId ou erro, usar localStorage
     const stored = localStorage.getItem(COMPLETED_WORKOUTS_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return Array.isArray(parsed) ? parsed : [];
+      if (Array.isArray(parsed)) {
+        console.log(`💾 Treinos completados carregados do localStorage (sem auth): ${parsed.length} treinos`);
+        return parsed;
+      }
     }
     
+    console.log("📋 Nenhum treino completado encontrado");
     return [];
   } catch (error) {
     console.error("Error getting completed workouts:", error);
