@@ -155,14 +155,20 @@ const ExerciseSelectionModal = ({
 
           {/* Filtros por grupo muscular */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden flex flex-col">
-            <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
-              {muscleGroups.map((group) => (
-                <TabsTrigger key={group.id} value={group.id}>
-                  <span className="hidden sm:inline">{group.name}</span>
-                  <span className="sm:hidden">{group.name.charAt(0)}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
+            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border/50 pb-2">
+              <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10 h-auto p-1 bg-muted/50">
+                {muscleGroups.map((group) => (
+                  <TabsTrigger 
+                    key={group.id} 
+                    value={group.id}
+                    className="text-xs sm:text-sm px-2 py-2 data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
+                    <span className="hidden sm:inline">{group.name}</span>
+                    <span className="sm:hidden">{group.name.charAt(0)}</span>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
 
             {/* Conteúdo dos exercícios */}
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">

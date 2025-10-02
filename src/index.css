@@ -356,4 +356,21 @@ html {
   .gap-card {
     gap: 1rem;
   }
+
+  /* Enhanced component styles */
+  .switch-enhanced {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .tab-enhanced {
+    @apply transition-all duration-200 ease-in-out hover:bg-muted/30;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-md hover:scale-[1.01];
+  }
+
+  .button-enhanced {
+    @apply transition-all duration-200 ease-in-out hover:shadow-sm;
+  }
 }
