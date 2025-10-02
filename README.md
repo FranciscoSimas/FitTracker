@@ -148,7 +148,7 @@ Our mission is to provide **each user with a personalized workout dashboard** th
 - 🔄 **Gamification system** with achievements and social features
 - 🔄 **Advanced analytics** and progress tracking
 
-### 🔧 Recent Improvements (January 2025)
+### 🔧 Recent Improvements
 - ✅ **Critical database fixes** - Resolved Supabase integration issues
 - ✅ **Completed workouts** now save correctly to database
 - ✅ **Duplicate plans** prevention system implemented
