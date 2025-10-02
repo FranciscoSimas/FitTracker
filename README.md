@@ -67,14 +67,14 @@ Our mission is to provide **each user with a personalized workout dashboard** th
 - 🔄 **Shared packages** for data models and utilities
 - 🔄 **Independent deployment** for web and mobile apps
 
-### 📋 FASE 4 - User Experience Enhancements (PLANNED)
-- 🔄 **Internationalization (i18n)** - Portuguese/English support
+### 🚀 FASE 4 - User Experience Enhancements (IN PROGRESS)
+- 🔄 **Settings page** - Comprehensive app configuration and preferences
+- 🔄 **User profile page** - Complete user management and customization
 - 🔄 **Theme customization** - Dark/Light mode with user preferences
-- 🔄 **Settings page** - Units (KG/LB), metrics, and app configuration
-- 🔄 **CSS polish** - Fix overlays, scrollbars, and padding issues
+- 🔄 **CSS polish** - Professional styling improvements and consistency
 
 ### 🏆 FASE 5 - Gamification & Social Features (PLANNED)
-- 🔄 **User profile page** with photo upload and customization
+- 🔄 **Advanced user profile** with photo upload and customization
 - 🔄 **Achievement system** with trophies and badges
 - 🔄 **Progress streaks** and consistency tracking
 - 🔄 **Social features** - friends, groups, and leaderboards
@@ -148,7 +148,7 @@ Our mission is to provide **each user with a personalized workout dashboard** th
 - 🔄 **Gamification system** with achievements and social features
 - 🔄 **Advanced analytics** and progress tracking
 
-### 🔧 Recent Improvements (January 2025)
+### 🔧 Recent Improvements
 - ✅ **Critical database fixes** - Resolved Supabase integration issues
 - ✅ **Completed workouts** now save correctly to database
 - ✅ **Duplicate plans** prevention system implemented
