@@ -166,12 +166,6 @@ const ExerciseSelectionModal = ({
             {/* Conteúdo dos exercícios */}
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">
               <TabsContent value={activeTab} className="mt-4 space-y-4 pr-2">
-                {/* Header com contador */}
-                <div className="flex items-center justify-end p-4 bg-gradient-to-r from-muted/30 to-muted/50 rounded-lg border border-border/50">
-                  <Badge variant="secondary" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
-                    {selectedExercises.length} selecionado{selectedExercises.length !== 1 ? 's' : ''}
-                  </Badge>
-                </div>
 
                 {/* Grid de exercícios */}
                 {activeTab === "all" ? (
