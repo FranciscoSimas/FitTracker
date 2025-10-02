@@ -101,13 +101,6 @@ const ExerciseSelectionModal = ({
     );
   };
 
-  const handleSelectAll = () => {
-    if (selectedExercises.length === filteredExercises.length) {
-      setSelectedExercises([]);
-    } else {
-      setSelectedExercises(filteredExercises.map(ex => ex.id));
-    }
-  };
 
   const handleConfirm = () => {
     const selected = allExercises.filter(ex => selectedExercises.includes(ex.id));
@@ -173,21 +166,8 @@ const ExerciseSelectionModal = ({
             {/* Conteúdo dos exercícios */}
             <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent hover:scrollbar-thumb-muted-foreground/30">
               <TabsContent value={activeTab} className="mt-4 space-y-4 pr-2">
-                {/* Header com seleção */}
-                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-muted/30 to-muted/50 rounded-lg border border-border/50">
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleSelectAll}
-                      className="text-xs"
-                    >
-                      {selectedExercises.length === filteredExercises.length && filteredExercises.length > 0
-                        ? "Desmarcar todos"
-                        : "Selecionar todos"
-                      }
-                    </Button>
-                  </div>
+                {/* Header com contador */}
+                <div className="flex items-center justify-end p-4 bg-gradient-to-r from-muted/30 to-muted/50 rounded-lg border border-border/50">
                   <Badge variant="secondary" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
                     {selectedExercises.length} selecionado{selectedExercises.length !== 1 ? 's' : ''}
                   </Badge>
