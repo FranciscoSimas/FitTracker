@@ -72,6 +72,7 @@ Our mission is to provide **each user with a personalized workout dashboard** th
 - 🔄 **User profile page** - Complete user management and customization
 - 🔄 **Theme customization** - Dark/Light mode with user preferences
 - 🔄 **CSS polish** - Professional styling improvements and consistency
+- 🔄 **Internationalization (i18n)** - Portuguese/English support
 
 ### 🏆 FASE 5 - Gamification & Social Features (PLANNED)
 - 🔄 **Advanced user profile** with photo upload and customization

@@ -23,6 +23,8 @@ import Evolution from "./pages/Evolution";
 import ActiveWorkout from "./pages/ActiveWorkout";
 import EditWorkoutPlan from "./pages/EditWorkoutPlan";
 import WorkoutHistory from "./pages/WorkoutHistory";
+import AppSettings from "./pages/AppSettings";
+import UserProfileNew from "./pages/UserProfileNew";
 
 const queryClient = new QueryClient();
 
@@ -54,7 +56,9 @@ const App = () => {
                 <Route path="adicionar-plano" element={<AddWorkoutPlan />} />
                 <Route path="evolucao" element={<Evolution />} />
                 <Route path="historico" element={<WorkoutHistory />} />
-                <Route path="perfil" element={<UserProfile />} />
+                <Route path="perfil" element={<UserProfileNew />} />
+                <Route path="configuracoes-conta" element={<UserProfile />} />
+                <Route path="configuracoes-app" element={<AppSettings />} />
                 <Route path="treino/:planId" element={<ActiveWorkout />} />
                 <Route path="editar-plano/:planId" element={<EditWorkoutPlan />} />
               </Route>

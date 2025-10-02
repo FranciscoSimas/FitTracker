@@ -60,8 +60,16 @@ const Layout = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem onClick={() => window.location.href = '/perfil'}>
+                    <User className="h-4 w-4 mr-2" />
+                    Perfil
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/configuracoes-conta'}>
                     <Settings className="h-4 w-4 mr-2" />
                     Configurações da Conta
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = '/configuracoes-app'}>
+                    <Settings className="h-4 w-4 mr-2" />
+                    Configurações da App
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
