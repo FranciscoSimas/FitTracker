@@ -406,7 +406,21 @@ export async function getWorkoutHistoryRemote(userId: string) {
     
     console.log(`📡 Histórico de treinos carregado do Supabase: ${workouts?.length || 0} treinos`);
     
-    return workouts || [];
+    // Converter snake_case para camelCase para compatibilidade com o frontend
+    const convertedWorkouts = (workouts || []).map(workout => ({
+      id: workout.id,
+      planId: workout.plan_id,
+      planName: workout.plan_name,
+      date: workout.date,
+      startTime: workout.start_time,
+      endTime: workout.end_time,
+      duration: workout.duration,
+      exercises: workout.exercises,
+      notes: workout.notes,
+      completed: true // Sempre true para treinos completados
+    }));
+    
+    return convertedWorkouts;
   } catch (error) {
     console.error('Error fetching workout history from Supabase:', error);
     throw error;
