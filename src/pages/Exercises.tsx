@@ -148,41 +148,44 @@ const Exercises = () => {
           </Card>
         ) : (
           filteredExercises.map((exercise) => (
-          <Card key={exercise.id} className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-lg font-semibold text-foreground">
-                    {exercise.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Dumbbell className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">
-                      {exercise.equipment || "Peso livre"}
-                    </span>
+            <Card
+              key={exercise.id}
+              className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md"
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-foreground">
+                      {exercise.name}
+                    </CardTitle>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Dumbbell className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {exercise.equipment || "Peso livre"}
+                      </span>
+                    </div>
                   </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => removeExercise(exercise.id)}
+                    className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
                 </div>
-                <Button
+              </CardHeader>
+              <CardContent className="pt-0">
+                <Badge
                   variant="outline"
-                  size="sm"
-                  onClick={() => removeExercise(exercise.id)}
-                  className="border-red-500/20 text-red-600 hover:bg-red-500/10"
+                  className={getMuscleGroupColor(exercise.muscleGroup)}
                 >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <Badge 
-                variant="outline" 
-                className={getMuscleGroupColor(exercise.muscleGroup)}
-              >
-                {exercise.muscleGroup}
-              </Badge>
-            </CardContent>
-          </Card>
-        ))
-        }
+                  {exercise.muscleGroup}
+                </Badge>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {filteredExercises.length === 0 && (
