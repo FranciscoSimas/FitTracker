@@ -237,49 +237,52 @@ const WorkoutHistory = () => {
           </Card>
         ) : (
           filteredWorkouts.map((workout) => (
-          <Card key={workout.id} className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {workout.planName}
-                    </h3>
-                    <Badge 
-                      variant="outline" 
-                      className="bg-fitness-success/10 text-fitness-success border-fitness-success/20"
-                    >
-                      Completo
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{formatDate(workout.date)}</span>
+            <Card
+              key={workout.id}
+              className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md"
+            >
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-semibold text-foreground">
+                        {workout.planName}
+                      </h3>
+                      <Badge
+                        variant="outline"
+                        className="bg-fitness-success/10 text-fitness-success border-fitness-success/20"
+                      >
+                        Completo
+                      </Badge>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{workout.duration} min</span>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        <span>{formatDate(workout.date)}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{workout.duration} min</span>
+                      </div>
+                      <span>
+                        {getCompletedSets(workout)}/{getTotalSets(workout)} sets
+                      </span>
                     </div>
-                    <span>
-                      {getCompletedSets(workout)}/{getTotalSets(workout)} sets
-                    </span>
                   </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setSelectedWorkout(workout)}
+                    className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    Ver Detalhes
+                  </Button>
                 </div>
-                
-                <Button
-                  variant="outline"
-                  onClick={() => setSelectedWorkout(workout)}
-                  className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  Ver Detalhes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))
-        }
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
 
       {filteredWorkouts.length === 0 && (
