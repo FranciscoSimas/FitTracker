@@ -10,10 +10,12 @@ import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { addExercise as persistAddExercise, getExercises } from "@/data/storage";
 import { mockExercises, Exercise } from "@/data/mockData";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddExercise = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const [exerciseName, setExerciseName] = useState("");
   const [muscleGroup, setMuscleGroup] = useState("");
@@ -66,7 +68,14 @@ const AddExercise = () => {
     };
     
     // Usar os exercícios atuais em vez dos mockExercises
-    await persistAddExercise(newExercise, currentExercises);
+    const updatedExercises = await persistAddExercise(newExercise, currentExercises);
+
+    // Atualizar cache do React Query para que a lista de exercícios
+    // seja atualizada imediatamente sem precisar de F5
+    queryClient.setQueryData<Exercise[]>(["exercises"], updatedExercises);
+
+    // Atualizar estado local desta página (por consistência, embora navegemos de seguida)
+    setCurrentExercises(updatedExercises);
     toast({
       title: "Exercício adicionado!",
       description: `${exerciseName} foi adicionado à biblioteca.`,

@@ -185,7 +185,7 @@ export async function getExercises(initial: Exercise[]): Promise<Exercise[]> {
     const stored = localStorage.getItem(EXERCISES_KEY);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
+      const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
           console.log(`💾 Exercícios carregados do localStorage (sem auth): ${parsed.length} exercícios`);
           return parsed;
@@ -294,7 +294,7 @@ export async function getPlans(initial: WorkoutPlan[]): Promise<WorkoutPlan[]> {
     const stored = localStorage.getItem(PLANS_KEY);
     if (stored) {
       try {
-        const parsed = JSON.parse(stored);
+      const parsed = JSON.parse(stored);
         if (Array.isArray(parsed)) {
           console.log(`💾 Planos carregados do localStorage (sem auth): ${parsed.length} planos`);
           return parsed;
@@ -414,7 +414,7 @@ export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
       console.error("❌ ERRO CRÍTICO ao carregar treinos do Supabase:", remoteError);
       console.error("❌ NÃO USANDO LOCALSTORAGE COMO FALLBACK");
       // NÃO USAR LOCALSTORAGE - APENAS SUPABASE
-      return [];
+    return [];
     }
   } catch (error) {
     console.error("Error getting completed workouts:", error);
