@@ -113,25 +113,6 @@ async function performDataMigration(): Promise<void> {
       console.log("✅ Treinos completados limpos - exercícios inexistentes removidos");
     }
 
-    // Tentar limpar também a base de dados Supabase
-    try {
-      const { clearOldDataFromDatabase, cleanupOrphanedExercises } = await import('./remote');
-      await clearOldDataFromDatabase();
-      console.log("✅ Base de dados Supabase limpa");
-      
-      // Limpeza automática de exercícios órfãos (manutenção de backend)
-      try {
-        const cleanupResult = await cleanupOrphanedExercises();
-        console.log(`🧹 Limpeza automática: ${cleanupResult.deleted} exercícios órfãos eliminados`);
-      } catch (cleanupError) {
-        console.warn("⚠️ Erro na limpeza automática de exercícios órfãos:", cleanupError);
-        // Não falha a migração por causa da limpeza
-      }
-    } catch (dbError) {
-      console.warn("⚠️ Não foi possível limpar a base de dados Supabase:", dbError);
-      console.log("📝 A migração continuará apenas com localStorage");
-    }
-
     // Marcar migração como completa
     markMigrationComplete();
     console.log("🎉 Migração limpa concluída com sucesso!");
@@ -414,7 +395,7 @@ export async function removePlan(planId: string, allPlans: WorkoutPlan[]): Promi
 export async function getCompletedWorkouts(): Promise<CompletedWorkout[]> {
   try {
     // Executar migração antes de carregar dados
-    performDataMigration();
+    await performDataMigration();
 
     // SUPABASE É A ÚNICA FONTE - SEM FALLBACK PARA LOCALSTORAGE
     const userId = getCurrentUserId();
@@ -480,12 +461,23 @@ export async function clearCompletedWorkouts(): Promise<void> {
 
 export async function getBodyWeights(): Promise<BodyWeightEntry[]> {
   try {
-    // Try remote first - disabled for now
-    // const remoteWeights = await remote.getBodyWeightsRemote('');
-    // if (remoteWeights.length > 0) {
-    //   localStorage.setItem(BODY_WEIGHTS_KEY, JSON.stringify(remoteWeights));
-    //   return remoteWeights;
-    // }
+    // Tentar carregar do Supabase primeiro
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        const remoteWeights = await remote.getBodyWeightsRemote(userId);
+        if (remoteWeights.length > 0) {
+          const mapped: BodyWeightEntry[] = remoteWeights.map(w => ({
+            date: w.date,
+            weight: w.weight,
+          }));
+          localStorage.setItem(BODY_WEIGHTS_KEY, JSON.stringify(mapped));
+          return mapped;
+        }
+      } catch (remoteError) {
+        console.warn("Erro ao carregar pesos corporais do Supabase, usando localStorage como fallback:", remoteError);
+      }
+    }
 
     const stored = localStorage.getItem(BODY_WEIGHTS_KEY);
     if (stored) {
@@ -520,8 +512,15 @@ export async function addBodyWeight(entry: BodyWeightEntry): Promise<void> {
     
     setBodyWeights(updated);
     
-    // Try to add to remote - disabled for now
-    // await remote.addBodyWeightRemote(entry, '');
+    // Guardar também no Supabase, se utilizador estiver autenticado
+    const userId = getCurrentUserId();
+    if (userId) {
+      try {
+        await remote.addBodyWeightRemote(entry, userId);
+      } catch (remoteError) {
+        console.warn("Erro ao salvar peso corporal no Supabase:", remoteError);
+      }
+    }
   } catch (error) {
     console.error("Error adding body weight:", error);
   }
@@ -576,18 +575,4 @@ export function saveLastWeight(exerciseId: string, weight: number, reps: number)
 export function getLastWeightForExercise(exerciseId: string): LastWeightEntry | null {
   const lastWeights = getLastWeights();
   return lastWeights[exerciseId] || null;
-}
-
-// Test data generator - generates realistic workout history for testing
-export function generateTestWorkoutData(): void {
-  // Import mockCompletedWorkouts from mockData
-  import('./mockData').then(({ mockCompletedWorkouts }) => {
-    // Clear existing data
-    localStorage.removeItem(COMPLETED_WORKOUTS_KEY);
-    
-    // Add test data
-    localStorage.setItem(COMPLETED_WORKOUTS_KEY, JSON.stringify(mockCompletedWorkouts));
-    
-    console.log('Test workout data generated successfully!');
-  });
 }

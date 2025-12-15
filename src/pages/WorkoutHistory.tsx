@@ -6,16 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, Clock, Eye, Filter } from "lucide-react";
 import { CompletedWorkout } from "@/data/mockData";
-import { getCompletedWorkouts, clearCompletedWorkouts, setCompletedWorkouts } from "@/data/storage";
+import { clearCompletedWorkouts } from "@/data/storage";
 import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
 import { InfiniteScroll } from "@/components/ui/virtual-list";
 import { useMemoizedWorkouts, useMemoizedStats } from "@/hooks/useMemoizedData";
+import { useCompletedWorkoutsQuery } from "@/hooks/useDataQueries";
 
 const WorkoutHistory = () => {
   const [workouts, setWorkouts] = useState<CompletedWorkout[]>([]);
   const [filteredWorkouts, setFilteredWorkouts] = useState<CompletedWorkout[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<string>("all");
   const [selectedWorkout, setSelectedWorkout] = useState<CompletedWorkout | null>(null);
+  const { data: completedData = [], isLoading, refetch } = useCompletedWorkoutsQuery();
 
   // Memoized data processing
   const memoizedWorkouts = useMemoizedWorkouts(workouts);
@@ -29,8 +31,17 @@ const WorkoutHistory = () => {
   );
 
   useEffect(() => {
-    refreshData();
-  }, []);
+    // Ordenar por data (mais recentes primeiro) sempre que dados mudam
+    const sortedData = [...completedData].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    setWorkouts(sortedData);
+    setFilteredWorkouts(
+      selectedPlan === "all"
+        ? sortedData
+        : sortedData.filter((w) => w.planName === selectedPlan)
+    );
+  }, [completedData, selectedPlan]);
 
   const handlePlanFilter = (plan: string) => {
     setSelectedPlan(plan);
@@ -45,11 +56,7 @@ const WorkoutHistory = () => {
   };
 
   const refreshData = async () => {
-    const data = await getCompletedWorkouts();
-    // Ordenar por data (mais recentes primeiro)
-    const sortedData = data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    setWorkouts(sortedData);
-    setFilteredWorkouts(selectedPlan === "all" ? sortedData : sortedData.filter(w => w.planName === selectedPlan));
+    await refetch();
   };
 
   const handleClear = async () => {
@@ -222,7 +229,14 @@ const WorkoutHistory = () => {
 
       {/* Workouts Grid */}
       <div className="space-y-4">
-        {filteredWorkouts.map((workout) => (
+        {isLoading ? (
+          <Card className="bg-card/50 border-border/50">
+            <CardContent className="p-8 text-center text-muted-foreground">
+              A carregar histórico de treinos...
+            </CardContent>
+          </Card>
+        ) : (
+          filteredWorkouts.map((workout) => (
           <Card key={workout.id} className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -264,7 +278,8 @@ const WorkoutHistory = () => {
               </div>
             </CardContent>
           </Card>
-        ))}
+        ))
+        }
       </div>
 
       {filteredWorkouts.length === 0 && (

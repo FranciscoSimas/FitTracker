@@ -6,14 +6,18 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Filter, Dumbbell, Trash2 } from "lucide-react";
-import { mockExercises, Exercise } from "@/data/mockData";
-import { getExercises, removeExercise as persistRemoveExercise } from "@/data/storage";
+import { Exercise } from "@/data/mockData";
+import { removeExercise as persistRemoveExercise } from "@/data/storage";
+import { useExercisesQuery } from "@/hooks/useDataQueries";
+import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 
 const Exercises = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+  const queryClient = useQueryClient();
+
+  const { data: exercisesData = [], isLoading } = useExercisesQuery();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,14 +25,11 @@ const Exercises = () => {
 
   const muscleGroups = ["all", "Peito", "Trícep", "Costas", "Bícep", "Ombros", "Pernas", "Core", "Cardio", "Funcional"];
 
+  // Sincronizar estado local com dados carregados pelo React Query
   useEffect(() => {
-    const loadData = async () => {
-      const data = await getExercises(mockExercises);
-      setExercises(data);
-      setFilteredExercises(data);
-    };
-    loadData();
-  }, []);
+    setExercises(exercisesData);
+    setFilteredExercises(exercisesData);
+  }, [exercisesData]);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -63,6 +64,8 @@ const Exercises = () => {
     const updated = await persistRemoveExercise(exerciseId, exercises);
     setExercises(updated);
     setFilteredExercises(updated);
+    // Atualizar cache do React Query
+    queryClient.setQueryData<Exercise[]>(["exercises"], updated);
     filterExercises(searchTerm, selectedMuscleGroup);
     toast({
       title: "Exercício removido!",
@@ -137,7 +140,14 @@ const Exercises = () => {
 
       {/* Exercise Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredExercises.map((exercise) => (
+        {isLoading ? (
+          <Card className="bg-card/50 border-border/50 col-span-full">
+            <CardContent className="p-6 text-center text-muted-foreground">
+              A carregar exercícios...
+            </CardContent>
+          </Card>
+        ) : (
+          filteredExercises.map((exercise) => (
           <Card key={exercise.id} className="bg-gradient-to-br from-card to-muted/20 border-border/50 hover:border-fitness-primary/50 transition-all duration-300 hover:shadow-md">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -171,7 +181,8 @@ const Exercises = () => {
               </Badge>
             </CardContent>
           </Card>
-        ))}
+        ))
+        }
       </div>
 
       {filteredExercises.length === 0 && (

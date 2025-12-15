@@ -32,28 +32,33 @@ const Layout = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+      <header className="border-b border-border bg-card shadow-sm sticky top-0 z-40">
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <div className="rounded-lg bg-gradient-to-r from-fitness-primary to-fitness-secondary p-2">
                 <Dumbbell className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent">
-                FitTracker
-              </h1>
+              <div className="flex flex-col min-w-0">
+                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-fitness-primary to-fitness-secondary bg-clip-text text-transparent truncate">
+                  FitTracker
+                </h1>
+                <span className="text-[11px] sm:text-xs text-muted-foreground hidden xs:block">
+                  O teu diário de treino inteligente
+                </span>
+              </div>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    size="sm"
-                    className="border-border/50 text-muted-foreground hover:text-foreground"
+                    size="icon"
+                    className="border-border/50 text-muted-foreground hover:text-foreground sm:px-3 sm:py-2 sm:h-9 sm:w-auto h-9 w-9"
                   >
-                    <User className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">
+                    <User className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline max-w-[140px] truncate">
                       {user?.user_metadata?.name || user?.email}
                     </span>
                   </Button>
@@ -85,14 +90,14 @@ const Layout = () => {
 
       {/* Navigation */}
       <nav className="border-b border-border bg-card">
-        <div className="container mx-auto px-2 sm:px-4">
-          <div className="flex gap-1 overflow-x-auto">
+        <div className="container mx-auto px-1 sm:px-4">
+          <div className="flex gap-1 overflow-x-auto scrollbar-thin py-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-3 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
+                  `flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${
                     isActive
                       ? "border-b-2 border-fitness-primary text-fitness-primary"
                       : "text-muted-foreground hover:text-foreground"

@@ -1,60 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { TrendingUp, Calendar, Clock, Dumbbell, History } from "lucide-react";
-import { getCompletedWorkouts, getExercises, getBodyWeights, addBodyWeight, addCompletedWorkout, BodyWeightEntry, generateTestWorkoutData } from "@/data/storage";
+import { addBodyWeight, addCompletedWorkout, BodyWeightEntry } from "@/data/storage";
 import { useNavigate } from "react-router-dom";
-import { mockExercises, CompletedWorkout, WorkoutExercise, Exercise } from "@/data/mockData";
+import { CompletedWorkout, WorkoutExercise, Exercise } from "@/data/mockData";
 import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
-import { LoadingSpinner } from "@/components/ui/loading";
+import { useCompletedWorkoutsQuery, useExercisesQuery, useBodyWeightsQuery } from "@/hooks/useDataQueries";
 
 const Evolution = () => {
   const navigate = useNavigate();
   const [selectedMuscleGroup, setSelectedMuscleGroup] = useState("all");
   const [selectedWorkoutPlan, setSelectedWorkoutPlan] = useState("all");
-  const [isGeneratingData, setIsGeneratingData] = useState(false);
-
-  const [completed, setCompleted] = useState<CompletedWorkout[]>([]);
-  const [allExercises, setAllExercises] = useState<Exercise[]>([]);
-  const [bodyWeights, setBodyWeights] = useState<BodyWeightEntry[]>([]);
-  const [isGeneratingTestData, setIsGeneratingTestData] = useState(false);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const [workouts, exercises, weights] = await Promise.all([
-        getCompletedWorkouts(),
-        getExercises(mockExercises),
-        getBodyWeights()
-      ]);
-      setCompleted(workouts);
-      setAllExercises(exercises);
-      setBodyWeights(weights);
-    };
-    loadData();
-  }, []);
-
-  const handleGenerateTestData = async () => {
-    setIsGeneratingTestData(true);
-    try {
-      generateTestWorkoutData();
-      // Reload data after generating
-      const [workouts, exercises, weights] = await Promise.all([
-        getCompletedWorkouts(),
-        getExercises(mockExercises),
-        getBodyWeights()
-      ]);
-      setCompleted(workouts);
-      setAllExercises(exercises);
-      setBodyWeights(weights);
-    } catch (error) {
-      console.error('Error generating test data:', error);
-    } finally {
-      setIsGeneratingTestData(false);
-    }
-  };
+  const { data: completed = [] } = useCompletedWorkoutsQuery();
+  const { data: allExercises = [] } = useExercisesQuery();
+  const { data: bodyWeights = [] } = useBodyWeightsQuery();
 
   // Process data for charts
   const getExerciseEvolution = (exerciseId: string) => {
@@ -235,105 +198,7 @@ const Evolution = () => {
   });
 
   // Generate test data for chart visualization
-  const generateTestData = async () => {
-    setIsGeneratingData(true);
-    try {
-      // Define different workout plans with specific exercises
-      const workoutPlans = [
-        {
-          name: "Plano Peito e Tríceps",
-          exercises: [
-            { name: "Supino Reto", baseWeight: 80 },
-            { name: "Supino Inclinado", baseWeight: 70 },
-            { name: "Trícep Pulley", baseWeight: 40 },
-            { name: "Trícep Francês", baseWeight: 25 },
-          ]
-        },
-        {
-          name: "Plano Costas e Bíceps", 
-          exercises: [
-            { name: "Remada", baseWeight: 60 },
-            { name: "Puxada Frontal", baseWeight: 50 },
-            { name: "Rosca Direta", baseWeight: 20 },
-            { name: "Rosca Alternada", baseWeight: 15 },
-          ]
-        },
-        {
-          name: "Plano Pernas",
-          exercises: [
-            { name: "Leg Press", baseWeight: 120 },
-            { name: "Agachamento", baseWeight: 80 },
-            { name: "Extensão de Pernas", baseWeight: 40 },
-            { name: "Flexão de Pernas", baseWeight: 35 },
-          ]
-        },
-        {
-          name: "Plano Ombros e Core",
-          exercises: [
-            { name: "Desenvolvimento", baseWeight: 30 },
-            { name: "Elevação Lateral", baseWeight: 12 },
-            { name: "Prancha", baseWeight: 0 }, // Bodyweight
-            { name: "Abdominal", baseWeight: 0 }, // Bodyweight
-          ]
-        }
-      ];
-
-      const dates = [-21, -18, -14, -11, -7, -4, 0]; // 7 workouts over 3 weeks
-      
-      for (const daysAgo of dates) {
-        const date = new Date();
-        date.setDate(date.getDate() + daysAgo);
-        
-        // Select a random plan for this workout
-        const selectedPlan = workoutPlans[Math.floor(Math.random() * workoutPlans.length)];
-        
-        const workoutExercises: WorkoutExercise[] = selectedPlan.exercises.map((planExercise, index) => {
-          const exercise = mockExercises.find(ex => ex.name === planExercise.name);
-          if (!exercise) return null;
-          
-          // Progressive weight increase over time
-          const progressFactor = Math.abs(daysAgo) * 0.5; // Weight increases over time
-          const weight = planExercise.baseWeight + progressFactor + (index * 2);
-          
-          return {
-            id: `we_${Date.now()}_${exercise.id}_${daysAgo}_${index}`,
-            exerciseId: exercise.id,
-            exercise: exercise,
-            sets: [
-              { id: `s1_${Date.now()}_${index}`, reps: 12, weight: Math.max(weight - 5, 0), completed: true },
-              { id: `s2_${Date.now()}_${index}`, reps: 10, weight: Math.max(weight - 2.5, 0), completed: true },
-              { id: `s3_${Date.now()}_${index}`, reps: 8, weight: Math.max(weight, 0), completed: true },
-            ]
-          };
-        }).filter(Boolean) as WorkoutExercise[];
-
-        const testWorkout: CompletedWorkout = {
-          id: `test_${Date.now()}_${daysAgo}`,
-          planId: `test_plan_${selectedPlan.name.replace(/\s+/g, '_')}`,
-          planName: selectedPlan.name,
-          date: date.toISOString().split('T')[0],
-          startTime: "10:00",
-          endTime: "11:30",
-          duration: 90,
-          exercises: workoutExercises,
-          completed: true,
-        };
-
-        await addCompletedWorkout(testWorkout);
-      }
-
-      // Reload data
-      const workouts = await getCompletedWorkouts();
-      setCompleted(workouts);
-      
-      alert("Dados de teste gerados com sucesso! 🎉\n\nCriados 7 treinos com 4 planos diferentes para testar os gráficos.");
-    } catch (error) {
-      console.error('Error generating test data:', error);
-      alert("Erro ao gerar dados de teste");
-    } finally {
-      setIsGeneratingData(false);
-    }
-  };
+  // Removido gerador de dados de teste de produção – a página agora reflete apenas dados reais.
 
   return (
     <PageTransition>
@@ -349,33 +214,6 @@ const Evolution = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button 
-                onClick={handleGenerateTestData}
-                disabled={isGeneratingTestData}
-                variant="outline"
-                className="border-fitness-primary/20 text-fitness-primary hover:bg-fitness-primary/10"
-              >
-                {isGeneratingTestData ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    Gerando...
-                  </>
-                ) : (
-                  <>
-                    <Dumbbell className="h-4 w-4 mr-2" />
-                    Dados de Teste
-                  </>
-                )}
-              </Button>
-              <Button 
-                onClick={generateTestData}
-                disabled={isGeneratingData}
-                variant="outline"
-              className="border-fitness-secondary/20 text-fitness-secondary hover:bg-fitness-secondary/10"
-            >
-              <Dumbbell className="h-4 w-4 mr-2" />
-              {isGeneratingData ? "Gerando..." : "Gerar Dados Teste"}
-            </Button>
             <Button 
               onClick={() => navigate("/historico")}
               variant="outline"

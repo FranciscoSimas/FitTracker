@@ -107,25 +107,29 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header - Minimalist & Professional */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/50">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center flex-shrink-0">
               <Dumbbell className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-semibold tracking-tight">FitTracker</span>
+            <span className="text-lg sm:text-xl font-semibold tracking-tight truncate">
+              FitTracker
+            </span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Funcionalidades</a>
             <a href="#screenshots" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">App</a>
             <a href="#reviews" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Avaliações</a>
           </nav>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-3">
             <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-sm">Entrar</Button>
+              <Button variant="ghost" size="sm" className="text-xs sm:text-sm px-3">
+                Entrar
+              </Button>
             </Link>
             <Link to="/signup">
-              <Button size="sm" className="bg-primary hover:bg-primary/90 text-sm px-6">
+              <Button size="sm" className="bg-primary hover:bg-primary/90 text-xs sm:text-sm px-4 sm:px-6">
                 Criar Conta
               </Button>
             </Link>
@@ -134,26 +138,26 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section - Modern & Clean */}
-      <section className="pt-32 pb-20 px-6">
+      <section className="pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12 sm:mb-16">
             
-            <h1 className="text-6xl md:text-7xl font-bold mb-8 leading-tight tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 sm:mb-8 leading-tight tracking-tight">
               <span className="block text-foreground">Transforma o teu</span>
               <span className="block text-primary">
                 treino em resultados
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg md:text-2xl text-muted-foreground mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed">
               A plataforma profissional para criar, gerir e acompanhar os teus planos de treino. 
               <br className="hidden md:block" />
               Com gráficos avançados, timer integrado e sincronização em tempo real.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10 sm:mb-16">
               <Link to="/signup">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-lg px-12 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-base sm:text-lg px-10 sm:px-12 py-4 sm:py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
                   Começar Gratuitamente
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -162,7 +166,7 @@ const LandingPage = () => {
           </div>
 
           {/* Hero Stats - Elegant Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 max-w-4xl mx-auto">
             <div className="text-center p-6 rounded-2xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all duration-300">
               <div className="text-4xl font-bold text-primary mb-2">100+</div>
               <div className="text-muted-foreground font-medium">Exercícios Pré-cadastrados</div>
@@ -180,22 +184,22 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section - Modern Grid */}
-      <section id="features" className="py-24 px-6 bg-gradient-to-b from-background to-muted/20">
+      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6 bg-gradient-to-b from-background to-muted/20">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+          <div className="text-center mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 tracking-tight">
               <span className="text-foreground">Tudo o que precisas</span>
               <br />
               <span className="text-primary">
                 para treinar melhor
               </span>
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               Funcionalidades desenvolvidas pensando na experiência real de quem treina a sério
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group">
                 <Card className="h-full text-center border-0 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-500 hover:scale-105 hover:shadow-2xl">

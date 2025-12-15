@@ -485,6 +485,70 @@ export async function addWorkoutHistoryRemote(workout: any, userId: string) {
   }
 }
 
+// ---- Body weight (peso corporal) ----
+
+interface BodyWeightRow {
+  date: string;
+  weight: number;
+}
+
+export async function getBodyWeightsRemote(userId: string): Promise<BodyWeightRow[]> {
+  try {
+    const { supabase } = await import("../integrations/supabase/client");
+
+    console.log("📡 Carregando pesos corporais do Supabase...");
+
+    const { data, error } = await supabase
+      .from("body_weights")
+      .select("date, weight")
+      .eq("user_id", userId)
+      .order("date", { ascending: true });
+
+    if (error) {
+      console.error("Erro ao buscar pesos corporais:", error);
+      throw error;
+    }
+
+    console.log(`📡 Pesos corporais carregados do Supabase: ${data?.length || 0} registos`);
+
+    return (data || []) as BodyWeightRow[];
+  } catch (error) {
+    console.error("Erro ao carregar pesos corporais do Supabase:", error);
+    throw error;
+  }
+}
+
+export async function addBodyWeightRemote(entry: BodyWeightRow, userId: string): Promise<void> {
+  try {
+    const { supabase } = await import("../integrations/supabase/client");
+
+    console.log("📡 Salvando peso corporal no Supabase...", entry);
+
+    const { error } = await supabase
+      .from("body_weights")
+      .upsert(
+        {
+          user_id: userId,
+          date: entry.date,
+          weight: entry.weight,
+        },
+        {
+          onConflict: "user_id,date",
+        }
+      );
+
+    if (error) {
+      console.error("Erro ao salvar peso corporal:", error);
+      throw error;
+    }
+
+    console.log("✅ Peso corporal salvo no Supabase");
+  } catch (error) {
+    console.error("Erro ao adicionar peso corporal no Supabase:", error);
+    throw error;
+  }
+}
+
 // Função para popular exercícios iniciais no Supabase
 // Agora pega os exercícios diretamente da tabela exercises (que já tem os 54)
 export async function populateInitialExercises(userId: string): Promise<void> {

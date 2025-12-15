@@ -85,9 +85,9 @@ const AppSettings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
@@ -98,8 +98,8 @@ const AppSettings = () => {
             Voltar
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <Settings className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
+              <Settings className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               Configurações da App
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -108,7 +108,7 @@ const AppSettings = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Unidades de Medida */}
           <Card>
             <CardHeader>

@@ -3,28 +3,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, Edit3, Users, Calendar, Plus, Sparkles, Dumbbell } from "lucide-react";
-import { mockWorkoutPlans, mockCompletedWorkouts, WorkoutPlan } from "@/data/mockData";
-import { getPlans } from "@/data/storage";
+import { WorkoutPlan } from "@/data/mockData";
 import { useNavigate } from "react-router-dom";
 import { isNewUser, isOnboardingComplete } from "@/utils/onboardingUtils";
 import OnboardingModal from "@/components/OnboardingModal";
 import { PageTransition, FadeIn, SlideIn } from "@/components/ui/page-transition";
-import { LoadingSpinner, LoadingSkeleton } from "@/components/ui/loading";
+import { LoadingSpinner } from "@/components/ui/loading";
+import { usePlansQuery, useCompletedWorkoutsQuery } from "@/hooks/useDataQueries";
 
 const WorkoutPlans = () => {
-  const [plans, setPlans] = useState<WorkoutPlan[]>([]);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
+  const { data: plans = [], isLoading } = usePlansQuery();
+  const { data: completedWorkouts = [] } = useCompletedWorkoutsQuery();
+
   useEffect(() => {
-    const loadPlans = async () => {
-      setIsLoading(true);
+    const checkOnboarding = async () => {
       try {
-        const data = await getPlans(mockWorkoutPlans);
-        setPlans(data);
-        
-        // Verifica se é um usuário novo e se ainda não completou o onboarding
         const userIsNew = await isNewUser();
         const onboardingComplete = isOnboardingComplete();
         
@@ -32,12 +28,10 @@ const WorkoutPlans = () => {
           setShowOnboarding(true);
         }
       } catch (error) {
-        console.error('Error loading plans:', error);
-      } finally {
-        setIsLoading(false);
+        console.error("Error checking onboarding state:", error);
       }
     };
-    loadPlans();
+    checkOnboarding();
   }, []);
 
   const startWorkout = (planId: string) => {
@@ -51,7 +45,8 @@ const WorkoutPlans = () => {
   const getSuggestedWorkout = () => {
     if (plans.length === 0) return null;
     
-    const lastWorkouts = mockCompletedWorkouts.slice(-4);
+    // Usar histórico real do utilizador se existir
+    const lastWorkouts = completedWorkouts.slice(0, 4);
     const recentPlanIds = lastWorkouts.map(w => w.planId);
     
     // Find a plan that hasn't been done recently
@@ -65,9 +60,7 @@ const WorkoutPlans = () => {
 
   const handleOnboardingComplete = async () => {
     setShowOnboarding(false);
-    // Recarrega os planos após o onboarding
-    const data = await getPlans(mockWorkoutPlans);
-    setPlans(data);
+    // React Query irá recarregar automaticamente os planos através de invalidações
   };
 
   // Mostra loading enquanto verifica se é usuário novo

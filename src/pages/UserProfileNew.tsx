@@ -95,9 +95,9 @@ const UserProfileNew = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-3 sm:px-4 py-6 sm:py-8 max-w-4xl">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
           <Button
             variant="ghost"
             size="sm"
@@ -108,8 +108,8 @@ const UserProfileNew = () => {
             Voltar
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <User className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
+              <User className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
               Perfil
             </h1>
             <p className="text-muted-foreground mt-1">
@@ -118,7 +118,7 @@ const UserProfileNew = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Avatar e Informações Básicas */}
           <div className="lg:col-span-1">
             <Card>

@@ -250,19 +250,23 @@ const ActiveWorkout = () => {
 
   if (!plan) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-foreground mb-4">Plano não encontrado</h2>
-        <Button onClick={() => navigate("/")}>Voltar aos Planos</Button>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4">
+          Plano não encontrado
+        </h2>
+        <Button onClick={() => navigate("/")} className="w-full sm:w-auto">
+          Voltar aos Planos
+        </Button>
       </div>
     );
   }
 
   return (
     <PageTransition>
-      <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="space-y-6 sm:space-y-8 max-w-4xl lg:max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <FadeIn delay={100}>
           {/* Header */}
-          <Card className="bg-gradient-to-r from-fitness-primary/10 to-fitness-secondary/10 border-fitness-primary/20">
+          <Card className="bg-gradient-to-r from-fitness-primary/10 to-fitness-secondary/10 border-fitness-primary/20 card-responsive">
         <CardHeader>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
@@ -273,10 +277,10 @@ const ActiveWorkout = () => {
                 {plan.exercises.length} exercícios
               </p>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 text-foreground">
+            <div className="flex flex-col items-stretch sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center justify-between sm:justify-start gap-2 text-foreground">
                 <Clock className={`h-5 w-5 ${isPaused ? 'text-fitness-warning' : 'text-fitness-primary'}`} />
-                <span className="text-xl font-mono font-bold">
+                <span className="text-lg sm:text-xl font-mono font-bold">
                   {formatTime(elapsedTime)}
                 </span>
                 {isPaused && (
@@ -285,7 +289,7 @@ const ActiveWorkout = () => {
                   </Badge>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 justify-end">
                 {!isActive && !startTime && (
                   <Button 
                     onClick={startWorkout}
@@ -330,16 +334,16 @@ const ActiveWorkout = () => {
       </Card>
 
       {/* Exercises */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {plan.exercises.map((exercise) => {
           const isExpanded = expandedExercises.has(exercise.id);
           const allSetsCompleted = exercise.sets.every(set => set.completed);
           
           return (
-            <Card key={exercise.id} className="bg-card/50 border-border/50">
+            <Card key={exercise.id} className="bg-card/50 border-border/50 card-responsive">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <Button
                       size="sm"
                       variant="ghost"
@@ -365,8 +369,8 @@ const ActiveWorkout = () => {
                 </div>
               </CardHeader>
             {isExpanded && (
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between mb-3">
+              <CardContent className="space-y-3 sm:space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
                   <Badge variant="outline" className="bg-fitness-primary/10 text-fitness-primary border-fitness-primary/20">
                     {exercise.exercise.muscleGroup}
                   </Badge>
@@ -575,7 +579,7 @@ const ActiveWorkout = () => {
       </div>
 
       {/* Notes */}
-      <Card className="bg-card/50 border-border/50">
+      <Card className="bg-card/50 border-border/50 card-responsive">
         <CardHeader>
           <CardTitle className="text-lg">Notas do Treino</CardTitle>
         </CardHeader>
