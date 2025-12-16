@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Play, Pause, Square, CheckCircle, Clock, Plus, Minus } from "lucide-react";
 import { mockWorkoutPlans, WorkoutPlan } from "@/data/mockData";
-import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight, getPlans } from "@/data/storage";
+import { getPlanById, addCompletedWorkout, getLastWeightForExercise, saveLastWeight, getPlans, getCompletedWorkouts } from "@/data/storage";
 import { CompletedWorkout } from "@/data/mockData";
 import { useToast } from "@/hooks/use-toast";
 import { PageTransition, FadeIn } from "@/components/ui/page-transition";
@@ -25,27 +25,61 @@ const ActiveWorkout = () => {
       if (planId) {
         const currentPlans = await getPlans(mockWorkoutPlans);
         const found = await getPlanById(planId, currentPlans);
-        if (found) {
-          // Load last weights for each exercise
-          const planWithLastWeights = {
-            ...found,
-            exercises: found.exercises.map(exercise => {
-              const lastWeight = getLastWeightForExercise(exercise.exerciseId);
-              if (lastWeight) {
+        if (!found) return;
+
+        // Buscar o último treino completo deste plano
+        let exercisesWithLastData = found.exercises;
+        try {
+          const history = await getCompletedWorkouts();
+          const lastForPlan = history
+            .filter(w => w.planId === found.id)
+            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+          if (lastForPlan && lastForPlan.exercises && Array.isArray(lastForPlan.exercises)) {
+            exercisesWithLastData = found.exercises.map(exercise => {
+              const lastExercise = lastForPlan.exercises.find(
+                (ex: any) => ex.exerciseId === exercise.exerciseId
+              ) as any | undefined;
+
+              if (lastExercise && Array.isArray(lastExercise.sets) && lastExercise.sets.length > 0) {
+                // Copiar os sets do último treino, mas marcar todos como não concluídos
+                const clonedSets = lastExercise.sets.map((set: any) => ({
+                  ...set,
+                  completed: false,
+                }));
                 return {
                   ...exercise,
-                  sets: exercise.sets.map(set => ({
-                    ...set,
-                    weight: lastWeight.weight,
-                    reps: lastWeight.reps
-                  }))
+                  sets: clonedSets,
                 };
               }
+
               return exercise;
-            })
-          };
-          setPlan(planWithLastWeights);
+            });
+          }
+        } catch (error) {
+          console.error("Erro ao carregar último treino para o plano:", error);
         }
+
+        // Carregar último peso global por exercício (fallback onde não houver histórico por plano)
+        const planWithLastWeights = {
+          ...found,
+          exercises: exercisesWithLastData.map(exercise => {
+            const lastWeight = getLastWeightForExercise(exercise.exerciseId);
+            if (lastWeight && (!exercise.sets || exercise.sets.length === 0)) {
+              return {
+                ...exercise,
+                sets: exercise.sets.map(set => ({
+                  ...set,
+                  weight: lastWeight.weight,
+                  reps: lastWeight.reps
+                }))
+              };
+            }
+            return exercise;
+          })
+        };
+
+        setPlan(planWithLastWeights);
       }
     };
     loadPlan();
